@@ -207,14 +207,14 @@ def create_add_game():
     body = request.get_json()
     if not body:
         return jsonify({"msg": "No data provided"}), 400
-    required = ["game_id", "body"]
+    required = ["body"]
     for field in required:
         if field not in body:
             return jsonify({"msg":"Missing field: {field}"}), 400
         
     add_game = AddGame(
         user_id = current_user_id,
-        game_id = body["game_id"],
+        game_id = body.get("game_id", None),
         creator=body.get("creator", False),
         update=body.get("update", False),
         body=body["body"],
