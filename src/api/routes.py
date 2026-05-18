@@ -126,13 +126,10 @@ def handle_login():
 @api.route('/private', methods=['GET'])
 @jwt_required()
 def handle_private():
-    #extraemos el ID del dueño del token
+    # Extraemos el ID del dueño del token
     current_user_id = get_jwt_identity()
-
-    #Obtener por ID
+    # Obtenemos el usuario por ID
     user = db.session.get(User, current_user_id)
-
     if not user:
-        return jsonify({"msg": "User not found","success":False}), 404
-    return jsonify({"msg":"User authenticated successfully", "success":True, "user_id":user.id}), 200
-
+        return jsonify({"msg": "User not found", "success": False}), 404
+    return jsonify(user.serialize()), 200
