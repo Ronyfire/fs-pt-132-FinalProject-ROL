@@ -48,7 +48,7 @@ def update_addgame_status(addgame_id):
     if add_game.status != "pending":
         return jsonify({"msg": "Submission already processed", "success": False}), 400
 
-    add_game = body["status"]
+    add_game.status = body["status"]
 
     # Have to create a code for working only if aproved to add the game successfuly
 
@@ -79,7 +79,7 @@ def update_addgame_status(addgame_id):
                 setattr(game, key, value)
 
     db.session.commit()
-    return jsonify({"msg": f'Submission {body["status"]}, "success": True, "submission": add_game.serialize()'}), 200
+    return jsonify({"msg": f'Submission {body["status"]}', "success": True, "submission": add_game.serialize()}), 200
 
 @api.route('/admin/users/<int:user_id>/ban', methods=['PUT'])
 @jwt_required()
