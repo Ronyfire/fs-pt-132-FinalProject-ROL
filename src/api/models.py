@@ -61,7 +61,6 @@ class Game(db.Model):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     # Relaciones
-    user_surveys: Mapped[List["UserSurvey"]] = relationship("UserSurvey", back_populates="game")
     user_glgs: Mapped[List["UserGLG"]] = relationship("UserGLG", back_populates="game")
     comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="game")
     game_tier: Mapped["GameTier"] = relationship("GameTier", back_populates="game", uselist=False, cascade="all, delete-orphan")
@@ -118,7 +117,6 @@ class Profile(db.Model):
 class UserSurvey(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
-    game_id: Mapped[int] = mapped_column(ForeignKey('game.id'), nullable=False)
     genres: Mapped[List[str]] = mapped_column(ARRAY(String(60)), nullable=False)
     platforms: Mapped[List[str]] = mapped_column(ARRAY(String(35)), nullable=False)
     play_style: Mapped[str] = mapped_column(String(20), nullable=False)
@@ -127,14 +125,12 @@ class UserSurvey(db.Model):
 
     # Relaciones
     user: Mapped["User"] = relationship("User", back_populates="surveys")
-    game: Mapped["Game"] = relationship("Game", back_populates="user_surveys")
     
     #Serialize
     def serialize(self):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "game_id": self.game_id,
             "genres": self.genres,
             "platforms": self.platforms,
             "play_style": self.play_style,

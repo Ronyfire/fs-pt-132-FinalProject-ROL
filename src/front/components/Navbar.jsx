@@ -1,19 +1,46 @@
 import { Link } from "react-router-dom";
-
+import useGlobalReducer from "../hooks/useGlobalReducer";
 export const Navbar = () => {
-
-	return (
-		<nav className="navbar navbar-light bg-light">
-			<div className="container">
-				<Link to="/">
-					<span className="navbar-brand mb-0 h1">React Boilerplate</span>
-				</Link>
-				<div className="ml-auto">
-					<Link to="/demo">
-						<button className="btn btn-primary">Check the Context in action</button>
-					</Link>
-				</div>
-			</div>
-		</nav>
-	);
+  const { store, dispatch } = useGlobalReducer();
+  const handleLogout = () => {
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    dispatch({ type: "logout" });
+  };
+  return (
+    <nav className="navbar navbar-light bg-light">
+      <div className="container">
+        <Link to="/" className="navbar-brand mb-0 h1">
+          Game-Side
+        </Link>
+        <div className="d-flex align-items-center gap-2">
+          {store.isAuthenticated ? (
+            <>
+              <span className="navbar-text me-2">
+                {store.user?.username}
+              </span>
+              <Link to="/profile" className="btn btn-outline-primary btn-sm">
+                Profile
+              </Link>
+              <button
+                className="btn btn-outline-danger btn-sm"
+                onClick={handleLogout}
+              >
+                Log Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn btn-outline-primary btn-sm">
+                Log In
+              </Link>
+              <Link to="/signup" className="btn btn-primary btn-sm">
+                Sign Up
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
 };
