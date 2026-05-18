@@ -23,7 +23,7 @@ def get_game_comments(game_id):
     return jsonify({"success": True, "comments": [comment.serialize() for comment in comments]}), 200
 
 
-# POST create comment
+# POST create comment / reply
 @api.route('/games/<int:game_id>/comments', methods=['POST'])
 @jwt_required()
 def create_comment(game_id):
@@ -40,18 +40,29 @@ def create_comment(game_id):
     if not body or "content" not in body:
         return jsonify({"msg": "Content is required", "success": False}), 400
 
+    parent_comment_id = body.get("parent_id")
+
+    if parent_comment_id:
+
+        parent_comment = db.session.get(Comment, parent_comment_id)
+
+        if not parent_comment:
+            return jsonify({"msg": "Parent comment not found", "success": False}), 404
+
+        if parent_comment.game_id != game_id:
+            return jsonify({"msg": "Parent comment belongs to another game", "success": False}), 400
+
     comment = Comment(
         user_id=current_user_id,
         game_id=game_id,
         content=body["content"],
-        parent_id=body.get("parent_id")
+        parent_id=parent_comment_id
     )
 
     db.session.add(comment)
     db.session.commit()
 
     return jsonify({"msg": "Comment created", "success": True, "comment": comment.serialize()}), 201
-
 
 # PUT update comment
 @api.route('/comments/<int:comment_id>', methods=['PUT'])
@@ -87,7 +98,6 @@ def delete_comment(comment_id):
     current_user_id = get_jwt_identity()
 
     current_user = db.session.get(User, current_user_id)
-
     comment = db.session.get(Comment, comment_id)
 
     if not comment:
