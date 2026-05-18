@@ -293,7 +293,7 @@ class Ban(db.Model):
 class AddGame(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
-    game_id: Mapped[int] = mapped_column(ForeignKey('game.id'), nullable=False)
+    game_id: Mapped[Optional[int]] = mapped_column(ForeignKey('game.id'), nullable=True)
     creator: Mapped[bool] = mapped_column(Boolean(), default=False, nullable=False)
     update: Mapped[bool] = mapped_column(Boolean(), default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
