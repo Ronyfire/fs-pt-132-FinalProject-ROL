@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 9173969e9706
+Revision ID: 8c3cf3a48f8c
 Revises: 
-Create Date: 2026-05-15 19:36:22.823150
+Create Date: 2026-05-18 18:32:10.283418
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9173969e9706'
+revision = '8c3cf3a48f8c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -47,7 +47,7 @@ def upgrade():
     op.create_table('add_game',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('game_id', sa.Integer(), nullable=False),
+    sa.Column('game_id', sa.Integer(), nullable=True),
     sa.Column('creator', sa.Boolean(), nullable=False),
     sa.Column('update', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
@@ -66,7 +66,7 @@ def upgrade():
     sa.Column('reason', sa.Text(), nullable=False),
     sa.Column('ends', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['admin_id'], ['user.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('comment',
@@ -78,7 +78,7 @@ def upgrade():
     sa.Column('parent_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['game_id'], ['game.id'], ),
     sa.ForeignKeyConstraint(['parent_id'], ['comment.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('game_tier',
@@ -143,7 +143,8 @@ def upgrade():
     sa.Column('is_favorite', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['game_id'], ['game.id'], ),
     sa.ForeignKeyConstraint(['ugl_id'], ['user_game_list.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('ugl_id', 'game_id')
     )
     # ### end Alembic commands ###
 
