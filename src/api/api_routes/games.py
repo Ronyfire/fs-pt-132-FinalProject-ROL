@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from api.models import db, Game, GameTier, UserGameTier, UserGameList, User, UserGLG
 from sqlalchemy import select
 from datetime import datetime, timezone
+import re
 
 
 
@@ -34,6 +35,11 @@ def check_admin(user_id):
     if not is_admin:        
         return jsonify({"msg": "Admin access required"}), 400
     return None
+def slugify(text):
+    text = text.lower().strip()
+    text = re.sub(r'[^\w\s-]', '', text)
+    text = re.sub(r'[-\s]+', '-', text)
+    return text[:250]
 
 # ─── recalcular GameTier ───
 # Cada vez que alguien vota, actualiza o borra su voto,
@@ -132,8 +138,10 @@ def create_game():
             release = datetime.fromisoformat(release).date()
         except ValueError:
             return jsonify({"msg": "Invalid release_date format. Use ISO format (YYYY-MM-DD)"}), 400
+    slug = body.get("slug") or slugify(body["title"])
 
     game = Game(
+        slug =slug,
         title=body["title"],
         description=body["description"],
         release_date=release,
@@ -170,7 +178,7 @@ def update_game(game_id):
     if not body:
         return jsonify({"msg": "No data provided"}), 400
 
-    updatable = ["title", "description", "developer",
+    updatable = ["title", "slug", "description", "developer",
                  "publisher", "cover_img_url", "genres", "platforms"]
 
     # Validar campos de texto
