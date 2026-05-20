@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import useGlobalReducer from "../../hooks/useGlobalReducer";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 export const Login = () => {
   const { store, dispatch } = useGlobalReducer();
