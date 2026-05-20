@@ -25,7 +25,7 @@ def get_pending_addgames():
         submission.serialize() for submission in submissions
     ]}), 200
 
-@api.route("admin/addgames/<int:addgame_id>", methods=['PUT'])
+@api.route("/admin/addgames/<int:addgame_id>", methods=['PUT'])
 @jwt_required()
 def update_addgame_status(addgame_id):
 
