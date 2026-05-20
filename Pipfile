@@ -23,6 +23,7 @@ sqlalchemy = "*"
 werkzeug = "*"
 flask-bcrypt = "*"
 pytz = "*"
+requests = "*"
 
 [requires]
 python_version = "3.13"
