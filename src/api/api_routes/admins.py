@@ -4,6 +4,7 @@ from api.routes import api
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import select
 from datetime import datetime
+from api.api_routes.igdb import search_igdb_games, create_game_from_igdb #<--lo de la api
 
 def admin_required():
 
@@ -25,7 +26,7 @@ def get_pending_addgames():
         submission.serialize() for submission in submissions
     ]}), 200
 
-@api.route("admin/addgames/<int:addgame_id>", methods=['PUT'])
+@api.route("/admin/addgames/<int:addgame_id>", methods=['PUT'])
 @jwt_required()
 def update_addgame_status(addgame_id):
 
@@ -123,3 +124,41 @@ def change_user_ban(user_id):
     db.session.add(ban)
     db.session.commit()
     return jsonify({"msg": "User banned", "success": True, "ban": ban.serialize()}), 200
+
+# ====================== IMPORTAR JUEGOS DESDE IGDB ======================
+
+@api.route('/admin/import-games', methods=['POST'])
+@jwt_required()
+def import_games_from_igdb():
+
+    if not admin_required():
+        return jsonify({"msg": "Admin access required", "success": False}), 403
+
+    body = request.get_json(silent=True) or {}
+    query = body.get('query')
+    quantity = body.get('quantity', 10)
+
+    if not query:
+        return jsonify({"msg": "Query is required", "success": False}), 400
+
+    results = search_igdb_games(query, page_size=quantity)
+
+    if not results:
+        return jsonify({"msg": "No se encontraron juegos en IGDB", "success": False}), 404
+
+    imported = []
+    skipped = []
+
+    for game_data in results:
+        game = create_game_from_igdb(game_data)
+        if game:
+            imported.append(game.title)
+        else:
+            skipped.append(game_data.get('name', 'unknown'))
+
+    return jsonify({
+        "success": True,
+        "message": f"Se importaron {len(imported)} juegos",
+        "imported_games": imported,
+        "skipped_games": skipped,
+    }), 200

@@ -34,6 +34,11 @@ db.init_app(app)
 bcrypt.init_app(app)
 app.config["JWT_SECRET_KEY"] = "LOR OF THE RINGS"
 jwt = JWTManager(app)
+
+# Credenciales IGDB
+app.config["IGDB_CLIENT_ID"] = os.getenv("IGDB_CLIENT_ID")
+app.config["IGDB_CLIENT_SECRET"] = os.getenv("IGDB_CLIENT_SECRET")
+
 # add the admin
 setup_admin(app)
 
