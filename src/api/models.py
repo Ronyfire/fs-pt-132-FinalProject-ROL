@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, DateTime, Date, Text, Enum, ForeignKey, JSON, ARRAY, select, func, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from typing import List, Optional
 
 imgurl = "https://images.unsplash.com/vector-1738312097380-45562da00459?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -50,14 +50,15 @@ class User(db.Model):
      
 class Game(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
+    slug: Mapped[str] = mapped_column(String(250), unique=True, nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
-    description: Mapped[str] = mapped_column(Text, nullable=False)
-    release_date: Mapped[datetime] = mapped_column(Date, nullable=False)
-    developer: Mapped[str] = mapped_column(String(100), nullable=False)
-    publisher: Mapped[str] = mapped_column(String(100), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    release_date: Mapped[Optional[Date]] = mapped_column(Date, nullable=True)
+    developer: Mapped[str] = mapped_column(String(150), nullable=False)
+    publisher: Mapped[str] = mapped_column(String(150), nullable=False)
     cover_img_url: Mapped[str] = mapped_column(String(255), nullable=False)
-    genres: Mapped[List[str]] = mapped_column(ARRAY(String(40)), nullable=False)
-    platforms: Mapped[List[str]] = mapped_column(ARRAY(String(30)), nullable=False)
+    genres: Mapped[List[str]] = mapped_column(ARRAY(String(60)), nullable=False)
+    platforms: Mapped[List[str]] = mapped_column(ARRAY(String(60)), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     # Relaciones
@@ -75,15 +76,16 @@ class Game(db.Model):
             UserGLG.is_favorite == True
         )).scalar()
         
-        return favorites
+        return favorites or 0
 
     #Serialize
     def serialize(self):
         return {
             "id": self.id,
+            "slug": self.slug,
             "title": self.title,
-            "description": self.description,
-            "release_date": self.release_date.isoformat(),
+            "description": self.description or "Sin descripción disponible.",
+            "release_date": self.release_date.isoformat() if self.release_date else None,
             "developer": self.developer,
             "publisher": self.publisher,
             "cover_img_url": self.cover_img_url,
@@ -118,7 +120,7 @@ class UserSurvey(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
     genres: Mapped[List[str]] = mapped_column(ARRAY(String(60)), nullable=False)
-    platforms: Mapped[List[str]] = mapped_column(ARRAY(String(35)), nullable=False)
+    platforms: Mapped[List[str]] = mapped_column(ARRAY(String(40)), nullable=False)
     play_style: Mapped[str] = mapped_column(String(20), nullable=False)
     favorite_themes: Mapped[List[str]] = mapped_column(ARRAY(String(50)), nullable=False)
     completed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
@@ -176,15 +178,17 @@ class UserGLG(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "ugl_id":self.ugl.id,
+            "ugl_id": self.ugl_id,
+            "game_id": self.game_id,
             "status": self.status,
             "rating": self.rating,
             "review": self.review,
+            "is_favorite": self.is_favorite,
             "added_at": self.added_at.isoformat(),
             "completed_at": self.completed_at.isoformat() if self.completed_at else None,
-            "game": self.game.serialize()
+            "game": self.game.serialize() if self.game else None
         }
-
+    
 class Comment(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
