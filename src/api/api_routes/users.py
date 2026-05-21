@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from api.models import db, User, Profile, UserSurvey, AddGame, imgurl
+from api.models import db, User, Profile, UserSurvey, AddGame, imgurl, utcnow
 from api.routes import api
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import select
@@ -180,7 +180,7 @@ def create_survey():
     if not body:
         return jsonify({"msg": "No data provided"}), 400
 
-    required = ["genres", "platforms", "play_style", "favorite_themes", "completed_at"] # se puede cambiar en funcion de lo que pongamos en la encuesta
+    required = ["genres", "platforms", "play_style", "favorite_themes"] # se puede cambiar en funcion de lo que pongamos en la encuesta
     for field in required:
         if field not in body:
             return jsonify({"msg": "Missing field: {field}"}), 400
@@ -191,7 +191,7 @@ def create_survey():
          platforms=body["platforms"],
          play_style=body["play_style"],
          favorite_themes=body["favorite_themes"],
-         completed_at=body["completed_at"]     
+         completed_at=utcnow()    
     )
     db.session.add(survey)
     db.session.commit()
