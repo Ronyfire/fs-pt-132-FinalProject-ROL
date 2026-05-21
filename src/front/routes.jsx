@@ -7,6 +7,8 @@ import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
+import { Game } from "./pages/Game";
+import { Survey } from "./pages/Survey";
 import { Profile } from "./pages/Profile";
 import { RequireAuth } from "./components/RequireAuth";
 import { Games } from "./pages/Games"
@@ -17,9 +19,12 @@ export const router = createBrowserRouter(
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/games/:gameId" element={<Game />} />
+
             {/* Rutas protegidas — RequireAuth envuelve a Profile */}
             <Route element={<RequireAuth />}>
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/survey" element={<Survey />} />
             </Route>
             <Route path="/games" element={<Games />} />
         </Route>
