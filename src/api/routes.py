@@ -20,6 +20,7 @@ from api.api_routes.comments import *
 from api.api_routes.favorites import *
 from api.api_routes.games import *
 from api.api_routes.users import *
+from api.api_routes.igdb import *
 
 
 

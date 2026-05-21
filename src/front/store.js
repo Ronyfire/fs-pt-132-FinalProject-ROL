@@ -4,7 +4,12 @@ export const initialStore = () => {
     user: null,
     token: null,
     isAuthenticated: false,
+
     games: [],
+    selectedGame: null,
+    comments: [],
+
+    loading: false,
   };
 };
 export default function storeReducer(store, action = {}) {
@@ -19,6 +24,23 @@ export default function storeReducer(store, action = {}) {
         user: action.payload.user,
         token: action.payload.token,
         isAuthenticated: true,
+      };
+    case "set_loading":
+      return {
+        ...store,
+        loading: action.payload,
+      };
+
+    case "set_selected_game":
+      return {
+        ...store,
+        selectedGame: action.payload,
+      };
+
+    case "set_comments":
+      return {
+        ...store,
+        comments: action.payload,
       };
     case "logout":
       sessionStorage.removeItem("token");
@@ -39,6 +61,6 @@ export default function storeReducer(store, action = {}) {
         isAuthenticated: !!token && !!user,
       };
     default:
-      throw Error("Unknown action.");
+      return store;
   }
 }

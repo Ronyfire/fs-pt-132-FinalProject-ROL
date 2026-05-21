@@ -53,12 +53,12 @@ class Game(db.Model):
     slug: Mapped[str] = mapped_column(String(250), unique=True, nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    release_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    release_date: Mapped[Optional[Date]] = mapped_column(Date, nullable=True)
     developer: Mapped[str] = mapped_column(String(150), nullable=False)
     publisher: Mapped[str] = mapped_column(String(150), nullable=False)
     cover_img_url: Mapped[str] = mapped_column(String(255), nullable=False)
-    genres: Mapped[List[str]] = mapped_column(ARRAY(String(40)), nullable=False)
-    platforms: Mapped[List[str]] = mapped_column(ARRAY(String(30)), nullable=False)
+    genres: Mapped[List[str]] = mapped_column(ARRAY(String(60)), nullable=False)
+    platforms: Mapped[List[str]] = mapped_column(ARRAY(String(60)), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     # Relaciones
