@@ -5,12 +5,18 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import select
 from datetime import datetime
 from api.api_routes.igdb import search_igdb_games, create_game_from_igdb #<--lo de la api
+import re
 
 def admin_required():
-
     current_user_id = get_jwt_identity()
     current_user = db.session.get(User, current_user_id)
     return current_user and current_user.is_admin
+
+def slugify(text):
+    text = text.lower().strip()
+    text = re.sub(r'[^\w\s-]', '', text)
+    text = re.sub(r'[-\s]+', '-', text)
+    return text[:250]
 
 @api.route("/admin/addgames", methods=["GET"])
 @jwt_required()
@@ -58,9 +64,10 @@ def update_addgame_status(addgame_id):
         if add_game.creator:
 
             new_game = Game(
+                slug=data.get("slug") or slugify(data["title"]),
                 title=data["title"],
-                description=data["description"],
-                release_date=datetime.fromisoformat(data["release_date"]),
+                description=data.get("description"),
+                release_date=datetime.fromisoformat(data["release_date"]).date() if data.get("release_date") else None,
                 developer=data["developer"],
                 publisher=data["publisher"],
                 cover_img_url=data["cover_img_url"],
@@ -75,9 +82,29 @@ def update_addgame_status(addgame_id):
 
             if not game:
                 return jsonify({"msg": "Game not found", "success": False}), 404
+            
+            allowed_fields = [
+                "title",
+                "slug",
+                "description",
+                "release_date",
+                "developer",
+                "publisher",
+                "cover_img_url",
+                "genres",
+                "platforms"
+            ]
 
             for key, value in data.items():
-                setattr(game, key, value)
+                if key in allowed_fields:
+                    if key == "release_date" and value:
+                        value = datetime.fromisoformat(value).date()
+
+                    if key == "title" and "slug" not in data:
+                        game.slug = slugify(value)
+
+                    setattr(game, key, value)
+
 
     db.session.commit()
     return jsonify({"msg": f'Submission {body["status"]}', "success": True, "submission": add_game.serialize()}), 200
