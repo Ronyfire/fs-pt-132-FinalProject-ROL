@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, DateTime, Date, Text, Enum, ForeignKey, JSON, ARRAY, select, func, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from typing import List, Optional
 
 imgurl = "https://images.unsplash.com/vector-1738312097380-45562da00459?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -53,7 +53,7 @@ class Game(db.Model):
     slug: Mapped[str] = mapped_column(String(250), unique=True, nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    release_date: Mapped[Optional[Date]] = mapped_column(Date, nullable=True)
+    release_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     developer: Mapped[str] = mapped_column(String(150), nullable=False)
     publisher: Mapped[str] = mapped_column(String(150), nullable=False)
     cover_img_url: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -179,14 +179,16 @@ class UserGLG(db.Model):
         return {
             "id": self.id,
             "ugl_id": self.ugl_id,
+            "game_id": self.game_id,
             "status": self.status,
             "rating": self.rating,
             "review": self.review,
+            "is_favorite": self.is_favorite,
             "added_at": self.added_at.isoformat(),
             "completed_at": self.completed_at.isoformat() if self.completed_at else None,
-            "game": self.game.serialize()
+            "game": self.game.serialize() if self.game else None
         }
-
+    
 class Comment(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
