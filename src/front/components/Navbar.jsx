@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+
 export const Navbar = () => {
   const { store, dispatch } = useGlobalReducer();
+
   const handleLogout = () => {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
     dispatch({ type: "logout" });
   };
+
   return (
     <nav className="navbar navbar-light bg-light">
       <div className="container">
@@ -16,9 +19,15 @@ export const Navbar = () => {
         <div className="d-flex align-items-center gap-2">
           {store.isAuthenticated ? (
             <>
-              <span className="navbar-text me-2">
-                {store.user?.username}
-              </span>
+              <span className="navbar-text me-2">{store.user?.username}</span>
+
+              {/* Botón Admin — solo visible si el usuario es admin */}
+              {store.user?.is_admin && (
+                <Link to="/admin" className="btn btn-warning btn-sm fw-bold">
+                  ⚙ Admin
+                </Link>
+              )}
+
               <Link to="/profile" className="btn btn-outline-primary btn-sm">
                 Profile
               </Link>
