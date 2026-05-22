@@ -2,15 +2,16 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for, send_from_directory
-from flask_migrate import Migrate
-from flask_swagger import swagger
+from flask import Flask, request, jsonify, url_for, send_from_directory # type: ignore
+from flask_migrate import Migrate # type: ignore
+from flask_swagger import swagger # type: ignore
 from api.utils import APIException, generate_sitemap
 from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
-
+from flask_jwt_extended import JWTManager # type: ignore
+from extensions import bcrypt
 # from models import Person
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
@@ -30,6 +31,13 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
+bcrypt.init_app(app)
+app.config["JWT_SECRET_KEY"] = "LOR OF THE RINGS"
+jwt = JWTManager(app)
+
+# Credenciales IGDB
+app.config["IGDB_CLIENT_ID"] = os.getenv("IGDB_CLIENT_ID")
+app.config["IGDB_CLIENT_SECRET"] = os.getenv("IGDB_CLIENT_SECRET")
 
 # add the admin
 setup_admin(app)
@@ -69,4 +77,6 @@ def serve_any_other_file(path):
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
+    with app.app_context():
+        db.create_all() 
     app.run(host='0.0.0.0', port=PORT, debug=True)

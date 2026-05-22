@@ -19,8 +19,10 @@ flask-admin = "==2.0.0"
 typing-extensions = "*"
 wtforms = "==3.1.2"
 sqlalchemy = "*"
-flask-jwt-extended = "*"
 werkzeug = "*"
+flask-bcrypt = "*"
+pytz = "*"
+requests = "*"
 
 [requires]
 python_version = "3.13"
