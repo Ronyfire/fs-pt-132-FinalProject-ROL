@@ -1,6 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, DateTime, Date, Text, Enum, ForeignKey, JSON, ARRAY, select, func, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship 
+from flask_sqlalchemy import SQLAlchemy # type: ignore
+from sqlalchemy import String, Boolean, DateTime, Date, Text, Enum, ForeignKey, JSON, ARRAY, select, func, Integer # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 from datetime import datetime, timezone, date
 from typing import List, Optional
 
