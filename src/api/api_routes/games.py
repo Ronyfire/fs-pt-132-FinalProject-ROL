@@ -547,7 +547,7 @@ def add_user_glg():
 def update_user_game_entry(entry_id):
     user_id = get_jwt_identity()
     entry = db.session.get(UserGLG, entry_id)
-    if not entry or entry.ugl.user_id != user_id:
+    if not entry or entry.ugl.user_id != int(user_id):
         return jsonify({"msg": "Entry not found"}), 404
     body = request.get_json()
     if not body:
