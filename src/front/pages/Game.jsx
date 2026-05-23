@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CommentForm from "../components/CommentForm";
 import FavoriteButton from "../components/FavoriteButton";
+import CommentCard from "../components/CommentCard";
 
 export const Game = () => {
     const { gameId } = useParams();
@@ -104,6 +105,15 @@ export const Game = () => {
         );
     }
 
+    const currentUser = JSON.parse(sessionStorage.getItem("user") || "null");
+    const isAdmin = currentUser?.is_admin === true;
+
+    const parentComments = comments.filter((comment) => comment.parent_id === null);
+
+    const getReplies = (commentId) => {
+        return comments.filter((comment) => comment.parent_id === commentId);
+    };
+
     return (
         <div className="container mt-4">
             {message && (
@@ -170,25 +180,21 @@ export const Game = () => {
             />
 
             <div className="mt-3">
-                {comments.map(comment => (
-                    <div className="card mb-2" key={comment.id}>
-                        <div className="card-body">
-                            <strong>{comment.username}</strong>
-                            <p>{comment.content}</p>
-
-                            {comment.parent_id && (
-                                <small>Add comment from #{comment.parent_id}</small>
-                            )}
-
-                            <CommentForm
-                                gameId={Number(gameId)}
-                                parentId={comment.id}
-                                buttonText="Responder"
-                                onCommentCreated={loadComments}
-                            />
-                        </div>
-                    </div>
-                ))}
+                {parentComments.length > 0 ? (
+                    parentComments.map((comment) => (
+                        <CommentCard
+                            key={comment.id}
+                            comment={comment}
+                            replies={getReplies(comment.id)}
+                            gameId={Number(gameId)}
+                            currentUser={currentUser}
+                            isAdmin={isAdmin}
+                            onRefresh={loadComments}
+                        />
+                    ))
+                ) : (
+                    <p>No comments yet. Be the first to comment.</p>
+                )}
             </div>
         </div>
     );

@@ -40,6 +40,16 @@ def create_report():
         # No reportar tu propio comentario
         if comment.user_id == int(reporter_id):
             return jsonify({"msg": "You cannot report your own comment", "success": False}), 400
+        
+        existing_report = db.session.execute(
+            select(Report).where(
+                Report.reporter_id == reporter_id,
+                Report.reported_comment_id == body["comment_id"]
+            )
+        ).scalar_one_or_none()
+
+        if existing_report:
+            return jsonify({"msg": "You already reported this comment", "success": False}), 400
  
         report = Report(
             reporter_id=reporter_id,
@@ -54,6 +64,16 @@ def create_report():
         # No reportarte a ti mismo
         if int(reporter_id) == int(body["user_id"]):
             return jsonify({"msg": "You cannot report yourself", "success": False}), 400
+        
+        existing_report = db.session.execute(
+            select(Report).where(
+                Report.reporter_id == reporter_id,
+                Report.reported_user_id == body["user_id"]
+            )
+        ).scalar_one_or_none()
+
+        if existing_report:
+            return jsonify({"msg": "You already reported this user", "success": False}), 400
  
         report = Report(
             reporter_id=reporter_id,

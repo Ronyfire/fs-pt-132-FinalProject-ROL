@@ -183,7 +183,7 @@ def create_survey():
     required = ["genres", "platforms", "play_style", "favorite_themes"] # se puede cambiar en funcion de lo que pongamos en la encuesta
     for field in required:
         if field not in body:
-            return jsonify({"msg": "Missing field: {field}"}), 400
+            return jsonify({"msg": f"Missing field: {field}"}), 400
     survey = UserSurvey(
             # esto se podria cambiar si se pide otras cosas en la encuesta
          user_id= current_user_id,
@@ -209,7 +209,7 @@ def create_add_game():
     required = ["body"]
     for field in required:
         if field not in body:
-            return jsonify({"msg":"Missing field: {field}"}), 400
+            return jsonify({"msg": f"Missing field: {field}"}), 400
         
     add_game = AddGame(
         user_id = current_user_id,
