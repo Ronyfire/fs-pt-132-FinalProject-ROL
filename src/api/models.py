@@ -60,6 +60,7 @@ class Game(db.Model):
     genres: Mapped[List[str]] = mapped_column(ARRAY(String(60)), nullable=False)
     platforms: Mapped[List[str]] = mapped_column(ARRAY(String(60)), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    comment_reports: Mapped[List["CommentReport"]] = relationship("CommentReport", back_populates="user", cascade="all, delete-orphan")
 
     # Relaciones
     user_glgs: Mapped[List["UserGLG"]] = relationship("UserGLG", back_populates="game")
@@ -196,6 +197,7 @@ class Comment(db.Model):
     content: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     parent_id: Mapped[Optional[int]] = mapped_column(ForeignKey('comment.id'), nullable=True)  # Cambié nombre a parent_id
+    reports: Mapped[List["CommentReport"]] = relationship("CommentReport", back_populates="comment", cascade="all, delete-orphan")
 
     # Relaciones
     user: Mapped["User"] = relationship("User", back_populates="comments")
@@ -221,8 +223,34 @@ class Comment(db.Model):
             "created_at": self.created_at.isoformat(),
             "parent_id": self.parent_id,          # Cambiado de reply_id
             "reply_count": len(self.replies),
+            "report_count": len(self.reports),
         }
     
+class CommentReport(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    comment_id: Mapped[int] = mapped_column(ForeignKey('comment.id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+
+    __table_args__ = (
+        db.UniqueConstraint('comment_id', 'user_id'),
+    )
+
+    comment: Mapped["Comment"] = relationship("Comment", back_populates="reports")
+    user: Mapped["User"] = relationship("User", back_populates="comment_reports")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "comment_id": self.comment_id,
+            "user_id": self.user_id,
+            "username": self.user.username if self.user else None,
+            "reason": self.reason,
+            "created_at": self.created_at.isoformat(),
+            "comment": self.comment.serialize() if self.comment else None
+        }    
+
 class GameTier(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     game_id: Mapped[int] = mapped_column(ForeignKey('game.id'), unique=True, nullable=False)
