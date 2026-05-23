@@ -127,14 +127,24 @@ def change_user_ban(user_id):
     if body is None or "is_active" not in body:
         return jsonify({"msg": "is_active is required", "success": False}), 400
 
-    # UNBAN
+   # UNBAN
     if body["is_active"] == True:
-
         user.is_active = True
+
+        # Marcar el ban activo más reciente como levantado
+        from datetime import timezone
+        active_ban = db.session.execute(
+            select(Ban)
+            .where(Ban.user_id == user_id, Ban.unbanned_at == None)
+            .order_by(Ban.created_at.desc())
+        ).scalars().first()
+
+        if active_ban:
+            active_ban.unbanned_at = datetime.now(timezone.utc)
+            active_ban.unbanned_by_id = current_admin_id
 
         db.session.commit()
         return jsonify({"msg": "User unbanned", "success": True}), 200
-
     # BAN
     if "reason" not in body:
         return jsonify({"msg": "Reason is required", "success": False}), 400
@@ -151,6 +161,19 @@ def change_user_ban(user_id):
     db.session.add(ban)
     db.session.commit()
     return jsonify({"msg": "User banned", "success": True, "ban": ban.serialize()}), 200
+
+# GET /admin/bans — Historial completo de bans
+@api.route('/admin/bans', methods=['GET'])
+@jwt_required()
+def get_ban_history():
+    if not admin_required():
+        return jsonify({"msg": "Admin access required", "success": False}), 403
+
+    bans = db.session.execute(
+        select(Ban).order_by(Ban.created_at.desc())
+    ).scalars().all()
+
+    return jsonify({"success": True, "bans": [b.serialize() for b in bans]}), 200
 
 # ====================== IMPORTAR JUEGOS DESDE IGDB ======================
 

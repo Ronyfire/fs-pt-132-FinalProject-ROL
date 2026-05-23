@@ -16,8 +16,7 @@ const authFetch = (url, opts = {}) =>
     },
   });
 
-// ─────────────────────────────────────────────────────────────
-// TAB 1: Suggested Games
+// Suggested Games
 // ─────────────────────────────────────────────────────────────
 function SuggestedGames() {
   const [submissions, setSubmissions] = useState([]);
@@ -113,8 +112,7 @@ function SuggestedGames() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// TAB 2: Reported Comments
+// Reported Comments
 // ─────────────────────────────────────────────────────────────
 function ReportedComments() {
   const [reports, setReports] = useState([]);
@@ -163,7 +161,7 @@ function ReportedComments() {
                   </blockquote>
 
                   <div className="mt-3 text-secondary small">
-                    Reported by <strong className="text-white">@{r.reporter_username}</strong> • 
+                    Reported by <strong className="text-white">@{r.reporter_username}</strong> •
                     Reason: <em className="text-warning">{r.reason}</em>
                   </div>
                 </div>
@@ -175,6 +173,20 @@ function ReportedComments() {
                   <button className="btn btn-danger btn-sm" onClick={() => deleteComment(r.id)}>
                     Delete Comment
                   </button>
+                  <button
+                    className="btn btn-warning btn-sm"
+                    onClick={async () => {
+                      const reason = prompt(`Ban reason for @${r.comment_author_username || "this user"}:`);
+                      if (!reason) return;
+                      await authFetch(`/api/admin/users/${r.comment_author_id}/ban`, {
+                        method: "PUT",
+                        body: JSON.stringify({ is_active: false, reason }),
+                      });
+                      resolve(r.id);
+                    }}
+                  >
+                    🔨 Ban User
+                  </button>
                 </div>
               </div>
             </div>
@@ -185,74 +197,104 @@ function ReportedComments() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// TAB 3: Reported Users
+// Reported Users
 // ─────────────────────────────────────────────────────────────
 function ReportedUsers() {
-  const [reports, setReports] = useState([]);
+  const [bans, setBans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all"); // "all" | "active" | "lifted"
 
   const load = () => {
     setLoading(true);
-    authFetch("/api/admin/reports/users")
+    authFetch("/api/admin/bans")
       .then((r) => r.json())
-      .then((d) => setReports(d.reports || []))
+      .then((d) => setBans(d.bans || []))
       .finally(() => setLoading(false));
   };
 
   useEffect(load, []);
 
-  const resolve = async (id) => {
-    await authFetch(`/api/admin/reports/${id}/resolve`, { method: "PUT" });
+  const unban = async (userId) => {
+    await authFetch(`/api/admin/users/${userId}/ban`, {
+      method: "PUT",
+      body: JSON.stringify({ is_active: true }),
+    });
     load();
   };
 
-  const banUser = async (report) => {
-    await authFetch(`/api/admin/users/${report.reported_user_id}/ban`, {
-      method: "PUT",
-      body: JSON.stringify({ is_active: false, reason: report.reason }),
-    });
-    resolve(report.id);
-  };
+  const filtered = bans.filter((b) => {
+    if (filter === "active") return b.is_active_ban;
+    if (filter === "lifted") return !b.is_active_ban;
+    return true;
+  });
 
   if (loading) return <p className="text-center py-5 text-secondary">Loading...</p>;
-  if (!reports.length)
-    return <p className="text-center py-5 text-secondary">No reported users.</p>;
 
   return (
-    <div className="row g-3">
-      {reports.map((r) => (
-        <div key={r.id} className="col-12">
-          <div className="card bg-dark border-secondary">
-            <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <h5 className="text-pink mb-1">@{r.reported_username}</h5>
-                  <p className="text-secondary small mb-2">ID: {r.reported_user_id}</p>
-                  <p className="text-secondary small">
-                    Reported by <strong>@{r.reporter_username}</strong> • Reason: <em className="text-warning">{r.reason}</em>
-                  </p>
-                </div>
+    <div>
+      {/* Filtro */}
+      <div className="d-flex gap-2 mb-3">
+        {[["all", "All"], ["active", "🔴 Active Bans"], ["lifted", "✅ Lifted"]].map(([val, label]) => (
+          <button
+            key={val}
+            className={`btn btn-sm ${filter === val ? "btn-pink" : "btn-outline-secondary"}`}
+            onClick={() => setFilter(val)}
+          >
+            {label}
+          </button>
+        ))}
+        <span className="ms-auto text-secondary small align-self-center">
+          {filtered.length} record{filtered.length !== 1 ? "s" : ""}
+        </span>
+      </div>
 
-                <div className="d-flex gap-2">
-                  <button className="btn btn-outline-secondary" onClick={() => resolve(r.id)}>
-                    Ignore
-                  </button>
-                  <button className="btn btn-danger" onClick={() => banUser(r)}>
-                    Ban User
-                  </button>
+      {!filtered.length && (
+        <p className="text-center py-5 text-secondary">No records found.</p>
+      )}
+
+      <div className="row g-3">
+        {filtered.map((b) => (
+          <div key={b.id} className="col-12">
+            <div className={`card bg-dark border-${b.is_active_ban ? "danger" : "secondary"}`}>
+              <div className="card-body d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <div className="mb-1 d-flex align-items-center gap-2">
+                    <span className={`badge ${b.is_active_ban ? "bg-danger" : "bg-success"}`}>
+                      {b.is_active_ban ? "Banned" : "Lifted"}
+                    </span>
+                    <strong className="text-white">@{b.username}</strong>
+                  </div>
+                  <p className="text-warning small mb-1">
+                    Reason: <em>{b.reason}</em>
+                  </p>
+                  <p className="text-secondary small mb-0">
+                    Banned by <strong className="text-light">@{b.admin_username}</strong> · {b.created_at?.slice(0, 10)}
+                    {" "}· {b.ends === "Permanent" ? "Permanent" : `Until ${b.ends?.slice(0, 10)}`}
+                  </p>
+                  {!b.is_active_ban && b.unbanned_at && (
+                    <p className="text-success small mb-0 mt-1">
+                      ✅ Unbanned by <strong>@{b.unbanned_by_username}</strong> on {b.unbanned_at?.slice(0, 10)}
+                    </p>
+                  )}
                 </div>
+                {b.is_active_ban && (
+                  <button
+                    className="btn btn-outline-success btn-sm flex-shrink-0"
+                    onClick={() => unban(b.user_id)}
+                  >
+                    Unban
+                  </button>
+                )}
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// TAB 4: All Games
+// All Games
 // ─────────────────────────────────────────────────────────────
 function AllGames() {
   const [games, setGames] = useState([]);
@@ -327,8 +369,7 @@ function AllGames() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// TAB 5: All Users
+//  All Users
 // ─────────────────────────────────────────────────────────────
 function AllUsers() {
   const [users, setUsers] = useState([]);
@@ -424,7 +465,7 @@ function AllUsers() {
 const TABS = [
   { key: "suggestions", label: "Suggested Games" },
   { key: "reportedComments", label: "Reported Comments" },
-  { key: "reportedUsers", label: "Reported Users" },
+  { key: "reportedUsers", label: "🔨 Ban History" },
   { key: "allGames", label: "All Games" },
   { key: "allUsers", label: "All Users" },
 ];
