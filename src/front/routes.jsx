@@ -12,7 +12,8 @@ import { Survey } from "./pages/Survey";
 import { Profile } from "./pages/Profile";
 import { RequireAuth } from "./components/RequireAuth";
 import { Games } from "./pages/Games";
-import { AdminPanel } from "./pages/AdminPanel";     // ←←← NUEVA IMPORTACIÓN
+import { AdminPanel } from "./pages/AdminPanel";     // ←←← NUEVA IMPORTACIÓN adminpanel
+import { TierList } from "./pages/TierList";   // ←←← NUEVA IMPORTACIÓN tierlist
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -22,6 +23,7 @@ export const router = createBrowserRouter(
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/games/:gameId" element={<Game />} />
+            <Route path="/tierlist" element={<TierList />} />
 
             {/* Rutas protegidas */}
             <Route element={<RequireAuth />}>

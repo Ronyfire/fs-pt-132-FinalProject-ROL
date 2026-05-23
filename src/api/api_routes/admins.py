@@ -75,6 +75,12 @@ def update_addgame_status(addgame_id):
                 platforms=data["platforms"]
             )
             db.session.add(new_game)
+            db.session.flush()  # ← necesario para obtener new_game.id antes del commit
+
+            # ← Auto-crear GameTier para que el juego sea votable
+            from api.models import GameTier
+            tier = GameTier(game_id=new_game.id)
+            db.session.add(tier)
 
         elif add_game.update:
 

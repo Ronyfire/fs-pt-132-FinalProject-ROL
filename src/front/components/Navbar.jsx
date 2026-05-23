@@ -16,6 +16,9 @@ export const Navbar = () => {
         <Link to="/" className="navbar-brand mb-0 h1">
           Game-Side
         </Link>
+        <Link to="/tierlist" className="btn btn-outline-light btn-sm">
+          🏆 Tier List
+        </Link>
         <div className="d-flex align-items-center gap-2">
           {store.isAuthenticated ? (
             <>
