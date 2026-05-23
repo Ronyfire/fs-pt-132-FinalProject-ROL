@@ -22,6 +22,7 @@ from api.api_routes.games import *
 from api.api_routes.users import *
 from api.api_routes.igdb import *
 from api.api_routes.reports import *
+from api.api_routes.upload import *
 
 
 
