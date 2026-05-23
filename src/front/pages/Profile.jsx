@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { ImageUploader } from "../components/ImageUploader";
 
 const API = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -70,7 +71,11 @@ export const Profile = () => {
   };
 
   const handleStartEdit = () => {
-    setEditForm({ username: profile?.username || "", description: profile?.profile?.description || "" });
+    setEditForm({
+      username: profile?.username || "",
+      description: profile?.profile?.description || "",
+      avatar_url: profile?.profile?.avatar_url || "",  // ← añadido
+    });
     setIsEditing(true);
   };
 
@@ -96,7 +101,10 @@ export const Profile = () => {
         }
       }
       // Actualizar descripción
-      await saveProfile({ description: editForm.description });
+      await saveProfile({
+        description: editForm.description,
+        avatar_url: editForm.avatar_url, // tema avatar con cloudinary
+      });
       setIsEditing(false);
       setStatusMsg({ type: "ok", text: "Perfil actualizado ✅" });
       setTimeout(() => setStatusMsg(null), 2000);
@@ -189,6 +197,17 @@ export const Profile = () => {
             <div style={{ flex: 1, minWidth: 0 }}>
               {isEditing ? (
                 <>
+                  {/* ← Cloudinary */}
+                  <div style={{ marginBottom: 20 }}>
+                    <ImageUploader
+                      label="Avatar"
+                      currentUrl={editForm.avatar_url || avatarUrl}
+                      shape="circle"
+                      previewWidth={100}
+                      onUpload={(url) => setEditForm((prev) => ({ ...prev, avatar_url: url }))}
+                    />
+                  </div>
+                  
                   <input
                     value={editForm.username}
                     onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
