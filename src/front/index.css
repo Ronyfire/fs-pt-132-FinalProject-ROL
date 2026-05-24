@@ -1,0 +1,609 @@
+/* ============================================================
+   GAME-SIDE — index.css
+   Regla: Bootstrap para layout/spacing/grid
+          CSS aquí para identidad visual (colores, tipografía,
+          componentes específicos que Bootstrap no cubre)
+   Todo en rem. Base: 1rem = 16px
+   ============================================================ */
+
+/* 1. FONTS --------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Varela+Round&display=swap');
+
+/* 2. VARIABLES ---------------------------------------------- */
+:root {
+  --green:        #7DD750;
+  --green-dim:    rgba(125, 215, 80, 0.15);
+  --green-glow:   0 0 1rem rgba(125, 215, 80, 0.4);
+  --green-border: rgba(125, 215, 80, 0.35);
+
+  --pink:         #D64F82;
+  --pink-dim:     rgba(214, 79, 130, 0.15);
+
+  --purple:       #AC4FD6;
+  --red:          #AD0003;
+
+  --bg:           #0D0F1F;
+  --bg-card:      #111326;
+  --bg-input:     #0a0c1a;
+  --bg-hover:     #1a1c2e;
+
+  --border:       #1e2235;
+
+  --text:         #F0F0F0;
+  --text-muted:   #888;
+  --text-dim:     #555;
+
+  --radius-sm:    0.375rem;
+  --radius-md:    0.625rem;
+  --radius-lg:    1rem;
+  --radius-xl:    1.5rem;
+  --radius-2xl:   2.25rem;
+
+  --transition:   0.18s ease;
+
+  /* Sobrescribir Bootstrap */
+  --bs-body-bg:           var(--bg);
+  --bs-body-color:        var(--text);
+  --bs-border-color:      var(--border);
+  --bs-card-bg:           var(--bg-card);
+  --bs-dark-bg-subtle:    var(--bg-card);
+}
+
+/* 3. BASE ---------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--green);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover { color: var(--text); }
+
+img { display: block; max-width: 100%; }
+button { font-family: inherit; cursor: pointer; }
+
+/* 4. TIPOGRAFÍA --------------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 0;
+}
+
+/* Tamaños de heading del diseño */
+.gs-h1 { font-size: clamp(2rem, 5vw, 4rem);   font-weight: 800; letter-spacing: -0.03em; }
+.gs-h2 { font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 700; letter-spacing: -0.02em; }
+.gs-h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 600; }
+
+.font-varela { font-family: 'Varela Round', sans-serif; }
+
+/* Color helpers (complementan Bootstrap text-*) */
+.text-green  { color: var(--green)  !important; }
+.text-pink   { color: var(--pink)   !important; }
+.text-purple { color: var(--purple) !important; }
+.text-red    { color: var(--red)    !important; }
+.text-dim    { color: var(--text-dim) !important; }
+
+/* 5. NAVBAR -------------------------------------------------- */
+.gs-navbar {
+  background: var(--bg);
+  border-bottom: 0.0625rem solid var(--border);
+  height: 4rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Logo */
+.gs-logo-text {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--green);
+}
+.gs-logo-text span { color: var(--text); }
+
+/* Nav links */
+.gs-nav-link {
+  color: #ccc;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.375rem 0.875rem;
+  border-radius: var(--radius-sm);
+  border: 0.0625rem solid transparent;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+.gs-nav-link:hover       { color: var(--text); border-color: var(--border); }
+.gs-nav-link.active      { color: var(--green); border-color: var(--green); }
+
+/* Search expandible */
+.gs-search-box {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 0.0625rem solid transparent;
+  border-radius: var(--radius-sm);
+  transition: all 0.25s ease;
+  width: 2.25rem;
+  overflow: hidden;
+}
+.gs-search-box.open {
+  background: var(--bg-input);
+  border-color: var(--green);
+  width: 13.75rem;
+}
+.gs-search-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 0.5rem 0.625rem;
+  display: flex;
+  flex-shrink: 0;
+  transition: color var(--transition);
+}
+.gs-search-box.open .gs-search-btn { color: var(--green); }
+.gs-search-input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 0.875rem;
+  width: 100%;
+  padding: 0.5rem 0.5rem 0.5rem 0;
+  font-family: 'Inter', sans-serif;
+}
+.gs-search-input::placeholder { color: var(--text-dim); }
+
+/* Search results dropdown */
+.gs-search-results {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--green-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  z-index: 200;
+  width: 17.5rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.5);
+}
+.gs-search-result {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  border-bottom: 0.0625rem solid var(--border);
+  transition: background var(--transition);
+  text-decoration: none;
+}
+.gs-search-result:hover { background: var(--bg-hover); }
+
+/* User avatar btn */
+.gs-avatar-btn {
+  background: none;
+  border: 0.125rem solid var(--green);
+  border-radius: 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow var(--transition);
+  padding: 0;
+}
+.gs-avatar-btn:hover { box-shadow: var(--green-glow); }
+.gs-avatar-btn img   { width: 100%; height: 100%; object-fit: cover; }
+
+/* Dropdown menú */
+.gs-dropdown {
+  position: absolute;
+  top: calc(100% + 0.625rem);
+  right: 0;
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--green-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  z-index: 200;
+  min-width: 11.25rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.5);
+}
+.gs-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: #ddd;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 0.0625rem solid var(--border);
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+  transition: background var(--transition);
+}
+.gs-dropdown-item:hover         { background: var(--bg-hover); color: var(--text); }
+.gs-dropdown-item.danger        { color: var(--pink); }
+.gs-dropdown-item.danger:hover  { background: var(--pink-dim); }
+
+/* 6. BOTONES ------------------------------------------------- */
+/* Base — úsalo junto a btn-green, btn-pink, etc. */
+.btn-gs {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1.25rem;
+  transition: all var(--transition);
+  text-decoration: none;
+  line-height: 1;
+  cursor: pointer;
+}
+.btn-gs:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-green         { background: var(--green);  color: var(--bg); }
+.btn-green:hover   { filter: brightness(1.1); box-shadow: var(--green-glow); color: var(--bg); }
+
+.btn-green-outline { background: transparent; color: var(--green); border: 0.0625rem solid var(--green); }
+.btn-green-outline:hover { background: var(--green-dim); }
+
+.btn-pink          { background: var(--pink); color: #fff; }
+.btn-pink:hover    { filter: brightness(1.1); color: #fff; }
+
+.btn-pink-outline  { background: transparent; color: var(--pink); border: 0.0625rem solid var(--pink); }
+.btn-pink-outline:hover { background: var(--pink-dim); }
+
+.btn-ghost         { background: transparent; color: var(--text-muted); border: 0.0625rem solid var(--border); }
+.btn-ghost:hover   { color: var(--text); border-color: #444; }
+
+/* Admin panel — Bootstrap nav-link compat */
+.bg-pink           { background-color: var(--pink) !important; }
+.border-pink       { border-color: var(--pink) !important; }
+.text-pink         { color: var(--pink) !important; }
+.table-pink th     { color: var(--pink); }
+
+/* 7. INPUTS -------------------------------------------------- */
+.gs-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 0.0625rem solid var(--green);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.9375rem;
+  padding: 0.625rem 0.875rem;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  transition: box-shadow var(--transition);
+}
+.gs-input:focus       { box-shadow: 0 0 0 0.2rem rgba(125, 215, 80, 0.2); }
+.gs-input::placeholder { color: var(--text-dim); }
+.gs-input.error       { border-color: var(--pink); }
+.gs-input.error:focus  { box-shadow: 0 0 0 0.2rem rgba(214, 79, 130, 0.2); }
+
+.gs-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #ccc;
+  margin-bottom: 0.25rem;
+}
+
+/* 8. CARDS --------------------------------------------------- */
+/* Base card — Bootstrap .card override */
+.gs-card {
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.gs-card:hover {
+  border-color: var(--green-border);
+  box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.3);
+}
+.gs-card-green {
+  border-color: var(--green);
+  box-shadow: 0 0.25rem 0.9375rem rgba(125, 215, 80, 0.25);
+}
+
+/* Game card — catálogo y tier list */
+.gs-game-card {
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+}
+.gs-game-card:hover {
+  border-color: var(--green-border);
+  box-shadow: var(--green-glow);
+}
+.gs-game-card__cover {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  background: var(--bg-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 2rem;
+  overflow: hidden;
+}
+.gs-game-card__cover img { width: 100%; height: 100%; object-fit: cover; }
+.gs-game-card__body { padding: 0.75rem; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+.gs-game-card__title {
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gs-game-card__tier { font-size: 1.125rem; font-weight: 800; }
+.gs-game-card__meta { color: var(--text-dim); font-size: 0.75rem; }
+
+/* 9. MODAL --------------------------------------------------- */
+.gs-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(0.25rem);
+}
+.gs-modal {
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--green);
+  box-shadow: 0 0 2rem rgba(125, 215, 80, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.75rem;
+  width: min(21.25rem, 90vw);
+  position: relative;
+}
+.gs-modal-close {
+  position: absolute;
+  top: 0.875rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: color var(--transition);
+}
+.gs-modal-close:hover { color: var(--text); }
+.gs-modal-title {
+  color: var(--green);
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+}
+.gs-modal-footer {
+  border-top: 0.0625rem solid var(--border);
+  padding-top: 1rem;
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+.gs-modal-link {
+  background: none;
+  border: none;
+  color: var(--pink);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  transition: color var(--transition);
+  padding: 0;
+}
+.gs-modal-link:hover { color: #ff6fa0; }
+
+/* 10. TIER LIST --------------------------------------------- */
+/* Tier row label lateral */
+.gs-tier-badge {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 800;
+  border: 0.125rem solid currentColor;
+  flex-shrink: 0;
+}
+
+/* Vote buttons inline */
+.gs-vote-row  { display: flex; gap: 0.25rem; }
+.gs-vote-btn {
+  flex: 1;
+  height: 1.625rem;
+  background: var(--bg-hover);
+  color: var(--text-dim);
+  border: 0.0625rem solid var(--border);
+  border-radius: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.gs-vote-btn:hover     { color: var(--text); border-color: #555; }
+.gs-vote-btn.active    { color: var(--bg); font-weight: 800; }
+.gs-vote-remove {
+  width: 100%;
+  background: transparent;
+  border: 0.0625rem solid var(--border);
+  border-radius: 0.25rem;
+  color: var(--text-dim);
+  font-size: 0.625rem;
+  padding: 0.1875rem 0;
+  font-family: 'Inter', sans-serif;
+  margin-top: 0.3rem;
+  transition: color var(--transition), border-color var(--transition);
+}
+.gs-vote-remove:hover  { color: var(--pink); border-color: var(--pink); }
+
+/* 11. PROFILE ----------------------------------------------- */
+.gs-profile-card {
+  border: 0.0625rem solid var(--green);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 0.25rem 1rem rgba(125, 215, 80, 0.2);
+  background: var(--bg);
+  padding: 2.5rem;
+}
+.gs-profile-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  filter: drop-shadow(0 0.25rem 1rem var(--green));
+}
+.gs-profile-username {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--green);
+  margin: 0;
+}
+.gs-profile-stat {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Edit inputs transparentes sobre el perfil */
+.gs-profile-input {
+  background: transparent;
+  border: none;
+  border-bottom: 0.125rem solid var(--green);
+  outline: none;
+  color: var(--green);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  width: 100%;
+  padding: 0;
+}
+.gs-profile-textarea {
+  background: transparent;
+  border: none;
+  border-bottom: 0.125rem solid var(--border);
+  outline: none;
+  color: #FFEDF4;
+  font-family: 'Varela Round', sans-serif;
+  resize: vertical;
+  width: 100%;
+  padding: 0;
+}
+
+/* Status badge en biblioteca */
+.gs-status-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-width: 0.1875rem;
+  border-style: solid;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background: var(--bg);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+/* 12. GAME DETAIL ------------------------------------------- */
+.gs-game-hero {
+  width: 100%;
+  max-height: 28rem;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+}
+.gs-stars { display: flex; gap: 0; }
+.gs-star     { font-size: 1.5rem; line-height: 1; color: #333; }
+.gs-star.on  { color: var(--pink); }
+
+/* 13. HOME --------------------------------------------------- */
+.gs-hero-title {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--green);
+}
+
+/* 14. FOOTER ------------------------------------------------- */
+.gs-footer {
+  background: var(--bg-card);
+  border-top: 0.0625rem solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+.gs-footer a { color: var(--text-muted); transition: color var(--transition); }
+.gs-footer a:hover { color: var(--green); }
+
+/* 15. TOAST -------------------------------------------------- */
+.gs-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.4);
+  animation: toastIn 0.2s ease;
+}
+.gs-toast.ok    { background: var(--green); color: var(--bg); }
+.gs-toast.error { background: var(--red);   color: #fff; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 16. SCROLLBAR --------------------------------------------- */
+::-webkit-scrollbar              { width: 0.375rem; height: 0.375rem; }
+::-webkit-scrollbar-track        { background: var(--bg); }
+::-webkit-scrollbar-thumb        { background: #2a2c3e; border-radius: 0.2rem; }
+::-webkit-scrollbar-thumb:hover  { background: #444; }
+
+/* Login dropdown anclado al botón */
+.gs-login-dropdown {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--green);
+  box-shadow: 0 0 2rem rgba(125, 215, 80, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  width: 18rem;
+  z-index: 300;
+}
+
+/* Search expandida más ancha (como figma) */
+.gs-search-box.open {
+  width: 28rem;
+}
