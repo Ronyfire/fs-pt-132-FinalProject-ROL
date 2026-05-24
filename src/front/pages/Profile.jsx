@@ -105,6 +105,9 @@ export const Profile = () => {
         description: editForm.description,
         avatar_url: editForm.avatar_url, // tema avatar con cloudinary
       });
+      if (editForm.avatar_url && editForm.avatar_url !== store.user?.profile?.avatar_url) {
+        dispatch({ type: "set_auth", payload: { token: store.token, user: { ...store.user, profile: { ...store.user?.profile, avatar_url: editForm.avatar_url } } } });
+      }
       setIsEditing(false);
       setStatusMsg({ type: "ok", text: "Perfil actualizado ✅" });
       setTimeout(() => setStatusMsg(null), 2000);
@@ -207,7 +210,7 @@ export const Profile = () => {
                       onUpload={(url) => setEditForm((prev) => ({ ...prev, avatar_url: url }))}
                     />
                   </div>
-                  
+
                   <input
                     value={editForm.username}
                     onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
