@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { ImageUploader } from "../components/ImageUploader";
+import html2canvas from "html2canvas";
 
 const API = import.meta.env.VITE_BACKEND_URL || "";
 
+// Colores del diseño Figma (dark mode)
 const C = {
   green: "#7DD750",
   pink: "#D64F82",
@@ -14,6 +15,7 @@ const C = {
   text: "#F0F0F0",
 };
 
+// Estados posibles de un juego en la biblioteca
 const STATUS = {
   completed: { label: "Completado", color: C.green },
   playing: { label: "Jugando", color: C.pink },
@@ -21,33 +23,63 @@ const STATUS = {
   dropped: { label: "Abandonado", color: C.red },
 };
 
+// Redes sociales con iconos SVG y estilos Figma
 const SOCIAL = {
-  instagram: { icon: "📷", label: "Instagram" },
-  twitch: { icon: "📺", label: "Twitch" },
+  instagram: {
+    label: "Instagram",
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" />
+        <circle cx="12" cy="12" r="5" />
+        <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  twitch: {
+    label: "Twitch",
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+        <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z" />
+      </svg>
+    ),
+  },
   twitter: { icon: "𝕏", label: "Twitter / X" },
-  youtube: { icon: "🎬", label: "YouTube" },
-  discord: { icon: "💬", label: "Discord" },
-  website: { icon: "🌐", label: "Sitio Web" },
+  website: {
+    label: "Sitio Web",
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="2" y1="12" x2="22" y2="12" />
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+      </svg>
+    ),
+  },
 };
 
+// Componente de estrellas para calificación
 const Stars = ({ rating = 0 }) => (
-  <div style={{ display: "flex", gap: 0 }}>
+  <div style={{ display: "flex", gap: 2 }}>
     {[0, 1, 2, 3, 4].map((i) => (
-      <span key={i} style={{ color: i < rating ? C.pink : "#333", fontSize: 24, lineHeight: 1 }}>★</span>
+      <span key={i} style={{ color: i < rating ? C.pink : "#555", fontSize: 24, lineHeight: 1 }}>★</span>
     ))}
   </div>
 );
 
 export const Profile = () => {
-  const { store, dispatch } = useGlobalReducer();
+  const { store } = useGlobalReducer();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [statusMsg, setStatusMsg] = useState(null); // { type: 'ok'|'error', text }
+  const [statusMsg, setStatusMsg] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ username: "", description: "" });
+  const [editForm, setEditForm] = useState({ username: "", description: "", redes: {} });
+  const setRedesField = (key, value) => {
+    setEditForm(prev => ({ ...prev, redes: { ...prev.redes, [key]: value } }));
+  };
+  const cardRef = useRef(null);
 
+  // Trae los datos del perfil desde el backend
   const fetchProfile = async () => {
     const resp = await fetch(`${API}/api/private`, {
       headers: { Authorization: `Bearer ${store.token}` },
@@ -56,6 +88,7 @@ export const Profile = () => {
     setProfile(await resp.json());
   };
 
+  // Guarda cambios en el perfil (descripción, redes, etc.)
   const saveProfile = async (data) => {
     if (!profile?.id) throw new Error("Profile not loaded yet");
     const resp = await fetch(`${API}/api/users/${profile.id}/profile`, {
@@ -70,25 +103,27 @@ export const Profile = () => {
     await fetchProfile();
   };
 
+  // Activa el modo edición con los valores actuales
   const handleStartEdit = () => {
     setEditForm({
       username: profile?.username || "",
       description: profile?.profile?.description || "",
-      avatar_url: profile?.profile?.avatar_url || "",  // ← añadido
+      redes: { ...(profile?.profile?.redes || {}) },
     });
     setIsEditing(true);
   };
 
+  // Cancela la edición sin guardar
   const handleCancelEdit = () => {
     setIsEditing(false);
-    setEditForm({ username: "", description: "" });
+    setEditForm({ username: "", description: "", redes: {} });
   };
 
+  // Guarda los cambios de username, descripción y redes
   const handleSaveEdit = async () => {
     if (!profile?.id) return;
     setStatusMsg({ type: "ok", text: "Guardando..." });
     try {
-      // Actualizar username si cambió
       if (editForm.username !== profile.username) {
         const userResp = await fetch(`${API}/api/users/${profile.id}`, {
           method: "PUT",
@@ -100,14 +135,7 @@ export const Profile = () => {
           throw new Error(`Error al actualizar username: ${userResp.status} ${errBody}`);
         }
       }
-      // Actualizar descripción
-      await saveProfile({
-        description: editForm.description,
-        avatar_url: editForm.avatar_url, // tema avatar con cloudinary
-      });
-      if (editForm.avatar_url && editForm.avatar_url !== store.user?.profile?.avatar_url) {
-        dispatch({ type: "set_auth", payload: { token: store.token, user: { ...store.user, profile: { ...store.user?.profile, avatar_url: editForm.avatar_url } } } });
-      }
+      await saveProfile({ description: editForm.description, redes: editForm.redes });
       setIsEditing(false);
       setStatusMsg({ type: "ok", text: "Perfil actualizado ✅" });
       setTimeout(() => setStatusMsg(null), 2000);
@@ -117,6 +145,7 @@ export const Profile = () => {
     }
   };
 
+  // Carga el perfil al montar el componente
   useEffect(() => {
     (async () => {
       try { await fetchProfile(); } catch (err) { setError(err.message); }
@@ -124,13 +153,15 @@ export const Profile = () => {
     })();
   }, []);
 
-  // Cerrar dropdown al clickear fuera
+  // Cierra el dropdown al clickear fuera
   useEffect(() => {
     if (!openDropdown) return;
-    const handler = (e) => { setOpenDropdown(null); };
+    const handler = () => { setOpenDropdown(null); };
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
   }, [openDropdown]);
+
+  // ─────────────── PANTALLAS DE CARGA Y ERROR ───────────────
 
   if (loading) return (
     <div className="min-vh-100 d-flex align-items-center justify-content-center" style={{ background: C.bg }}>
@@ -144,6 +175,9 @@ export const Profile = () => {
     </div>
   );
 
+  // ─────────────── FUNCIONES ───────────────
+
+  // Actualiza el estado de un juego en la biblioteca
   const updateStatus = async (entryId, newStatus) => {
     setStatusMsg({ type: "ok", text: "Actualizando..." });
     try {
@@ -166,152 +200,194 @@ export const Profile = () => {
     }
   };
 
+  // Captura la tarjeta del perfil con html2canvas y la descarga
+  const handleShare = async () => {
+    if (!cardRef.current) return;
+    setStatusMsg({ type: "ok", text: "Generando captura..." });
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: C.bg,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      const link = document.createElement("a");
+      link.download = `perfil-${profile?.username || "gamer"}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+      setStatusMsg({ type: "ok", text: "Captura descargada ✅" });
+      setTimeout(() => setStatusMsg(null), 2000);
+    } catch (err) {
+      setStatusMsg({ type: "error", text: "Error al generar captura" });
+      setTimeout(() => setStatusMsg(null), 4000);
+    }
+  };
+
+  // ─────────────── DATOS DERIVADOS ───────────────
+
   const avatarUrl = profile?.profile?.avatar_url ||
     `https://api.dicebear.com/7.x/bottts/svg?seed=${profile?.username || "Gamer"}`;
+
   const games = profile?.game_lists?.[0]?.games || [];
   const redes = profile?.profile?.redes || {};
+
   const playing = games.filter((g) => g.status === "playing");
   const favorites = games.filter((g) => g.is_favorite);
   const completed = games.filter((g) => g.status === "completed").length;
   const pending = games.filter((g) => g.status === "want_to_play").length;
 
+  // ─────────────── RENDER ───────────────
+
   return (
     <div style={{ background: C.bg, color: C.text, fontFamily: "'Inter', sans-serif", minHeight: "100vh", paddingBottom: 80 }}>
       <div style={{ maxWidth: 1442, margin: "0 auto", padding: "0 59px" }}>
-        {/* ══ CARD PRINCIPAL: header + jugando + favoritos ══ */}
-        <div style={{
+        <div ref={cardRef} style={{
           marginTop: 60, width: "100%",
           background: C.bg, border: "1px solid " + C.green,
           boxShadow: "0px 4px 15px " + C.green,
           borderRadius: 36, padding: "40px",
           boxSizing: "border-box",
         }}>
-          {/* --- HEADER: Avatar + Username/Desc + Stats --- */}
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 24 }}>
-            {/* Avatar */}
-            <div style={{
-              width: 228, height: 228, borderRadius: 332, overflow: "hidden", flexShrink: 0,
-              filter: "drop-shadow(0px 4px 15px " + C.green + ")",
-            }}>
-              <img src={avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </div>
+          {/* ── HEADER: Avatar + Username/Desc + Redes + Stats ── */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            {/* Grupo izquierdo: Avatar + Username + Redes */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              {/* Avatar */}
+              <div style={{
+                width: 228, height: 228, borderRadius: 332, overflow: "hidden", flexShrink: 0,
+                filter: "drop-shadow(0px 4px 15px " + C.green + ")",
+              }}>
+                <img src={avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
 
-            {/* Username + Description */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              {isEditing ? (
-                <>
-                  {/* ← Cloudinary */}
-                  <div style={{ marginBottom: 20 }}>
-                    <ImageUploader
-                      label="Avatar"
-                      currentUrl={editForm.avatar_url || avatarUrl}
-                      shape="circle"
-                      previewWidth={100}
-                      onUpload={(url) => setEditForm((prev) => ({ ...prev, avatar_url: url }))}
+              {/* Username + Description */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {isEditing ? (
+                  <>
+                    <input
+                      value={editForm.username}
+                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                      style={{ fontSize: 64, fontWeight: 700, color: C.green, background: "transparent", border: "none", borderBottom: "2px solid " + C.green, outline: "none", width: "100%", margin: 0, fontFamily: "'Inter', sans-serif", padding: 0 }}
                     />
-                  </div>
-
-                  <input
-                    value={editForm.username}
-                    onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                    style={{ fontSize: 64, fontWeight: 700, color: C.green, background: "transparent", border: "none", borderBottom: "2px solid " + C.green, outline: "none", width: "100%", margin: 0, fontFamily: "'Inter', sans-serif", padding: 0 }}
-                  />
-                  <textarea
-                    value={editForm.description}
-                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                    rows={3}
-                    style={{ fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%", color: "#FFEDF4", background: "transparent", border: "none", borderBottom: "2px solid #555", outline: "none", width: "100%", maxWidth: 479, marginTop: 8, resize: "vertical", padding: 0 }}
-                    placeholder="Contá algo sobre vos..."
-                  />
-                  <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-                    <button onClick={handleSaveEdit}
-                      style={{ background: C.green, color: "#000", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
-                    >
-                      Guardar
-                    </button>
-                    <button onClick={handleCancelEdit}
-                      style={{ background: "transparent", color: "#FFF", border: "1px solid #555", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h1 style={{ fontSize: 64, fontWeight: 700, color: C.green, margin: 0 }}>{profile?.username}</h1>
-                  {profile?.profile?.description && (
-                    <div style={{
-                      fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%",
-                      color: "#FFEDF4", maxWidth: 479, marginTop: 8,
-                    }}>
-                      {profile.profile.description}
+                    <textarea
+                      value={editForm.description}
+                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                      rows={3}
+                      style={{ fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%", color: "#FFEDF4", background: "transparent", border: "none", borderBottom: "2px solid #555", outline: "none", width: "100%", maxWidth: 479, marginTop: 8, resize: "vertical", padding: 0 }}
+                      placeholder="Contá algo sobre vos..."
+                    />
+                    {/* Inputs para redes sociales */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16, maxWidth: 479 }}>
+                      {Object.entries(SOCIAL).map(([key, s]) => (
+                        <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 20, width: 24, display: "inline-flex", justifyContent: "center" }}>{s.icon}</span>
+                          <input
+                            value={editForm.redes[key] || ""}
+                            onChange={(e) => setRedesField(key, e.target.value)}
+                            placeholder={s.label}
+                            style={{ flex: 1, background: "transparent", border: "none", borderBottom: "1px solid #555", color: "#FFEDF4", fontSize: 14, outline: "none", padding: "4px 0", fontFamily: "'Varela Round', sans-serif" }}
+                          />
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </>
-              )}
+                    <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                      <button onClick={handleSaveEdit}
+                        style={{ background: C.green, color: "#000", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
+                      >
+                        Guardar
+                      </button>
+                      <button onClick={handleCancelEdit}
+                        style={{ background: "transparent", color: "#FFF", border: "1px solid #555", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h1 style={{ fontSize: 64, fontWeight: 700, color: C.green, margin: 0 }}>{profile?.username}</h1>
+                    {profile?.profile?.description && (
+                      <div style={{
+                        fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%",
+                        color: "#FFEDF4", maxWidth: 479, marginTop: 8,
+                      }}>
+                        {profile.profile.description}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Redes sociales — columna vertical, sin círculos, siempre visibles */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, flexShrink: 0 }}>
+                {Object.entries(SOCIAL).map(([key, s]) => {
+                  const url = redes[key];
+                  const iconStyle = {
+                    display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    width: 36, height: 36,
+                    fontSize: 24, color: "#FFF", textDecoration: "none",
+                    transition: "transform 0.15s",
+                    opacity: 1,
+                    cursor: url ? "pointer" : "default",
+                  };
+                  return url ? (
+                    <a key={key} href={url} target="_blank" rel="noopener noreferrer" title={s.label}
+                      style={iconStyle}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.15)"}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    >
+                      {s.icon}
+                    </a>
+                  ) : (
+                    <span key={key} title={s.label} style={iconStyle}>
+                      {s.icon}
+                    </span>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Stats: Completados / Pendientes */}
-            <div style={{ textAlign: "right", flexShrink: 0 }}>
-              <div style={{ display: "flex", gap: 48, justifyContent: "flex-end" }}>
-                <span style={{ fontSize: 64, fontWeight: 700, color: C.green }}>{completed}</span>
-                <span style={{ fontSize: 64, fontWeight: 700, color: C.purple }}>{pending}</span>
-              </div>
-              <div style={{ display: "flex", gap: 48, justifyContent: "flex-end", fontSize: 14, fontWeight: 700 }}>
-                <span>Completados</span>
-                <span>Pendientes</span>
-              </div>
+          {/* Stats: Completados / Pendientes + Botón Editar */}
+          <div style={{ textAlign: "right", flexShrink: 0 }}>
+            <div style={{ display: "flex", gap: 48, justifyContent: "flex-end" }}>
+              <span style={{ fontSize: 64, fontWeight: 700, color: C.green }}>{completed}</span>
+              <span style={{ fontSize: 64, fontWeight: 700, color: C.purple }}>{pending}</span>
             </div>
-          </div>
-
-          {/* --- Redes sociales + Pen/Share --- */}
-          <div style={{ display: "flex", alignItems: "center", gap: 24, marginTop: 16, marginLeft: 252 }}>
-            {Object.entries(redes).filter(([k]) => k !== "website").map(([key, url]) => {
-              const s = SOCIAL[key.toLowerCase()] || { icon: "🔗", label: key };
-              return (
-                <a key={key} href={url} target="_blank" rel="noopener noreferrer" title={s.label}
-                  style={{ width: 48, height: 48, border: "4px solid #FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#FFF", textDecoration: "none" }}
-                >
-                  {s.icon}
-                </a>
-              );
-            })}
-            {redes?.website && (
-              <a href={redes.website} target="_blank" rel="noopener noreferrer" title="Sitio Web"
-                style={{ width: 47, height: 47, border: "1.6px solid #FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#FFF", textDecoration: "none" }}
-              >
-                🌐
-              </a>
-            )}
-            <div style={{ marginLeft: "auto", display: "flex", gap: 12 }}>
+            <div style={{ display: "flex", gap: 48, justifyContent: "flex-end", fontSize: 14, fontWeight: 700 }}>
+              <span>Completados</span>
+              <span>Pendientes</span>
+            </div>
+            {/* Botones Editar + Compartir abajo de los stats */}
+            <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end", gap: 12 }}>
               <button onClick={handleStartEdit}
-                style={{ width: 45, height: 45, border: "3.5px solid " + C.green, background: "transparent", borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+                style={{ width: 48, height: 48, background: C.green, border: "none", borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "transform 0.15s" }}
                 title="Editar perfil"
+                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
               >
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={C.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 3C10 6 5 10 5 16c0 2.2 1.8 4 4 4h6c2.2 0 4-1.8 4-4 0-6-5-10-7-13z" />
-                  <path d="M12 3v12" />
-                  <circle cx="12" cy="10" r="1.5" fill={C.green} />
-                  <path d="M8 18l4-3 4 3" />
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                 </svg>
               </button>
-              <button
-                onClick={() => { navigator.clipboard?.writeText(window.location.href); setStatusMsg({ type: "ok", text: "Link copiado ✅" }); setTimeout(() => setStatusMsg(null), 2000); }}
-                style={{ width: 51, height: 51, background: C.green, border: "none", borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+              <button onClick={handleShare}
+                style={{ width: 48, height: 48, background: C.green, border: "none", borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "transform 0.15s" }}
                 title="Compartir perfil"
+                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
               >
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="18" cy="5" r="3" />
                   <circle cx="6" cy="12" r="3" />
                   <circle cx="18" cy="19" r="3" />
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="6.49" />
-                  <line x1="15.41" y1="17.51" x2="8.59" y2="13.51" />
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                 </svg>
               </button>
             </div>
           </div>
+          </div>
 
-          {/* --- Jugando actualmente --- */}
+          {/* ── Jugando actualmente ── */}
           {playing.length > 0 && (
             <>
               <h2 style={{ fontSize: 40, fontWeight: 600, letterSpacing: "-0.02em", color: C.purple, margin: "60px 0 24px" }}>
@@ -343,7 +419,7 @@ export const Profile = () => {
             </>
           )}
 
-          {/* --- Juegos favoritos --- */}
+          {/* ── Juegos favoritos ── */}
           {favorites.length > 0 && (
             <>
               <h2 style={{ fontSize: 40, fontWeight: 600, letterSpacing: "-0.02em", color: C.pink, margin: "60px 0 24px" }}>
@@ -415,7 +491,6 @@ export const Profile = () => {
                       <span style={{ color: C.green, fontSize: 16 }}>{g?.title}</span>
                       <span style={{ color: C.pink, fontSize: 16, fontWeight: 600 }}>{entry.rating > 0 ? `${entry.rating}/5` : "—"}</span>
                     </div>
-                    {/* Botón de estado con dropdown */}
                     <div onClick={(e) => e.stopPropagation()} style={{ position: "relative", alignSelf: "flex-start" }}>
                       <div
                         onClick={(e) => { e.preventDefault(); setOpenDropdown(isOpen ? null : entry.id); }}
@@ -429,7 +504,12 @@ export const Profile = () => {
                           {Object.entries(STATUS).map(([key, opt]) => (
                             <div key={key}
                               onClick={(e) => { e.preventDefault(); updateStatus(entry.id, key); }}
-                              style={{ padding: "12px 32px", cursor: "pointer", borderBottom: "1px solid #222", display: "flex", alignItems: "center", gap: 8, color: opt.color, fontSize: 18, fontWeight: 500, background: entry.status === key ? "rgba(255,255,255,0.05)" : "transparent" }}
+                              style={{
+                                padding: "12px 32px", cursor: "pointer", borderBottom: "1px solid #222",
+                                display: "flex", alignItems: "center", gap: 8, color: opt.color,
+                                fontSize: 18, fontWeight: 500,
+                                background: entry.status === key ? "rgba(255,255,255,0.05)" : "transparent"
+                              }}
                               onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
                               onMouseLeave={(e) => e.currentTarget.style.background = entry.status === key ? "rgba(255,255,255,0.05)" : "transparent"}
                             >
@@ -448,7 +528,7 @@ export const Profile = () => {
             })}
           </div>
         )}
-        {/* Mensaje de estado (feedback visual) */}
+
         {statusMsg && (
           <div style={{
             position: "fixed", bottom: 24, right: 24, zIndex: 100,
