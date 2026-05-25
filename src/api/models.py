@@ -246,6 +246,8 @@ class UserGameTier(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
     rating: Mapped[int] = mapped_column(Integer,nullable=False)
     __table_args__ = (db.UniqueConstraint('game_tier_id', 'user_id'),)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
     # Relaciones
     game_tier: Mapped["GameTier"] = relationship("GameTier", back_populates="user_game_tiers")
@@ -257,6 +259,9 @@ class UserGameTier(db.Model):
             "game_tier_id": self.game_tier_id,
             "user_id": self.user_id,
             "username": self.user.username if self.user else None,
+            "rating": self.rating,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
         }
 
 
