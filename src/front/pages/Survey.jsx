@@ -12,6 +12,7 @@ export const Survey = () => {
   });
 
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("info");
   const [loading, setLoading] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -60,6 +61,39 @@ export const Survey = () => {
     "Comedy"
   ];
 
+  const playStyleOptions = [
+    {
+      value: "casual",
+      title: "Casual",
+      description: "Relaxed sessions and easy-to-pick-up games."
+    },
+    {
+      value: "competitive",
+      title: "Competitive",
+      description: "Ranked matches, skill expression, and challenge."
+    },
+    {
+      value: "completionist",
+      title: "Completionist",
+      description: "Achievements, collectibles, and 100% runs."
+    },
+    {
+      value: "story",
+      title: "Story-focused",
+      description: "Narrative, characters, and emotional journeys."
+    },
+    {
+      value: "exploration",
+      title: "Exploration",
+      description: "Open worlds, secrets, and discovery."
+    },
+    {
+      value: "social",
+      title: "Social / Multiplayer",
+      description: "Co-op, party games, and shared experiences."
+    }
+  ];
+
   const toggleArrayValue = (field, value) => {
     setForm((currentForm) => {
       const alreadySelected = currentForm[field].includes(value);
@@ -73,29 +107,38 @@ export const Survey = () => {
     });
   };
 
-  const handlePlayStyleChange = (event) => {
+  const handlePlayStyleChange = (value) => {
     setForm({
       ...form,
-      play_style: event.target.value
+      play_style: value
     });
+  };
+
+  const validateSurvey = () => {
+    if (form.genres.length === 0) {
+      return "Please select at least one genre.";
+    }
+
+    if (form.platforms.length === 0) {
+      return "Please select at least one platform.";
+    }
+
+    if (form.favorite_themes.length === 0) {
+      return "Please select at least one theme.";
+    }
+
+    return "";
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setMessage("");
 
-    if (form.genres.length === 0) {
-      setMessage("Please select at least one genre.");
-      return;
-    }
+    const validationError = validateSurvey();
 
-    if (form.platforms.length === 0) {
-      setMessage("Please select at least one platform.");
-      return;
-    }
-
-    if (form.favorite_themes.length === 0) {
-      setMessage("Please select at least one theme.");
+    if (validationError) {
+      setMessageType("error");
+      setMessage(validationError);
       return;
     }
 
@@ -125,97 +168,198 @@ export const Survey = () => {
         throw new Error(data.msg || "Could not save survey");
       }
 
-      setMessage("Survey successfully saved.");
+      setMessageType("success");
+      setMessage("Survey successfully saved. Your recommendations are getting smarter.");
 
       setTimeout(() => {
         navigate("/profile");
-      }, 800);
-
+      }, 900);
     } catch (error) {
+      setMessageType("error");
       setMessage(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const renderCheckboxGroup = (options, field) => {
+  const renderPillGroup = (options, field) => {
     return (
-      <div className="row">
-        {options.map((option) => (
-          <div className="col-md-4 mb-2" key={option}>
-            <label className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={form[field].includes(option)}
-                onChange={() => toggleArrayValue(field, option)}
-              />
-              <span className="form-check-label">
-                {option}
-              </span>
-            </label>
-          </div>
-        ))}
+      <div className="gs-survey-pill-grid">
+        {options.map((option) => {
+          const selected = form[field].includes(option);
+
+          return (
+            <button
+              type="button"
+              key={option}
+              className={`gs-survey-pill ${selected ? "selected" : ""}`}
+              onClick={() => toggleArrayValue(field, option)}
+            >
+              {option}
+            </button>
+          );
+        })}
       </div>
     );
   };
 
+  const selectedCount =
+    form.genres.length + form.platforms.length + form.favorite_themes.length;
+
   return (
-    <div className="container mt-4">
-      <h1>Taste Survey</h1>
+    <main className="gs-survey-page">
+      <section className="container gs-survey-layout">
+        <div className="gs-survey-main">
+          <span className="gs-home-eyebrow">Personalized recommendations</span>
 
-      <p className="text-muted">
-        Help Game-Side understand what kind of games you enjoy.
-      </p>
+          <h1 className="gs-survey-title">
+            Build Your Gaming Taste Profile
+          </h1>
 
-      {message && (
-        <div className="alert alert-info">
-          {message}
+          <p className="gs-survey-subtitle">
+            Tell Game-Side what you enjoy, where you play, and what kind of
+            experiences pull you in. Your answers will help shape smarter game
+            recommendations.
+          </p>
+
+          {message && (
+            <div className={`gs-survey-message ${messageType}`}>
+              {message}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="gs-survey-form">
+            <section className="gs-survey-block">
+              <div className="gs-survey-block-header">
+                <span>01</span>
+                <div>
+                  <h2>Favorite Genres</h2>
+                  <p>Choose the genres you usually enjoy the most.</p>
+                </div>
+              </div>
+
+              {renderPillGroup(genreOptions, "genres")}
+            </section>
+
+            <section className="gs-survey-block">
+              <div className="gs-survey-block-header">
+                <span>02</span>
+                <div>
+                  <h2>Platforms</h2>
+                  <p>Select where you usually play your games.</p>
+                </div>
+              </div>
+
+              {renderPillGroup(platformOptions, "platforms")}
+            </section>
+
+            <section className="gs-survey-block">
+              <div className="gs-survey-block-header">
+                <span>03</span>
+                <div>
+                  <h2>Play Style</h2>
+                  <p>Pick the style that best describes how you usually play.</p>
+                </div>
+              </div>
+
+              <div className="gs-playstyle-grid">
+                {playStyleOptions.map((style) => (
+                  <button
+                    type="button"
+                    key={style.value}
+                    className={`gs-playstyle-card ${
+                      form.play_style === style.value ? "selected" : ""
+                    }`}
+                    onClick={() => handlePlayStyleChange(style.value)}
+                  >
+                    <strong>{style.title}</strong>
+                    <span>{style.description}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="gs-survey-block">
+              <div className="gs-survey-block-header">
+                <span>04</span>
+                <div>
+                  <h2>Favorite Themes</h2>
+                  <p>Choose the worlds, moods, or vibes you like most.</p>
+                </div>
+              </div>
+
+              {renderPillGroup(themeOptions, "favorite_themes")}
+            </section>
+
+            <div className="gs-survey-actions">
+              <button
+                type="button"
+                className="btn-gs btn-ghost"
+                onClick={() => navigate("/")}
+              >
+                Back Home
+              </button>
+
+              <button
+                type="submit"
+                className="btn-gs btn-green"
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save Survey"}
+              </button>
+            </div>
+          </form>
         </div>
-      )}
 
-      <form onSubmit={handleSubmit}>
+        <aside className="gs-survey-side">
+          <div className="gs-survey-side-card">
+            <span className="gs-survey-side-label">Taste Profile</span>
 
-        <div className="mb-4">
-          <h4>Favorite Genres</h4>
-          {renderCheckboxGroup(genreOptions, "genres")}
-        </div>
+            <h3>Your Smart Match</h3>
 
-        <div className="mb-4">
-          <h4>Platforms</h4>
-          {renderCheckboxGroup(platformOptions, "platforms")}
-        </div>
+            <p>
+              The more specific your choices are, the better Game-Side can
+              recommend games that match your actual mood and habits.
+            </p>
 
-        <div className="mb-4">
-          <h4>Play Style</h4>
+            <div className="gs-survey-progress">
+              <div className="gs-survey-progress-info">
+                <span>Profile data</span>
+                <strong>{selectedCount} picks</strong>
+              </div>
 
-          <select
-            className="form-control"
-            name="play_style"
-            value={form.play_style}
-            onChange={handlePlayStyleChange}
-          >
-            <option value="casual">Casual</option>
-            <option value="competitive">Competitive</option>
-            <option value="completionist">Completionist</option>
-            <option value="story">Story-focused</option>
-            <option value="exploration">Exploration</option>
-            <option value="social">Social / Multiplayer</option>
-          </select>
-        </div>
+              <div className="gs-survey-progress-bar">
+                <div
+                  style={{
+                    width: `${Math.min(selectedCount * 8, 100)}%`
+                  }}
+                />
+              </div>
+            </div>
 
-        <div className="mb-4">
-          <h4>Favorite Themes</h4>
-          {renderCheckboxGroup(themeOptions, "favorite_themes")}
-        </div>
+            <div className="gs-survey-summary">
+              <div>
+                <span>Genres</span>
+                <strong>{form.genres.length}</strong>
+              </div>
 
-        <button
-          className="btn btn-success"
-          disabled={loading}
-        >
-          {loading ? "Saving..." : "Save Survey"}
-        </button>
-      </form>
-    </div>
+              <div>
+                <span>Platforms</span>
+                <strong>{form.platforms.length}</strong>
+              </div>
+
+              <div>
+                <span>Themes</span>
+                <strong>{form.favorite_themes.length}</strong>
+              </div>
+            </div>
+
+            <div className="gs-survey-mascot-box">
+              <span>Future Mascot Area</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
   );
 };
