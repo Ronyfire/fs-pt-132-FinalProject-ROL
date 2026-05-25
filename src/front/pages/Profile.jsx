@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { ImageUploader } from "../components/ImageUploader";
+import html2canvas from "html2canvas";
 
 const API = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -77,6 +77,7 @@ export const Profile = () => {
   const setRedesField = (key, value) => {
     setEditForm(prev => ({ ...prev, redes: { ...prev.redes, [key]: value } }));
   };
+  const cardRef = useRef(null);
 
   // Trae los datos del perfil desde el backend
   const fetchProfile = async () => {
@@ -107,7 +108,7 @@ export const Profile = () => {
     setEditForm({
       username: profile?.username || "",
       description: profile?.profile?.description || "",
-      avatar_url: profile?.profile?.avatar_url || "",  // ← añadido
+      redes: { ...(profile?.profile?.redes || {}) },
     });
     setIsEditing(true);
   };
@@ -134,14 +135,7 @@ export const Profile = () => {
           throw new Error(`Error al actualizar username: ${userResp.status} ${errBody}`);
         }
       }
-      // Actualizar descripción
-      await saveProfile({
-        description: editForm.description,
-        avatar_url: editForm.avatar_url, // tema avatar con cloudinary
-      });
-      if (editForm.avatar_url && editForm.avatar_url !== store.user?.profile?.avatar_url) {
-        dispatch({ type: "set_auth", payload: { token: store.token, user: { ...store.user, profile: { ...store.user?.profile, avatar_url: editForm.avatar_url } } } });
-      }
+      await saveProfile({ description: editForm.description, redes: editForm.redes });
       setIsEditing(false);
       setStatusMsg({ type: "ok", text: "Perfil actualizado ✅" });
       setTimeout(() => setStatusMsg(null), 2000);
@@ -206,6 +200,29 @@ export const Profile = () => {
     }
   };
 
+  // Captura la tarjeta del perfil con html2canvas y la descarga
+  const handleShare = async () => {
+    if (!cardRef.current) return;
+    setStatusMsg({ type: "ok", text: "Generando captura..." });
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: C.bg,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      const link = document.createElement("a");
+      link.download = `perfil-${profile?.username || "gamer"}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+      setStatusMsg({ type: "ok", text: "Captura descargada ✅" });
+      setTimeout(() => setStatusMsg(null), 2000);
+    } catch (err) {
+      setStatusMsg({ type: "error", text: "Error al generar captura" });
+      setTimeout(() => setStatusMsg(null), 4000);
+    }
+  };
+
   // ─────────────── DATOS DERIVADOS ───────────────
 
   const avatarUrl = profile?.profile?.avatar_url ||
@@ -224,7 +241,7 @@ export const Profile = () => {
   return (
     <div style={{ background: C.bg, color: C.text, fontFamily: "'Inter', sans-serif", minHeight: "100vh", paddingBottom: 80 }}>
       <div style={{ maxWidth: 1442, margin: "0 auto", padding: "0 59px" }}>
-        <div style={{
+        <div ref={cardRef} style={{
           marginTop: 60, width: "100%",
           background: C.bg, border: "1px solid " + C.green,
           boxShadow: "0px 4px 15px " + C.green,
@@ -243,60 +260,63 @@ export const Profile = () => {
                 <img src={avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
 
-            {/* Username + Description */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              {isEditing ? (
-                <>
-                  {/* ← Cloudinary */}
-                  <div style={{ marginBottom: 20 }}>
-                    <ImageUploader
-                      label="Avatar"
-                      currentUrl={editForm.avatar_url || avatarUrl}
-                      shape="circle"
-                      previewWidth={100}
-                      onUpload={(url) => setEditForm((prev) => ({ ...prev, avatar_url: url }))}
+              {/* Username + Description */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {isEditing ? (
+                  <>
+                    <input
+                      value={editForm.username}
+                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                      style={{ fontSize: 64, fontWeight: 700, color: C.green, background: "transparent", border: "none", borderBottom: "2px solid " + C.green, outline: "none", width: "100%", margin: 0, fontFamily: "'Inter', sans-serif", padding: 0 }}
                     />
-                  </div>
-
-                  <input
-                    value={editForm.username}
-                    onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                    style={{ fontSize: 64, fontWeight: 700, color: C.green, background: "transparent", border: "none", borderBottom: "2px solid " + C.green, outline: "none", width: "100%", margin: 0, fontFamily: "'Inter', sans-serif", padding: 0 }}
-                  />
-                  <textarea
-                    value={editForm.description}
-                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                    rows={3}
-                    style={{ fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%", color: "#FFEDF4", background: "transparent", border: "none", borderBottom: "2px solid #555", outline: "none", width: "100%", maxWidth: 479, marginTop: 8, resize: "vertical", padding: 0 }}
-                    placeholder="Contá algo sobre vos..."
-                  />
-                  <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-                    <button onClick={handleSaveEdit}
-                      style={{ background: C.green, color: "#000", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
-                    >
-                      Guardar
-                    </button>
-                    <button onClick={handleCancelEdit}
-                      style={{ background: "transparent", color: "#FFF", border: "1px solid #555", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h1 style={{ fontSize: 64, fontWeight: 700, color: C.green, margin: 0 }}>{profile?.username}</h1>
-                  {profile?.profile?.description && (
-                    <div style={{
-                      fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%",
-                      color: "#FFEDF4", maxWidth: 479, marginTop: 8,
-                    }}>
-                      {profile.profile.description}
+                    <textarea
+                      value={editForm.description}
+                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                      rows={3}
+                      style={{ fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%", color: "#FFEDF4", background: "transparent", border: "none", borderBottom: "2px solid #555", outline: "none", width: "100%", maxWidth: 479, marginTop: 8, resize: "vertical", padding: 0 }}
+                      placeholder="Contá algo sobre vos..."
+                    />
+                    {/* Inputs para redes sociales */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16, maxWidth: 479 }}>
+                      {Object.entries(SOCIAL).map(([key, s]) => (
+                        <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 20, width: 24, display: "inline-flex", justifyContent: "center" }}>{s.icon}</span>
+                          <input
+                            value={editForm.redes[key] || ""}
+                            onChange={(e) => setRedesField(key, e.target.value)}
+                            placeholder={s.label}
+                            style={{ flex: 1, background: "transparent", border: "none", borderBottom: "1px solid #555", color: "#FFEDF4", fontSize: 14, outline: "none", padding: "4px 0", fontFamily: "'Varela Round', sans-serif" }}
+                          />
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </>
-              )}
-            </div>
+                    <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                      <button onClick={handleSaveEdit}
+                        style={{ background: C.green, color: "#000", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
+                      >
+                        Guardar
+                      </button>
+                      <button onClick={handleCancelEdit}
+                        style={{ background: "transparent", color: "#FFF", border: "1px solid #555", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h1 style={{ fontSize: 64, fontWeight: 700, color: C.green, margin: 0 }}>{profile?.username}</h1>
+                    {profile?.profile?.description && (
+                      <div style={{
+                        fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%",
+                        color: "#FFEDF4", maxWidth: 479, marginTop: 8,
+                      }}>
+                        {profile.profile.description}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
 
               {/* Redes sociales — columna vertical, sin círculos, siempre visibles */}
               <div style={{ display: "flex", flexDirection: "column", gap: 10, flexShrink: 0 }}>
@@ -337,8 +357,8 @@ export const Profile = () => {
               <span>Completados</span>
               <span>Pendientes</span>
             </div>
-            {/* Botón Editar abajo de los stats */}
-            <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
+            {/* Botones Editar + Compartir abajo de los stats */}
+            <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end", gap: 12 }}>
               <button onClick={handleStartEdit}
                 style={{ width: 48, height: 48, background: C.green, border: "none", borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "transform 0.15s" }}
                 title="Editar perfil"
@@ -347,6 +367,20 @@ export const Profile = () => {
               >
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                </svg>
+              </button>
+              <button onClick={handleShare}
+                style={{ width: 48, height: 48, background: C.green, border: "none", borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "transform 0.15s" }}
+                title="Compartir perfil"
+                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                 </svg>
               </button>
             </div>
