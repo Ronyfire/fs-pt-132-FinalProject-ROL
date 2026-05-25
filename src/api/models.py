@@ -1,6 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, DateTime, Date, Text, Enum, ForeignKey, JSON, ARRAY, select, func, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship 
+from flask_sqlalchemy import SQLAlchemy # type: ignore
+from sqlalchemy import String, Boolean, DateTime, Date, Text, Enum, ForeignKey, JSON, ARRAY, select, func, Integer # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 from datetime import datetime, timezone, date
 from typing import List, Optional
 
@@ -30,7 +30,8 @@ class User(db.Model):
     bans_received: Mapped[List["Ban"]] = relationship("Ban", foreign_keys="Ban.user_id", back_populates="user", cascade="all, delete-orphan")
     add_games: Mapped[List["AddGame"]] = relationship("AddGame", back_populates="user", cascade="all, delete-orphan")
     user_game_tiers: Mapped[List["UserGameTier"]] = relationship("UserGameTier", back_populates="user", cascade="all, delete-orphan")
-
+    reports_made: Mapped[List["Report"]] = relationship("Report", foreign_keys="Report.reporter_id", back_populates="reporter", cascade="all, delete-orphan" )
+    reports_received: Mapped[List["Report"]] = relationship("Report", foreign_keys="Report.reported_user_id", back_populates="reported_user", cascade="all, delete-orphan" )
 
 # Serialize 
     def serialize(self):
@@ -200,16 +201,10 @@ class Comment(db.Model):
     # Relaciones
     user: Mapped["User"] = relationship("User", back_populates="comments")
     game: Mapped["Game"] = relationship("Game", back_populates="comments")
-    replies: Mapped[List["Comment"]] = relationship(
-        "Comment", 
-        back_populates="parent",
-        cascade="all, delete-orphan"
-    )
-    parent: Mapped[Optional["Comment"]] = relationship(
-        "Comment", 
-        back_populates="replies",
-        remote_side=[id]
-    )
+    replies: Mapped[List["Comment"]] = relationship("Comment",back_populates="parent",cascade="all, delete-orphan")
+    parent: Mapped[Optional["Comment"]] = relationship("Comment",back_populates="replies",remote_side=[id])
+    reports: Mapped[List["Report"]] = relationship( "Report", back_populates="comment", cascade="all, delete-orphan" )
+    
     #Serialize
     def serialize(self):
         return {
@@ -273,9 +268,14 @@ class Ban(db.Model):
     reason: Mapped[str] = mapped_column(Text, nullable=False)
     ends: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
+    # Campo nuevo para registrar el unban
+    unbanned_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    unbanned_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey('user.id'), nullable=True)
+
     # Relaciones
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id], back_populates="bans_received")
     admin: Mapped["User"] = relationship("User", foreign_keys=[admin_id], back_populates="bans_given")
+    unbanned_by: Mapped[Optional["User"]] = relationship("User", foreign_keys=[unbanned_by_id])
 
     #Serialize
     def serialize(self):
@@ -288,6 +288,11 @@ class Ban(db.Model):
             "reason": self.reason,
             "created_at": self.created_at.isoformat(),
             "ends": self.ends.isoformat() if self.ends else "Permanent",
+            # Lo Nuevo 
+            "is_active_ban": self.unbanned_at is None,
+            "unbanned_at": self.unbanned_at.isoformat() if self.unbanned_at else None,
+            "unbanned_by_id": self.unbanned_by_id,
+            "unbanned_by_username": self.unbanned_by.username if self.unbanned_by else None,
         }
 
 class AddGame(db.Model):
@@ -320,3 +325,39 @@ class AddGame(db.Model):
             "updated_at": self.updated_at.isoformat(),
         }
 
+class Report(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+ 
+    # Quién reporta
+    reporter_id: Mapped[int] = mapped_column(ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
+ 
+    # Qué se reporta — uno de los dos tendrá valor, el otro None
+    reported_comment_id: Mapped[Optional[int]] = mapped_column(ForeignKey('comment.id', ondelete="CASCADE"), nullable=True)
+    reported_user_id: Mapped[Optional[int]] = mapped_column(ForeignKey('user.id', ondelete="CASCADE"), nullable=True)
+ 
+    reason: Mapped[str] = mapped_column(String(300), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    resolved: Mapped[bool] = mapped_column(Boolean(), default=False, nullable=False)
+ 
+    # Relaciones
+    reporter: Mapped["User"] = relationship("User", foreign_keys=[reporter_id], back_populates="reports_made")
+    reported_user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[reported_user_id], back_populates="reports_received")
+    comment: Mapped[Optional["Comment"]] = relationship("Comment", back_populates="reports")
+ 
+ #Serialize
+    def serialize(self):
+        return {
+            "id": self.id,
+            "reporter_id": self.reporter_id,
+            "reporter_username": self.reporter.username if self.reporter else None,
+            "reported_comment_id": self.reported_comment_id,
+            "comment_content": self.comment.content if self.comment else None,
+            "comment_game_id": self.comment.game_id if self.comment else None,
+            "comment_author_id": self.comment.user_id if self.comment else None,
+            "comment_author_username": self.comment.user.username if self.comment and self.comment.user else None,
+            "reported_user_id": self.reported_user_id,
+            "reported_username": self.reported_user.username if self.reported_user else None,
+            "reason": self.reason,
+            "resolved": self.resolved,
+            "created_at": self.created_at.isoformat(),
+        }

@@ -15,12 +15,13 @@ def get_game_comments(game_id):
         return jsonify({"msg": "Game not found", "success": False}), 404
 
     comments = db.session.execute(
-        select(Comment).where(
-            Comment.game_id == game_id
-        )
+        select(Comment).where(Comment.game_id == game_id)
     ).scalars().all()
 
-    return jsonify({"success": True, "comments": [comment.serialize() for comment in comments]}), 200
+    return jsonify({
+        "success": True,
+        "comments": [comment.serialize() for comment in comments]
+    }), 200
 
 
 # POST create comment / reply
@@ -43,7 +44,6 @@ def create_comment(game_id):
     parent_comment_id = body.get("parent_id")
 
     if parent_comment_id:
-
         parent_comment = db.session.get(Comment, parent_comment_id)
 
         if not parent_comment:
@@ -100,13 +100,13 @@ def delete_comment(comment_id):
     current_user = db.session.get(User, current_user_id)
     comment = db.session.get(Comment, comment_id)
 
+    if not current_user:
+        return jsonify({"msg": "User not found", "success": False}), 404
+
     if not comment:
         return jsonify({"msg": "Comment not found", "success": False}), 404
 
-    if (
-        comment.user_id != int(current_user_id)
-        and not current_user.is_admin
-    ):
+    if comment.user_id != int(current_user_id) and not current_user.is_admin:
         return jsonify({"msg": "Not authorized", "success": False}), 403
 
     db.session.delete(comment)

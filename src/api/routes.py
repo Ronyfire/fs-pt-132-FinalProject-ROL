@@ -21,6 +21,8 @@ from api.api_routes.favorites import *
 from api.api_routes.games import *
 from api.api_routes.users import *
 from api.api_routes.igdb import *
+from api.api_routes.reports import *
+from api.api_routes.upload import *
 
 
 
@@ -104,7 +106,7 @@ def handle_login():
     username_empty = len(username.strip()) < 5
     password_empty = len(web_password.strip()) < 5
     if username_empty or password_empty:
-        return jsonify({"msg": "Username, email and password must be at least five characters"}), 400
+        return jsonify({"msg": "Username and password must be at least five characters"}), 400
 
     # Filtrar usuario por nombre
     query = select(User).where(User.username == username)
@@ -112,6 +114,12 @@ def handle_login():
 
     if user is None:
         return jsonify({"msg": "User not found"}), 401
+
+    # === NUEVA VERIFICACIÓN: BLOQUEAR USUARIOS BANEADOS ===
+    if not user.is_active:
+        return jsonify({
+            "msg": "Your account has been banned. Please contact support."
+        }), 403
 
     # Comparacion de la clave que llega con el HASH guardado
     is_valid = bcrypt.check_password_hash(user.password_hash, web_password)
@@ -121,8 +129,12 @@ def handle_login():
 
     # Creamos la pulsera (Token) usando el ID del usuario
     access_token = create_access_token(identity=str(user.id))
-    return jsonify({"msg": "Successful login", "token": access_token, "user_id": user.id}), 200
 
+    return jsonify({
+        "msg": "Successful login",
+        "token": access_token,
+        "user": user.serialize()          # ←←← AÑADIDO cambio aqui para que devuela informacion de user(datos para el is_admin)
+    }), 200
 # 3. Private: validar acceso
 @api.route('/private', methods=['GET'])
 @jwt_required()

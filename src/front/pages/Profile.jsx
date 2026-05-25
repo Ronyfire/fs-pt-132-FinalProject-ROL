@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { ImageUploader } from "../components/ImageUploader";
 
 const API = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -106,7 +107,7 @@ export const Profile = () => {
     setEditForm({
       username: profile?.username || "",
       description: profile?.profile?.description || "",
-      redes: { ...(profile?.profile?.redes || {}) },
+      avatar_url: profile?.profile?.avatar_url || "",  // ← añadido
     });
     setIsEditing(true);
   };
@@ -133,7 +134,14 @@ export const Profile = () => {
           throw new Error(`Error al actualizar username: ${userResp.status} ${errBody}`);
         }
       }
-      await saveProfile({ description: editForm.description, redes: editForm.redes });
+      // Actualizar descripción
+      await saveProfile({
+        description: editForm.description,
+        avatar_url: editForm.avatar_url, // tema avatar con cloudinary
+      });
+      if (editForm.avatar_url && editForm.avatar_url !== store.user?.profile?.avatar_url) {
+        dispatch({ type: "set_auth", payload: { token: store.token, user: { ...store.user, profile: { ...store.user?.profile, avatar_url: editForm.avatar_url } } } });
+      }
       setIsEditing(false);
       setStatusMsg({ type: "ok", text: "Perfil actualizado ✅" });
       setTimeout(() => setStatusMsg(null), 2000);
@@ -235,63 +243,60 @@ export const Profile = () => {
                 <img src={avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
 
-              {/* Username + Description */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                {isEditing ? (
-                  <>
-                    <input
-                      value={editForm.username}
-                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                      style={{ fontSize: 64, fontWeight: 700, color: C.green, background: "transparent", border: "none", borderBottom: "2px solid " + C.green, outline: "none", width: "100%", margin: 0, fontFamily: "'Inter', sans-serif", padding: 0 }}
+            {/* Username + Description */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {isEditing ? (
+                <>
+                  {/* ← Cloudinary */}
+                  <div style={{ marginBottom: 20 }}>
+                    <ImageUploader
+                      label="Avatar"
+                      currentUrl={editForm.avatar_url || avatarUrl}
+                      shape="circle"
+                      previewWidth={100}
+                      onUpload={(url) => setEditForm((prev) => ({ ...prev, avatar_url: url }))}
                     />
-                    <textarea
-                      value={editForm.description}
-                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                      rows={3}
-                      style={{ fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%", color: "#FFEDF4", background: "transparent", border: "none", borderBottom: "2px solid #555", outline: "none", width: "100%", maxWidth: 479, marginTop: 8, resize: "vertical", padding: 0 }}
-                      placeholder="Contá algo sobre vos..."
-                    />
-                    {/* Inputs para redes sociales */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16, maxWidth: 479 }}>
-                      {Object.entries(SOCIAL).map(([key, s]) => (
-                        <div key={key} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 20, width: 24, display: "inline-flex", justifyContent: "center" }}>{s.icon}</span>
-                          <input
-                            value={editForm.redes[key] || ""}
-                            onChange={(e) => setRedesField(key, e.target.value)}
-                            placeholder={s.label}
-                            style={{ flex: 1, background: "transparent", border: "none", borderBottom: "1px solid #555", color: "#FFEDF4", fontSize: 14, outline: "none", padding: "4px 0", fontFamily: "'Varela Round', sans-serif" }}
-                          />
-                        </div>
-                      ))}
+                  </div>
+
+                  <input
+                    value={editForm.username}
+                    onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                    style={{ fontSize: 64, fontWeight: 700, color: C.green, background: "transparent", border: "none", borderBottom: "2px solid " + C.green, outline: "none", width: "100%", margin: 0, fontFamily: "'Inter', sans-serif", padding: 0 }}
+                  />
+                  <textarea
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    rows={3}
+                    style={{ fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%", color: "#FFEDF4", background: "transparent", border: "none", borderBottom: "2px solid #555", outline: "none", width: "100%", maxWidth: 479, marginTop: 8, resize: "vertical", padding: 0 }}
+                    placeholder="Contá algo sobre vos..."
+                  />
+                  <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                    <button onClick={handleSaveEdit}
+                      style={{ background: C.green, color: "#000", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
+                    >
+                      Guardar
+                    </button>
+                    <button onClick={handleCancelEdit}
+                      style={{ background: "transparent", color: "#FFF", border: "1px solid #555", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h1 style={{ fontSize: 64, fontWeight: 700, color: C.green, margin: 0 }}>{profile?.username}</h1>
+                  {profile?.profile?.description && (
+                    <div style={{
+                      fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%",
+                      color: "#FFEDF4", maxWidth: 479, marginTop: 8,
+                    }}>
+                      {profile.profile.description}
                     </div>
-                    <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-                      <button onClick={handleSaveEdit}
-                        style={{ background: C.green, color: "#000", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
-                      >
-                        Guardar
-                      </button>
-                      <button onClick={handleCancelEdit}
-                        style={{ background: "transparent", color: "#FFF", border: "1px solid #555", borderRadius: 8, padding: "10px 24px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
-                      >
-                        Cancelar
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h1 style={{ fontSize: 64, fontWeight: 700, color: C.green, margin: 0 }}>{profile?.username}</h1>
-                    {profile?.profile?.description && (
-                      <div style={{
-                        fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%",
-                        color: "#FFEDF4", maxWidth: 479, marginTop: 8,
-                      }}>
-                        {profile.profile.description}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
+                  )}
+                </>
+              )}
+            </div>
 
               {/* Redes sociales — columna vertical, sin círculos, siempre visibles */}
               <div style={{ display: "flex", flexDirection: "column", gap: 10, flexShrink: 0 }}>
