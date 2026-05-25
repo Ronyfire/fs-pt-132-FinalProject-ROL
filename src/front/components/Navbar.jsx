@@ -6,7 +6,7 @@ const API = import.meta.env.VITE_BACKEND_URL || "";
 
 // ── Logo ──────────────────────────────────────────────────────
 const Logo = () => (
-  <Link to="/" className="text-decoration-none d-flex align-items-center gap-2 flex-shrink-0">
+  <Link to="/" className="gs-logo-link text-decoration-none d-flex align-items-center gap-2 flex-shrink-0">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7DD750" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="6" width="20" height="12" rx="5" />
       <path d="M6 10v4M8 12H4" />
@@ -19,14 +19,33 @@ const Logo = () => (
   </Link>
 );
 
+// ── PC Icon ───────────────────────────────────────────────────
+const PcSearchIcon = ({ active }) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke={active ? "#7DD750" : "#888"} strokeWidth="1.6"
+    strokeLinecap="round" strokeLinejoin="round"
+    style={{ transition: "stroke 0.2s, filter 0.2s", filter: active ? "drop-shadow(0 0 5px #7DD750)" : "none" }}
+  >
+    <rect x="2" y="3" width="20" height="13" rx="2" />
+    <rect x="4" y="5" width="16" height="9" rx="1"
+      fill={active ? "rgba(125,215,80,0.2)" : "rgba(255,255,255,0.04)"}
+      stroke="none" style={{ transition: "fill 0.2s" }} />
+    <text x="12" y="12.5" textAnchor="middle" fontSize="7" fontWeight="bold"
+      fill={active ? "#7DD750" : "#555"} stroke="none"
+      style={{ transition: "fill 0.2s", fontFamily: "Inter, sans-serif" }}>?</text>
+    <line x1="12" y1="16" x2="12" y2="19" />
+    <line x1="9"  y1="19" x2="15" y2="19" />
+  </svg>
+);
+
 // ── Search ────────────────────────────────────────────────────
 const SearchBar = () => {
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [open, setOpen]       = useState(false);
+  const [query, setQuery]     = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const inputRef = useRef();
+  const navigate     = useNavigate();
+  const inputRef     = useRef();
   const containerRef = useRef();
 
   useEffect(() => { if (open) inputRef.current?.focus(); }, [open]);
@@ -62,26 +81,23 @@ const SearchBar = () => {
   const close = () => { setOpen(false); setQuery(""); setResults([]); };
 
   return (
-    <div ref={containerRef} className="position-relative d-flex align-items-center">
-      <div className={`gs-search-box ${open ? "open" : ""}`}>
-        <button className="gs-search-btn" onClick={() => { setOpen(!open); if (open) close(); }} aria-label="Search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
+    <div ref={containerRef} className="gs-navbar-search">
+      <div className={`gs-search-box ${open ? "open" : "default"}`}>
+        <button className="gs-search-icon-btn" onClick={() => { setOpen(!open); if (open) close(); }} aria-label="Search">
+          <PcSearchIcon active={open} />
         </button>
-        {open && (
-          <input
-            ref={inputRef}
-            className="gs-search-input"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && results[0]) { navigate(`/games/${results[0].id}`); close(); }
-              if (e.key === "Escape") close();
-            }}
-            placeholder="Search games..."
-          />
-        )}
+        <input
+          ref={inputRef}
+          className="gs-search-input"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && results[0]) { navigate(`/games/${results[0].id}`); close(); }
+            if (e.key === "Escape") close();
+          }}
+          placeholder="Search games..."
+        />
       </div>
 
       {open && (results.length > 0 || loading) && (
@@ -107,11 +123,10 @@ const SearchBar = () => {
 
 // ── Login Dropdown ────────────────────────────────────────────
 const LoginDropdown = ({ onClose, dispatch }) => {
-  const navigate = useNavigate();
-  const [mode, setMode] = useState("login");
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [mode, setMode]       = useState("login");
+  const [form, setForm]       = useState({ username: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError]     = useState("");
   const [success, setSuccess] = useState("");
 
   const set = (e) => { setForm({ ...form, [e.target.name]: e.target.value }); setError(""); };
@@ -120,7 +135,7 @@ const LoginDropdown = ({ onClose, dispatch }) => {
     e.preventDefault();
     setLoading(true); setError("");
     try {
-      const res = await fetch(`${API}/api/login`, {
+      const res  = await fetch(`${API}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: form.username, password: form.password }),
@@ -139,7 +154,7 @@ const LoginDropdown = ({ onClose, dispatch }) => {
     e.preventDefault();
     setLoading(true); setError("");
     try {
-      const res = await fetch(`${API}/api/signup`, {
+      const res  = await fetch(`${API}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: form.username, email: form.email, password: form.password }),
@@ -216,8 +231,8 @@ const LoginDropdown = ({ onClose, dispatch }) => {
       )}
 
       <div className="gs-modal-footer">
-        {mode !== "signup" && <button className="gs-modal-link" onClick={() => { setMode("signup"); setError(""); }}><span>👤</span> Sign Up</button>}
-        {mode !== "login" && <button className="gs-modal-link" onClick={() => { setMode("login"); setError(""); }}><span>🔑</span> Log In</button>}
+        {mode !== "signup"  && <button className="gs-modal-link" onClick={() => { setMode("signup");  setError(""); }}><span>👤</span> Sign Up</button>}
+        {mode !== "login"   && <button className="gs-modal-link" onClick={() => { setMode("login");   setError(""); }}><span>🔑</span> Log In</button>}
         {mode !== "recover" && <button className="gs-modal-link" onClick={() => { setMode("recover"); setError(""); }}><span>🔐</span> Forgot Password</button>}
       </div>
     </div>
@@ -243,7 +258,6 @@ const UserMenu = ({ user, onLogout }) => {
       <button className="gs-avatar-btn" onClick={() => setOpen(!open)} aria-label="User menu">
         <img src={avatar} alt={user?.username} />
       </button>
-
       {open && (
         <div className="gs-dropdown">
           <div className="px-3 py-2" style={{ borderBottom: "0.0625rem solid var(--border)" }}>
@@ -251,7 +265,7 @@ const UserMenu = ({ user, onLogout }) => {
             <div className="text-dim" style={{ fontSize: "0.75rem" }}>{user?.email}</div>
           </div>
           <Link to="/profile" className="gs-dropdown-item" onClick={() => setOpen(false)}>👤 My Profile</Link>
-          <Link to="/survey" className="gs-dropdown-item" onClick={() => setOpen(false)}>🎮 Survey</Link>
+          <Link to="/survey"  className="gs-dropdown-item" onClick={() => setOpen(false)}>🎮 Survey</Link>
           {user?.is_admin && (
             <Link to="/admin" className="gs-dropdown-item" onClick={() => setOpen(false)}>⚙ Admin Panel</Link>
           )}
@@ -264,7 +278,69 @@ const UserMenu = ({ user, onLogout }) => {
   );
 };
 
-// ── NAVBAR PRINCIPAL ──────────────────────────────────────────
+// ── Mobile Menu ───────────────────────────────────────────────
+const MobileMenu = ({ user, onLogout, dispatch, location }) => {
+  const [open, setOpen]       = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const ref = useRef();
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) { setOpen(false); setShowLogin(false); } };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const close = () => { setOpen(false); setShowLogin(false); };
+
+  const avatar = user?.profile?.avatar_url ||
+    `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.username || "User"}`;
+
+  return (
+    <div ref={ref} className="position-relative">
+      {/* Hamburguesa */}
+      <button className="gs-hamburger" onClick={() => { setOpen(!open); setShowLogin(false); }} aria-label="Menu">
+        <span className={`gs-hamburger-line ${open ? "open" : ""}`} />
+        <span className={`gs-hamburger-line ${open ? "open" : ""}`} />
+        <span className={`gs-hamburger-line ${open ? "open" : ""}`} />
+      </button>
+
+      {open && !showLogin && (
+        <div className="gs-mobile-menu">
+          {/* Links */}
+          <Link to="/games"    className={`gs-mobile-menu-item ${location.pathname === "/games"    ? "active" : ""}`} onClick={close}>🎮 Games</Link>
+          <Link to="/tierlist" className={`gs-mobile-menu-item ${location.pathname === "/tierlist" ? "active" : ""}`} onClick={close}>🏆 Tier List</Link>
+
+          <div style={{ borderTop: "0.0625rem solid var(--border)", margin: "0.5rem 0" }} />
+
+          {/* Auth */}
+          {user ? (
+            <>
+              <div className="px-3 py-2 d-flex align-items-center gap-2">
+                <img src={avatar} alt="" className="gs-avatar-btn" style={{ width: "2rem", height: "2rem" }} />
+                <span className="text-green fw-bold" style={{ fontSize: "0.875rem" }}>{user.username}</span>
+              </div>
+              <Link to="/profile" className="gs-mobile-menu-item" onClick={close}>👤 My Profile</Link>
+              <Link to="/survey"  className="gs-mobile-menu-item" onClick={close}>📋 Survey</Link>
+              {user?.is_admin && <Link to="/admin" className="gs-mobile-menu-item" onClick={close}>⚙ Admin Panel</Link>}
+              <button className="gs-mobile-menu-item danger" onClick={() => { onLogout(); close(); }}>🚪 Log Out</button>
+            </>
+          ) : (
+            <button className="gs-mobile-menu-item" onClick={() => setShowLogin(true)}>🔑 Log In / Sign Up</button>
+          )}
+        </div>
+      )}
+
+      {/* Login form en mobile */}
+      {open && showLogin && (
+        <div className="gs-mobile-menu" style={{ width: "18rem" }}>
+          <LoginDropdown onClose={close} dispatch={dispatch} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── NAVBAR ────────────────────────────────────────────────────
 export const Navbar = () => {
   const { store, dispatch } = useGlobalReducer();
   const [showLogin, setShowLogin] = useState(false);
@@ -292,28 +368,47 @@ export const Navbar = () => {
     <nav className="gs-navbar">
       <div className="container h-100 d-flex align-items-center gap-3">
 
+        {/* Logo izquierda */}
         <Logo />
-        <SearchBar />
+
+        {/* Spacer izquierdo */}
         <div className="flex-grow-1" />
 
-        <div className="d-flex align-items-center gap-1">
-          <Link to="/games" className={`gs-nav-link ${location.pathname === "/games" ? "active" : ""}`}>Games</Link>
+        {/* Search centrado — siempre visible */}
+        <SearchBar />
+
+        {/* Spacer derecho */}
+        <div className="flex-grow-1" />
+
+        {/* Desktop: Games + TierList + Auth */}
+        <div className="d-none d-md-flex align-items-center gap-1">
+          <Link to="/games"    className={`gs-nav-link ${location.pathname === "/games"    ? "active" : ""}`}>Games</Link>
           <Link to="/tierlist" className={`gs-nav-link ${location.pathname === "/tierlist" ? "active" : ""}`}>Tier List</Link>
+
+          <div className="position-relative ms-2" ref={loginRef}>
+            {store.isAuthenticated ? (
+              <UserMenu user={store.user} onLogout={handleLogout} />
+            ) : (
+              <>
+                <button className="btn-gs btn-green" onClick={() => setShowLogin(!showLogin)}>
+                  Log In
+                </button>
+                {showLogin && (
+                  <LoginDropdown onClose={() => setShowLogin(false)} dispatch={dispatch} />
+                )}
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="d-flex align-items-center position-relative" ref={loginRef}>
-          {store.isAuthenticated ? (
-            <UserMenu user={store.user} onLogout={handleLogout} />
-          ) : (
-            <>
-              <button className="btn-gs btn-green" onClick={() => setShowLogin(!showLogin)}>
-                Log In
-              </button>
-              {showLogin && (
-                <LoginDropdown onClose={() => setShowLogin(false)} dispatch={dispatch} />
-              )}
-            </>
-          )}
+        {/* Mobile: hamburguesa */}
+        <div className="d-flex d-md-none">
+          <MobileMenu
+            user={store.isAuthenticated ? store.user : null}
+            onLogout={handleLogout}
+            dispatch={dispatch}
+            location={location}
+          />
         </div>
 
       </div>

@@ -42,16 +42,15 @@
   --transition:   0.18s ease;
 
   /* Sobrescribir Bootstrap */
-  --bs-body-bg:           var(--bg);
-  --bs-body-color:        var(--text);
-  --bs-border-color:      var(--border);
-  --bs-card-bg:           var(--bg-card);
-  --bs-dark-bg-subtle:    var(--bg-card);
+  --bs-body-bg:        var(--bg);
+  --bs-body-color:     var(--text);
+  --bs-border-color:   var(--border);
+  --bs-card-bg:        var(--bg-card);
+  --bs-dark-bg-subtle: var(--bg-card);
 }
 
 /* 3. BASE ---------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
-
 html { scroll-behavior: smooth; }
 
 body {
@@ -70,7 +69,6 @@ a {
   transition: color var(--transition);
 }
 a:hover { color: var(--text); }
-
 img { display: block; max-width: 100%; }
 button { font-family: inherit; cursor: pointer; }
 
@@ -82,14 +80,12 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
 }
 
-/* Tamaños de heading del diseño */
-.gs-h1 { font-size: clamp(2rem, 5vw, 4rem);   font-weight: 800; letter-spacing: -0.03em; }
+.gs-h1 { font-size: clamp(2rem, 5vw, 4rem);    font-weight: 800; letter-spacing: -0.03em; }
 .gs-h2 { font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 700; letter-spacing: -0.02em; }
 .gs-h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 600; }
 
 .font-varela { font-family: 'Varela Round', sans-serif; }
 
-/* Color helpers (complementan Bootstrap text-*) */
 .text-green  { color: var(--green)  !important; }
 .text-pink   { color: var(--pink)   !important; }
 .text-purple { color: var(--purple) !important; }
@@ -112,8 +108,13 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--green);
+  transition: color var(--transition);
 }
-.gs-logo-text span { color: var(--text); }
+
+/* Active rosa al hacer click en logo, Games, Tier List */
+.gs-logo-link:active .gs-logo-text { color: var(--pink) !important; }
+.gs-logo-link:active svg            { stroke: var(--pink) !important; }
+.gs-nav-link:active                 { color: var(--pink) !important; border-color: var(--pink) !important; }
 
 /* Nav links */
 .gs-nav-link {
@@ -126,35 +127,45 @@ h1, h2, h3, h4, h5, h6 {
   transition: all var(--transition);
   text-decoration: none;
 }
-.gs-nav-link:hover       { color: var(--text); border-color: var(--border); }
-.gs-nav-link.active      { color: var(--green); border-color: var(--green); }
+.gs-nav-link:hover  { color: var(--text); border-color: var(--border); }
+.gs-nav-link.active { color: var(--green); border-color: var(--green); }
 
-/* Search expandible */
+/* Search — lupa siempre visible, input se expande al lado */
+.gs-navbar-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.gs-search-icon-btn {
+  background: none;
+  border: none;
+  padding: 0.4rem 0.5rem;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .gs-search-box {
   display: flex;
   align-items: center;
-  background: transparent;
-  border: 0.0625rem solid transparent;
-  border-radius: var(--radius-sm);
-  transition: all 0.25s ease;
-  width: 2.25rem;
-  overflow: hidden;
-}
-.gs-search-box.open {
   background: var(--bg-input);
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: width 0.25s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gs-search-box.default {
+  width: 12rem;
+}
+
+.gs-search-box.open {
+  width: 32rem;
   border-color: var(--green);
-  width: 13.75rem;
+  box-shadow: 0 0 0 0.15rem rgba(125, 215, 80, 0.15);
 }
-.gs-search-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  padding: 0.5rem 0.625rem;
-  display: flex;
-  flex-shrink: 0;
-  transition: color var(--transition);
-}
-.gs-search-box.open .gs-search-btn { color: var(--green); }
+
 .gs-search-input {
   background: none;
   border: none;
@@ -162,7 +173,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text);
   font-size: 0.875rem;
   width: 100%;
-  padding: 0.5rem 0.5rem 0.5rem 0;
+  padding: 0.5rem 0.75rem;
   font-family: 'Inter', sans-serif;
 }
 .gs-search-input::placeholder { color: var(--text-dim); }
@@ -177,7 +188,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-md);
   overflow: hidden;
   z-index: 200;
-  width: 17.5rem;
+  width: 20rem;
   box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.5);
 }
 .gs-search-result {
@@ -190,6 +201,8 @@ h1, h2, h3, h4, h5, h6 {
   text-decoration: none;
 }
 .gs-search-result:hover { background: var(--bg-hover); }
+.gs-search-result-title { color: var(--text); font-size: 0.8125rem; font-weight: 600; }
+.gs-search-result-tier  { color: var(--text-dim); font-size: 0.6875rem; }
 
 /* User avatar btn */
 .gs-avatar-btn {
@@ -208,7 +221,7 @@ h1, h2, h3, h4, h5, h6 {
 .gs-avatar-btn:hover { box-shadow: var(--green-glow); }
 .gs-avatar-btn img   { width: 100%; height: 100%; object-fit: cover; }
 
-/* Dropdown menú */
+/* Dropdown menú usuario */
 .gs-dropdown {
   position: absolute;
   top: calc(100% + 0.625rem);
@@ -235,12 +248,25 @@ h1, h2, h3, h4, h5, h6 {
   text-decoration: none;
   transition: background var(--transition);
 }
-.gs-dropdown-item:hover         { background: var(--bg-hover); color: var(--text); }
-.gs-dropdown-item.danger        { color: var(--pink); }
-.gs-dropdown-item.danger:hover  { background: var(--pink-dim); }
+.gs-dropdown-item:hover        { background: var(--bg-hover); color: var(--text); }
+.gs-dropdown-item.danger       { color: var(--pink); }
+.gs-dropdown-item.danger:hover { background: var(--pink-dim); }
+
+/* Login dropdown anclado al botón */
+.gs-login-dropdown {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--green);
+  box-shadow: 0 0 2rem rgba(125, 215, 80, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  width: 18rem;
+  z-index: 300;
+}
 
 /* 6. BOTONES ------------------------------------------------- */
-/* Base — úsalo junto a btn-green, btn-pink, etc. */
 .btn-gs {
   display: inline-flex;
   align-items: center;
@@ -259,26 +285,26 @@ h1, h2, h3, h4, h5, h6 {
 }
 .btn-gs:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-green         { background: var(--green);  color: var(--bg); }
-.btn-green:hover   { filter: brightness(1.1); box-shadow: var(--green-glow); color: var(--bg); }
+.btn-green       { background: var(--green); color: var(--bg); }
+.btn-green:hover { filter: brightness(1.1); box-shadow: var(--green-glow); color: var(--bg); }
 
-.btn-green-outline { background: transparent; color: var(--green); border: 0.0625rem solid var(--green); }
+.btn-green-outline       { background: transparent; color: var(--green); border: 0.0625rem solid var(--green); }
 .btn-green-outline:hover { background: var(--green-dim); }
 
-.btn-pink          { background: var(--pink); color: #fff; }
-.btn-pink:hover    { filter: brightness(1.1); color: #fff; }
+.btn-pink       { background: var(--pink); color: #fff; }
+.btn-pink:hover { filter: brightness(1.1); color: #fff; }
 
-.btn-pink-outline  { background: transparent; color: var(--pink); border: 0.0625rem solid var(--pink); }
+.btn-pink-outline       { background: transparent; color: var(--pink); border: 0.0625rem solid var(--pink); }
 .btn-pink-outline:hover { background: var(--pink-dim); }
 
-.btn-ghost         { background: transparent; color: var(--text-muted); border: 0.0625rem solid var(--border); }
-.btn-ghost:hover   { color: var(--text); border-color: #444; }
+.btn-ghost       { background: transparent; color: var(--text-muted); border: 0.0625rem solid var(--border); }
+.btn-ghost:hover { color: var(--text); border-color: #444; }
 
-/* Admin panel — Bootstrap nav-link compat */
-.bg-pink           { background-color: var(--pink) !important; }
-.border-pink       { border-color: var(--pink) !important; }
-.text-pink         { color: var(--pink) !important; }
-.table-pink th     { color: var(--pink); }
+/* Bootstrap compat */
+.bg-pink       { background-color: var(--pink) !important; }
+.border-pink   { border-color: var(--pink) !important; }
+.text-pink     { color: var(--pink) !important; }
+.table-pink th { color: var(--pink); }
 
 /* 7. INPUTS -------------------------------------------------- */
 .gs-input {
@@ -293,9 +319,9 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Inter', sans-serif;
   transition: box-shadow var(--transition);
 }
-.gs-input:focus       { box-shadow: 0 0 0 0.2rem rgba(125, 215, 80, 0.2); }
+.gs-input:focus        { box-shadow: 0 0 0 0.2rem rgba(125, 215, 80, 0.2); }
 .gs-input::placeholder { color: var(--text-dim); }
-.gs-input.error       { border-color: var(--pink); }
+.gs-input.error        { border-color: var(--pink); }
 .gs-input.error:focus  { box-shadow: 0 0 0 0.2rem rgba(214, 79, 130, 0.2); }
 
 .gs-label {
@@ -307,23 +333,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* 8. CARDS --------------------------------------------------- */
-/* Base card — Bootstrap .card override */
 .gs-card {
   background: var(--bg-card);
   border: 0.0625rem solid var(--border);
   border-radius: var(--radius-md);
   transition: border-color var(--transition), box-shadow var(--transition);
 }
-.gs-card:hover {
-  border-color: var(--green-border);
-  box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.3);
-}
-.gs-card-green {
-  border-color: var(--green);
-  box-shadow: 0 0.25rem 0.9375rem rgba(125, 215, 80, 0.25);
-}
+.gs-card:hover     { border-color: var(--green-border); box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.3); }
+.gs-card-green     { border-color: var(--green); box-shadow: 0 0.25rem 0.9375rem rgba(125, 215, 80, 0.25); }
 
-/* Game card — catálogo y tier list */
 .gs-game-card {
   background: var(--bg-card);
   border: 0.0625rem solid var(--border);
@@ -334,34 +352,13 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
 }
-.gs-game-card:hover {
-  border-color: var(--green-border);
-  box-shadow: var(--green-glow);
-}
-.gs-game-card__cover {
-  width: 100%;
-  aspect-ratio: 3/4;
-  object-fit: cover;
-  background: var(--bg-hover);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-dim);
-  font-size: 2rem;
-  overflow: hidden;
-}
-.gs-game-card__cover img { width: 100%; height: 100%; object-fit: cover; }
-.gs-game-card__body { padding: 0.75rem; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
-.gs-game-card__title {
-  color: var(--text);
-  font-size: 0.875rem;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.gs-game-card__tier { font-size: 1.125rem; font-weight: 800; }
-.gs-game-card__meta { color: var(--text-dim); font-size: 0.75rem; }
+.gs-game-card:hover        { border-color: var(--green-border); box-shadow: var(--green-glow); }
+.gs-game-card__cover       { width: 100%; aspect-ratio: 3/4; background: var(--bg-hover); display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-size: 2rem; overflow: hidden; }
+.gs-game-card__cover img   { width: 100%; height: 100%; object-fit: cover; }
+.gs-game-card__body        { padding: 0.75rem; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+.gs-game-card__title       { color: var(--text); font-size: 0.875rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gs-game-card__tier        { font-size: 1.125rem; font-weight: 800; }
+.gs-game-card__meta        { color: var(--text-dim); font-size: 0.75rem; }
 
 /* 9. MODAL --------------------------------------------------- */
 .gs-modal-backdrop {
@@ -424,7 +421,6 @@ h1, h2, h3, h4, h5, h6 {
 .gs-modal-link:hover { color: #ff6fa0; }
 
 /* 10. TIER LIST --------------------------------------------- */
-/* Tier row label lateral */
 .gs-tier-badge {
   width: 3.5rem;
   height: 3.5rem;
@@ -437,9 +433,7 @@ h1, h2, h3, h4, h5, h6 {
   border: 0.125rem solid currentColor;
   flex-shrink: 0;
 }
-
-/* Vote buttons inline */
-.gs-vote-row  { display: flex; gap: 0.25rem; }
+.gs-vote-row   { display: flex; gap: 0.25rem; }
 .gs-vote-btn {
   flex: 1;
   height: 1.625rem;
@@ -452,8 +446,8 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Inter', sans-serif;
   transition: all 0.15s;
 }
-.gs-vote-btn:hover     { color: var(--text); border-color: #555; }
-.gs-vote-btn.active    { color: var(--bg); font-weight: 800; }
+.gs-vote-btn:hover  { color: var(--text); border-color: #555; }
+.gs-vote-btn.active { color: var(--bg); font-weight: 800; }
 .gs-vote-remove {
   width: 100%;
   background: transparent;
@@ -466,7 +460,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 0.3rem;
   transition: color var(--transition), border-color var(--transition);
 }
-.gs-vote-remove:hover  { color: var(--pink); border-color: var(--pink); }
+.gs-vote-remove:hover { color: var(--pink); border-color: var(--pink); }
 
 /* 11. PROFILE ----------------------------------------------- */
 .gs-profile-card {
@@ -476,24 +470,9 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--bg);
   padding: 2.5rem;
 }
-.gs-profile-avatar {
-  border-radius: 50%;
-  object-fit: cover;
-  filter: drop-shadow(0 0.25rem 1rem var(--green));
-}
-.gs-profile-username {
-  font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: 700;
-  color: var(--green);
-  margin: 0;
-}
-.gs-profile-stat {
-  font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: 700;
-  line-height: 1;
-}
-
-/* Edit inputs transparentes sobre el perfil */
+.gs-profile-avatar   { border-radius: 50%; object-fit: cover; filter: drop-shadow(0 0.25rem 1rem var(--green)); }
+.gs-profile-username { font-size: clamp(2rem, 5vw, 4rem); font-weight: 700; color: var(--green); margin: 0; }
+.gs-profile-stat     { font-size: clamp(2rem, 5vw, 4rem); font-weight: 700; line-height: 1; }
 .gs-profile-input {
   background: transparent;
   border: none;
@@ -516,8 +495,6 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   padding: 0;
 }
-
-/* Status badge en biblioteca */
 .gs-status-btn {
   display: inline-flex;
   align-items: center;
@@ -534,31 +511,79 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* 12. GAME DETAIL ------------------------------------------- */
-.gs-game-hero {
-  width: 100%;
-  max-height: 28rem;
-  object-fit: cover;
-  border-radius: var(--radius-lg);
-}
-.gs-stars { display: flex; gap: 0; }
-.gs-star     { font-size: 1.5rem; line-height: 1; color: #333; }
-.gs-star.on  { color: var(--pink); }
+.gs-game-hero { width: 100%; max-height: 28rem; object-fit: cover; border-radius: var(--radius-lg); }
+.gs-stars     { display: flex; gap: 0; }
+.gs-star      { font-size: 1.5rem; line-height: 1; color: #333; }
+.gs-star.on   { color: var(--pink); }
 
 /* 13. HOME --------------------------------------------------- */
-.gs-hero-title {
-  font-size: clamp(1.75rem, 4vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--green);
+.gs-hero-title { font-size: clamp(1.75rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.02em; color: var(--green); }
+
+.gs-home {
+  background:
+    radial-gradient(circle at top left, rgba(125, 215, 80, 0.08), transparent 26rem),
+    radial-gradient(circle at 80% 20%, rgba(172, 79, 214, 0.08), transparent 24rem),
+    var(--bg);
+  min-height: 100vh;
+}
+.gs-home-hero {
+  padding: 5rem 0 4rem;
+  border-bottom: 0.0625rem solid rgba(125, 215, 80, 0.18);
+  box-shadow: inset 0 -0.25rem 1rem rgba(125, 215, 80, 0.12);
+}
+.gs-home-hero-text  { max-width: 38rem; color: #d8d8e8; font-size: 1.05rem; }
+.gs-home-section    { padding-top: 4rem; }
+.gs-home-section-title { font-size: clamp(1.75rem, 3vw, 2.4rem); font-weight: 800; letter-spacing: -0.03em; }
+.gs-feature-card    { height: 100%; }
+.gs-feature-img {
+  height: 13.25rem;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(125, 215, 80, 0.12), rgba(172, 79, 214, 0.1)), var(--bg-card);
+  border: 0.0625rem solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.gs-feature-card h4 { font-size: 1rem; margin-bottom: 0.15rem; }
+.gs-feature-card p  { color: #e8e8f2; margin: 0; }
+.gs-home-carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scroll-snap-type: x mandatory;
+}
+.gs-home-carousel-item { min-width: 11.5rem; max-width: 11.5rem; scroll-snap-align: start; }
+.gs-survey-cta {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 3rem;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(17, 19, 38, 0.95), rgba(13, 15, 31, 0.95));
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+}
+.gs-survey-benefit    { margin-bottom: 1.75rem; }
+.gs-survey-benefit h5 { font-size: 1rem; margin-bottom: 0.4rem; }
+.gs-survey-benefit p  { color: #f0f0f0; margin: 0; max-width: 28rem; }
+.gs-survey-preview {
+  min-height: 25rem;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(172, 79, 214, 0.16), rgba(125, 215, 80, 0.1)), var(--bg-card);
+  border: 0.0625rem solid var(--green-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  overflow: hidden;
 }
 
 /* 14. FOOTER ------------------------------------------------- */
-.gs-footer {
-  background: var(--bg-card);
-  border-top: 0.0625rem solid var(--border);
-  color: var(--text-muted);
-  font-size: 0.875rem;
-}
+.gs-footer   { background: var(--bg-card); border-top: 0.0625rem solid var(--border); color: var(--text-muted); font-size: 0.875rem; }
 .gs-footer a { color: var(--text-muted); transition: color var(--transition); }
 .gs-footer a:hover { color: var(--green); }
 
@@ -584,157 +609,92 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* 16. SCROLLBAR --------------------------------------------- */
-::-webkit-scrollbar              { width: 0.375rem; height: 0.375rem; }
-::-webkit-scrollbar-track        { background: var(--bg); }
-::-webkit-scrollbar-thumb        { background: #2a2c3e; border-radius: 0.2rem; }
-::-webkit-scrollbar-thumb:hover  { background: #444; }
+::-webkit-scrollbar             { width: 0.375rem; height: 0.375rem; }
+::-webkit-scrollbar-track       { background: var(--bg); }
+::-webkit-scrollbar-thumb       { background: #2a2c3e; border-radius: 0.2rem; }
+::-webkit-scrollbar-thumb:hover { background: #444; }
 
-/* Login dropdown anclado al botón */
-.gs-login-dropdown {
+/* 17. RESPONSIVE NAVBAR ------------------------------------- */
+@media (max-width: 992px) {
+  .gs-search-box.default { width: 9rem; }
+  .gs-search-box.open    { width: 16rem; }
+  .gs-search-results     { width: 16rem; }
+}
+
+@media (max-width: 768px) {
+  .gs-navbar .container  { padding: 0 1rem; gap: 0.5rem; }
+  .gs-logo-text          { display: none; }
+  .gs-search-box.default { width: 6rem; }
+  .gs-search-box.open    { width: 11rem; }
+  .gs-search-results     { width: 12rem; }
+  .gs-nav-link           { font-size: 0.8125rem; padding: 0.3rem 0.5rem; }
+  .btn-gs.btn-green      { font-size: 0.8125rem; padding: 0.4rem 0.75rem; }
+  .gs-login-dropdown     { width: min(16rem, 90vw); }
+  .gs-dropdown           { min-width: 10rem; }
+  .gs-home-hero          { padding: 3.5rem 0 3rem; }
+  .gs-survey-cta         { grid-template-columns: 1fr; padding: 1.5rem; }
+  .gs-survey-preview     { min-height: 16rem; }
+}
+
+@media (max-width: 480px) {
+  .gs-search-box.default { width: 4rem; }
+  .gs-search-box.open    { width: 8rem; }
+  .gs-search-results     { width: 10rem; }
+}
+
+/* 18. MOBILE MENU ------------------------------------------- */
+.gs-hamburger {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+
+.gs-hamburger-line {
+  display: block;
+  width: 1.375rem;
+  height: 0.125rem;
+  background: var(--text-muted);
+  border-radius: 0.1rem;
+  transition: all 0.2s ease;
+}
+
+.gs-hamburger:hover .gs-hamburger-line { background: var(--green); }
+
+.gs-mobile-menu {
   position: absolute;
   top: calc(100% + 0.75rem);
   right: 0;
   background: var(--bg-card);
-  border: 0.0625rem solid var(--green);
-  box-shadow: 0 0 2rem rgba(125, 215, 80, 0.2);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  width: 18rem;
-  z-index: 300;
-}
-
-/* Search expandida más ancha (como figma) */
-.gs-search-box.open {
-  width: 28rem;
-}
-
-/* HOME LANDING ------------------------------------------------ */
-
-.gs-home {
-  background:
-    radial-gradient(circle at top left, rgba(125, 215, 80, 0.08), transparent 26rem),
-    radial-gradient(circle at 80% 20%, rgba(172, 79, 214, 0.08), transparent 24rem),
-    var(--bg);
-  min-height: 100vh;
-}
-
-.gs-home-hero {
-  padding: 5rem 0 4rem;
-  border-bottom: 0.0625rem solid rgba(125, 215, 80, 0.18);
-  box-shadow: inset 0 -0.25rem 1rem rgba(125, 215, 80, 0.12);
-}
-
-.gs-home-hero-text {
-  max-width: 38rem;
-  color: #d8d8e8;
-  font-size: 1.05rem;
-}
-
-.gs-home-section {
-  padding-top: 4rem;
-}
-
-.gs-home-section-title {
-  font-size: clamp(1.75rem, 3vw, 2.4rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
-
-.gs-feature-card {
-  height: 100%;
-}
-
-.gs-feature-img {
-  height: 13.25rem;
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(135deg, rgba(125, 215, 80, 0.12), rgba(172, 79, 214, 0.1)),
-    var(--bg-card);
-  border: 0.0625rem solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-dim);
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.gs-feature-card h4 {
-  font-size: 1rem;
-  margin-bottom: 0.15rem;
-}
-
-.gs-feature-card p {
-  color: #e8e8f2;
-  margin: 0;
-}
-
-.gs-home-carousel {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  padding-bottom: 1rem;
-  scroll-snap-type: x mandatory;
-}
-
-.gs-home-carousel-item {
-  min-width: 11.5rem;
-  max-width: 11.5rem;
-  scroll-snap-align: start;
-}
-
-.gs-survey-cta {
-  display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: 3rem;
-  align-items: center;
-  background:
-    linear-gradient(135deg, rgba(17, 19, 38, 0.95), rgba(13, 15, 31, 0.95));
-  border: 0.0625rem solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 2.5rem;
-}
-
-.gs-survey-benefit {
-  margin-bottom: 1.75rem;
-}
-
-.gs-survey-benefit h5 {
-  font-size: 1rem;
-  margin-bottom: 0.4rem;
-}
-
-.gs-survey-benefit p {
-  color: #f0f0f0;
-  margin: 0;
-  max-width: 28rem;
-}
-
-.gs-survey-preview {
-  min-height: 25rem;
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(135deg, rgba(172, 79, 214, 0.16), rgba(125, 215, 80, 0.1)),
-    var(--bg-card);
   border: 0.0625rem solid var(--green-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-dim);
+  border-radius: var(--radius-md);
   overflow: hidden;
+  z-index: 300;
+  min-width: 13rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.5);
 }
 
-@media (max-width: 768px) {
-  .gs-home-hero {
-    padding: 3.5rem 0 3rem;
-  }
-
-  .gs-survey-cta {
-    grid-template-columns: 1fr;
-    padding: 1.5rem;
-  }
-
-  .gs-survey-preview {
-    min-height: 16rem;
-  }
+.gs-mobile-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #ddd;
+  text-decoration: none;
+  background: none;
+  border: none;
+  border-bottom: 0.0625rem solid var(--border);
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  transition: background var(--transition), color var(--transition);
+  cursor: pointer;
 }
+
+.gs-mobile-menu-item:hover  { background: var(--bg-hover); color: var(--text); }
+.gs-mobile-menu-item.active { color: var(--green); }
+.gs-mobile-menu-item.danger { color: var(--pink); }
+.gs-mobile-menu-item.danger:hover { background: var(--pink-dim); }
