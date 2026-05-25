@@ -40,11 +40,11 @@ export const Home = () => {
       {/* HERO */}
       <section className="gs-home-hero text-center">
         <div className="container">
-          <h1 className="gs-hero-title mb-3">Tu Universo Gaming</h1>
+          <h1 className="gs-hero-title mb-3">Your Gaming Universe</h1>
 
           <p className="gs-home-hero-text mx-auto">
-            Descubre, rastrea y califica tus videojuegos favoritos.
-            Únete a una comunidad apasionada de gamers.
+            Discover, track, and rate your favorite video games.
+            Join a passionate community of gamers.
           </p>
 
           <div className="d-flex justify-content-center gap-3 mt-4 flex-wrap">
@@ -52,14 +52,14 @@ export const Home = () => {
               className="btn-gs btn-green"
               onClick={() => navigate("/survey")}
             >
-              Comenzar ahora &gt;
+              Get Started &gt;
             </button>
 
             <button
               className="btn-gs btn-green-outline"
               onClick={() => navigate("/games")}
             >
-              Explorar juegos
+              Explore Games
             </button>
           </div>
         </div>
@@ -68,37 +68,49 @@ export const Home = () => {
       {/* EXPERIENCE */}
       <section className="container gs-home-section">
         <h2 className="gs-home-section-title text-center text-pink">
-          Tu experiencia Game-Side
+          Your Game-Side Experience
         </h2>
 
         <div className="row g-4 mt-3">
           <div className="col-md-4">
             <article className="gs-feature-card">
               <div className="gs-feature-img">
-                <span>Imagen Games</span>
+                <span>Games Page Image</span>
               </div>
-              <h4 className="text-green">Descubre</h4>
-              <p>Miles de juegos para explorar, buscar y conocer.</p>
+
+              <h4 className="text-green">Discover</h4>
+
+              <p>
+                Browse thousands of games, search by title, and find your next favorite adventure.
+              </p>
             </article>
           </div>
 
           <div className="col-md-4">
             <article className="gs-feature-card">
               <div className="gs-feature-img">
-                <span>Imagen Profile</span>
+                <span>Profile Page Image</span>
               </div>
-              <h4 className="text-green">Organiza</h4>
-              <p>Tu biblioteca personalizada con juegos pendientes, completados y favoritos.</p>
+
+              <h4 className="text-green">Organize</h4>
+
+              <p>
+                Build your personal library with games you want to play, are playing, completed, or dropped.
+              </p>
             </article>
           </div>
 
           <div className="col-md-4">
             <article className="gs-feature-card">
               <div className="gs-feature-img">
-                <span>Imagen Tier List</span>
+                <span>Tier List Image</span>
               </div>
-              <h4 className="text-green">Compara</h4>
-              <p>Crea y consulta tier lists con valoraciones de la comunidad.</p>
+
+              <h4 className="text-green">Rank</h4>
+
+              <p>
+                Rate games, compare community scores, and explore tier lists built by players.
+              </p>
             </article>
           </div>
         </div>
@@ -122,14 +134,14 @@ export const Home = () => {
           <section className="container gs-home-section">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h2 className="gs-home-section-title text-green mb-0">
-                Tendencias Ahora
+                Trending Now
               </h2>
 
               <button
                 className="btn-gs btn-ghost"
                 onClick={() => navigate("/games")}
               >
-                Ver todos
+                View All
               </button>
             </div>
 
@@ -141,7 +153,7 @@ export const Home = () => {
                   </div>
                 ))
               ) : (
-                <p className="text-dim">No hay tendencias todavía.</p>
+                <p className="text-dim">No trending games available yet.</p>
               )}
             </div>
           </section>
@@ -150,14 +162,14 @@ export const Home = () => {
           <section className="container gs-home-section">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h2 className="gs-home-section-title text-green mb-0">
-                Recomendaciones para ti
+                Recommended for You
               </h2>
 
               <button
                 className="btn-gs btn-ghost"
                 onClick={() => navigate("/games")}
               >
-                Explorar más
+                Explore More
               </button>
             </div>
 
@@ -170,7 +182,7 @@ export const Home = () => {
                 ))
               ) : (
                 <p className="text-dim">
-                  Completa la encuesta para mejorar tus recomendaciones.
+                  Complete the survey to improve your recommendations.
                 </p>
               )}
             </div>
@@ -183,38 +195,44 @@ export const Home = () => {
         <div className="gs-survey-cta">
           <div>
             <h2 className="text-green">
-              Tu próxima obsesión gamer está aquí
+              Your Next Gaming Obsession Starts Here
             </h2>
 
             <p className="text-dim mb-4">
-              Responde unas preguntas rápidas y recibe recomendaciones hechas para ti.
+              Answer a few quick questions and get recommendations made for you.
             </p>
 
             <div className="gs-survey-benefit">
-              <h5 className="text-pink">Personalizado</h5>
-              <p>Recibe recomendaciones basadas en tus géneros, estilo de juego y preferencias reales.</p>
+              <h5 className="text-pink">Personalized</h5>
+              <p>
+                Get recommendations based on your favorite genres, play style, and real preferences.
+              </p>
             </div>
 
             <div className="gs-survey-benefit">
-              <h5 className="text-pink">Ahorra tiempo</h5>
-              <p>Deja de perder horas buscando qué jugar y encuentra títulos que encajen contigo.</p>
+              <h5 className="text-pink">Save Time</h5>
+              <p>
+                Stop spending hours wondering what to play and find games that actually match your taste.
+              </p>
             </div>
 
             <div className="gs-survey-benefit">
-              <h5 className="text-pink">Descubre</h5>
-              <p>Explora juegos nuevos, joyas ocultas y experiencias que probablemente nunca habrías encontrado.</p>
+              <h5 className="text-pink">Discover More</h5>
+              <p>
+                Explore new releases, hidden gems, and experiences you might never have found on your own.
+              </p>
             </div>
 
             <button
               className="btn-gs btn-green mt-3"
               onClick={() => navigate("/survey")}
             >
-              Comenzar encuesta
+              Start Survey
             </button>
           </div>
 
           <div className="gs-survey-preview">
-            <span>Imagen Survey</span>
+            <span>Survey Image</span>
           </div>
         </div>
       </section>
