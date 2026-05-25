@@ -1,0 +1,37 @@
+.gs-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 0.0625rem solid var(--green);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.9375rem;
+  padding: 0.625rem 0.875rem;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  transition: box-shadow var(--transition);
+}
+
+.gs-input:focus { box-shadow: 0 0 0 0.2rem rgba(125, 215, 80, 0.2); }
+.gs-input::placeholder { color: var(--text-dim); }
+
+.gs-input.error { border-color: var(--pink); }
+
+.gs-input.error:focus {
+  box-shadow: 0 0 0 0.2rem rgba(214, 79, 130, 0.2);
+}
+
+.gs-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #ccc;
+  margin-bottom: 0.25rem;
+}
+
+.gs-alert-error {
+  background: rgba(214, 79, 130, 0.1);
+  color: var(--pink);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+}

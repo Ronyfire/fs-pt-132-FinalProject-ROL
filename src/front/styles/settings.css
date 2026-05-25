@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Varela+Round&display=swap');
+
+:root {
+  --green:        #7DD750;
+  --green-dim:    rgba(125, 215, 80, 0.15);
+  --green-glow:   0 0 1rem rgba(125, 215, 80, 0.4);
+  --green-border: rgba(125, 215, 80, 0.35);
+  --pink:         #D64F82;
+  --pink-dim:     rgba(214, 79, 130, 0.15);
+  --purple:       #AC4FD6;
+  --red:          #AD0003;
+  --bg:           #0D0F1F;
+  --bg-card:      #111326;
+  --bg-input:     #0a0c1a;
+  --bg-hover:     #1a1c2e;
+  --border:       #1e2235;
+  --text:         #F0F0F0;
+  --text-muted:   #888;
+  --text-dim:     #555;
+  --radius-sm:    0.375rem;
+  --radius-md:    0.625rem;
+  --radius-lg:    1rem;
+  --radius-xl:    1.5rem;
+  --radius-2xl:   2.25rem;
+  --transition:   0.18s ease;
+
+  /* Bootstrap overrides */
+  --bs-body-bg:        var(--bg);
+  --bs-body-color:     var(--text);
+  --bs-border-color:   var(--border);
+  --bs-card-bg:        var(--bg-card);
+  --bs-dark-bg-subtle: var(--bg-card);
+}

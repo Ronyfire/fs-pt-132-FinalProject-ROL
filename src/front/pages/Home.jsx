@@ -15,15 +15,32 @@ export const Home = () => {
   useEffect(() => {
     const loadHomeGames = async () => {
       try {
-        const response = await fetch(`${backendUrl}/api/games`);
-        const data = await response.json();
+        const token = sessionStorage.getItem("token");
 
-        if (!response.ok) {
-          throw new Error(data.msg || "Could not load games");
+        const headers = token
+          ? { Authorization: `Bearer ${token}` }
+          : {};
+
+        const [trendingResponse, recommendationsResponse] = await Promise.all([
+          fetch(`${backendUrl}/api/games/trending`),
+          fetch(`${backendUrl}/api/games/recommendations`, {
+            headers
+          })
+        ]);
+
+        const trendingData = await trendingResponse.json();
+        const recommendationsData = await recommendationsResponse.json();
+
+        if (!trendingResponse.ok) {
+          throw new Error(trendingData.msg || "Could not load trending games");
         }
 
-        setTrendingGames(data.slice(0, 3));
-        setRecommendedGames(data.slice(3, 11));
+        if (!recommendationsResponse.ok) {
+          throw new Error(recommendationsData.msg || "Could not load recommendations");
+        }
+
+        setTrendingGames(trendingData.slice(0, 3));
+        setRecommendedGames(recommendationsData.slice(0, 10));
       } catch (error) {
         console.log(error);
         setError(error.message);
