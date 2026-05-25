@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import html2canvas from "html2canvas";
+import { ImageUploader } from "../components/ImageUploader";
 
 const API = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -66,14 +67,14 @@ const Stars = ({ rating = 0 }) => (
 );
 
 export const Profile = () => {
-  const { store } = useGlobalReducer();
+  const { store, dispatch } = useGlobalReducer();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [openDropdown, setOpenDropdown] = useState(null);
   const [statusMsg, setStatusMsg] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ username: "", description: "", redes: {} });
+  const [editForm, setEditForm] = useState({ username: "", description: "", redes: {}, avatar_url: "" });
   const setRedesField = (key, value) => {
     setEditForm(prev => ({ ...prev, redes: { ...prev.redes, [key]: value } }));
   };
@@ -109,6 +110,7 @@ export const Profile = () => {
       username: profile?.username || "",
       description: profile?.profile?.description || "",
       redes: { ...(profile?.profile?.redes || {}) },
+      avatar_url: profile?.profile?.avatar_url || "",
     });
     setIsEditing(true);
   };
@@ -116,7 +118,7 @@ export const Profile = () => {
   // Cancela la edición sin guardar
   const handleCancelEdit = () => {
     setIsEditing(false);
-    setEditForm({ username: "", description: "", redes: {} });
+    setEditForm({ username: "", description: "", redes: {}, avatar_url: "" });
   };
 
   // Guarda los cambios de username, descripción y redes
@@ -135,7 +137,17 @@ export const Profile = () => {
           throw new Error(`Error al actualizar username: ${userResp.status} ${errBody}`);
         }
       }
-      await saveProfile({ description: editForm.description, redes: editForm.redes });
+      await saveProfile({ description: editForm.description, redes: editForm.redes, avatar_url: editForm.avatar_url });
+      // Sincronizar avatar en el store global
+      if (editForm.avatar_url && editForm.avatar_url !== store.user?.profile?.avatar_url) {
+        dispatch({
+          type: "set_auth",
+          payload: {
+            token: store.token,
+            user: { ...store.user, profile: { ...store.user?.profile, avatar_url: editForm.avatar_url } },
+          },
+        });
+      }
       setIsEditing(false);
       setStatusMsg({ type: "ok", text: "Perfil actualizado ✅" });
       setTimeout(() => setStatusMsg(null), 2000);
@@ -276,6 +288,16 @@ export const Profile = () => {
                       style={{ fontFamily: "'Varela Round', sans-serif", fontSize: 24, lineHeight: "150%", color: "#FFEDF4", background: "transparent", border: "none", borderBottom: "2px solid #555", outline: "none", width: "100%", maxWidth: 479, marginTop: 8, resize: "vertical", padding: 0 }}
                       placeholder="Contá algo sobre vos..."
                     />
+                    {/* Cloudinary Avatar Upload */}
+                    <div style={{ marginBottom: 8, maxWidth: 479 }}>
+                      <ImageUploader
+                        label="Avatar"
+                        currentUrl={editForm.avatar_url || avatarUrl}
+                        shape="circle"
+                        previewWidth={100}
+                        onUpload={(url) => setEditForm((prev) => ({ ...prev, avatar_url: url }))}
+                      />
+                    </div>
                     {/* Inputs para redes sociales */}
                     <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16, maxWidth: 479 }}>
                       {Object.entries(SOCIAL).map(([key, s]) => (
