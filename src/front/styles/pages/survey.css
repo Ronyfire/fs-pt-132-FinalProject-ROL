@@ -1,0 +1,351 @@
+/* SURVEY PAGE — GAME-SIDE STYLE ----------------------------- */
+
+.gs-survey-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 6%, rgba(125, 215, 80, 0.14), transparent 24rem),
+    radial-gradient(circle at 85% 20%, rgba(172, 79, 214, 0.16), transparent 26rem),
+    radial-gradient(circle at 45% 100%, rgba(214, 79, 130, 0.08), transparent 24rem),
+    linear-gradient(180deg, #0D0F1F 0%, #080A16 100%);
+  padding: 4rem 0 5rem;
+}
+
+.gs-survey-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: 2rem;
+  align-items: start;
+}
+
+.gs-survey-main {
+  min-width: 0;
+}
+
+.gs-survey-title {
+  max-width: 48rem;
+  color: var(--text);
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  line-height: 0.95;
+  font-weight: 900;
+  letter-spacing: -0.07em;
+  margin-bottom: 1.2rem;
+}
+
+.gs-survey-title::first-line {
+  color: var(--green);
+}
+
+.gs-survey-subtitle {
+  max-width: 44rem;
+  color: #d8d8e8;
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+}
+
+.gs-survey-message {
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.gs-survey-message.info {
+  background: rgba(172, 79, 214, 0.12);
+  border: 0.0625rem solid rgba(172, 79, 214, 0.35);
+  color: var(--text);
+}
+
+.gs-survey-message.success {
+  background: var(--green-dim);
+  border: 0.0625rem solid var(--green-border);
+  color: var(--green);
+}
+
+.gs-survey-message.error {
+  background: var(--pink-dim);
+  border: 0.0625rem solid rgba(214, 79, 130, 0.4);
+  color: var(--pink);
+}
+
+.gs-survey-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.gs-survey-block {
+  background: rgba(17, 19, 38, 0.82);
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.18);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.gs-survey-block:hover {
+  border-color: var(--green-border);
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.28);
+}
+
+.gs-survey-block-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.gs-survey-block-header > span {
+  width: 2.35rem;
+  height: 2.35rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--green-dim);
+  border: 0.0625rem solid var(--green-border);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  box-shadow: var(--green-glow);
+}
+
+.gs-survey-block-header h2 {
+  color: var(--text);
+  font-size: 1.35rem;
+  margin-bottom: 0.2rem;
+}
+
+.gs-survey-block-header p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.gs-survey-pill-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.gs-survey-pill {
+  background: rgba(10, 12, 26, 0.78);
+  border: 0.0625rem solid var(--border);
+  border-radius: 999rem;
+  color: #d8d8e8;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: all var(--transition);
+}
+
+.gs-survey-pill:hover {
+  border-color: var(--green-border);
+  color: var(--green);
+  transform: translateY(-0.1rem);
+}
+
+.gs-survey-pill.selected {
+  background: var(--green);
+  color: var(--bg);
+  border-color: var(--green);
+  box-shadow: var(--green-glow);
+}
+
+.gs-playstyle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.gs-playstyle-card {
+  text-align: left;
+  background: rgba(10, 12, 26, 0.78);
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  transition: all var(--transition);
+}
+
+.gs-playstyle-card strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.gs-playstyle-card span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.gs-playstyle-card:hover {
+  border-color: var(--purple);
+  transform: translateY(-0.1rem);
+}
+
+.gs-playstyle-card.selected {
+  border-color: var(--pink);
+  background: rgba(214, 79, 130, 0.12);
+  box-shadow: 0 0 1rem rgba(214, 79, 130, 0.18);
+}
+
+.gs-playstyle-card.selected strong {
+  color: var(--pink);
+}
+
+.gs-survey-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.gs-survey-side {
+  position: sticky;
+  top: 5.5rem;
+}
+
+.gs-survey-side-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top right, rgba(125, 215, 80, 0.18), transparent 14rem),
+    linear-gradient(145deg, rgba(17, 19, 38, 0.96), rgba(10, 12, 26, 0.96));
+  border: 0.0625rem solid var(--green-border);
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+  box-shadow:
+    0 1.5rem 4rem rgba(0, 0, 0, 0.35),
+    0 0 2rem rgba(125, 215, 80, 0.08);
+}
+
+.gs-survey-side-label {
+  color: var(--pink);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.gs-survey-side-card h3 {
+  color: var(--green);
+  font-size: 1.8rem;
+  line-height: 1;
+  margin: 0.75rem 0;
+}
+
+.gs-survey-side-card p {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.gs-survey-progress {
+  background: rgba(10, 12, 26, 0.75);
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gs-survey-progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.gs-survey-progress-info span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.gs-survey-progress-info strong {
+  color: var(--green);
+  font-size: 0.85rem;
+}
+
+.gs-survey-progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  border-radius: 999rem;
+  background: var(--bg-hover);
+  overflow: hidden;
+}
+
+.gs-survey-progress-bar div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--pink));
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}
+
+.gs-survey-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.gs-survey-summary div {
+  background: rgba(10, 12, 26, 0.7);
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+}
+
+.gs-survey-summary span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.gs-survey-summary strong {
+  display: block;
+  color: var(--green);
+  font-size: 1.4rem;
+  line-height: 1;
+  margin-top: 0.25rem;
+}
+
+.gs-survey-mascot-box {
+  min-height: 12rem;
+  border-radius: var(--radius-lg);
+  border: 0.125rem dashed rgba(125, 215, 80, 0.28);
+  background:
+    radial-gradient(circle, rgba(172, 79, 214, 0.16), transparent 60%),
+    rgba(10, 12, 26, 0.45);
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+}
+
+@media (max-width: 991px) {
+  .gs-survey-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .gs-survey-side {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .gs-survey-page {
+    padding: 2.5rem 0 4rem;
+  }
+
+  .gs-playstyle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gs-survey-actions {
+    justify-content: stretch;
+  }
+
+  .gs-survey-actions .btn-gs {
+    width: 100%;
+  }
+}

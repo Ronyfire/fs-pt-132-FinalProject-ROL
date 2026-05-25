@@ -1,0 +1,29 @@
+.gs-h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.gs-h2 {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.gs-h3 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 600;
+}
+
+.font-varela { font-family: 'Varela Round', sans-serif; }
+
+.text-green  { color: var(--green)    !important; }
+.text-pink   { color: var(--pink)     !important; }
+.text-purple { color: var(--purple)   !important; }
+.text-red    { color: var(--red)      !important; }
+.text-dim    { color: var(--text-dim) !important; }
+
+/* Bootstrap compatibility helpers */
+.bg-pink       { background-color: var(--pink) !important; }
+.border-pink   { border-color:     var(--pink) !important; }
+.table-pink th { color: var(--pink); }

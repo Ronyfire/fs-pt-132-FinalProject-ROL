@@ -1,0 +1,65 @@
+.gs-profile-card {
+  border: 0.0625rem solid var(--green);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 0.25rem 1rem rgba(125, 215, 80, 0.2);
+  background: var(--bg);
+  padding: 2.5rem;
+}
+
+.gs-profile-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  filter: drop-shadow(0 0.25rem 1rem var(--green));
+}
+
+.gs-profile-username {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--green);
+  margin: 0;
+}
+
+.gs-profile-stat {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.gs-profile-input {
+  background: transparent;
+  border: none;
+  border-bottom: 0.125rem solid var(--green);
+  outline: none;
+  color: var(--green);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  width: 100%;
+  padding: 0;
+}
+
+.gs-profile-textarea {
+  background: transparent;
+  border: none;
+  border-bottom: 0.125rem solid var(--border);
+  outline: none;
+  color: #FFEDF4;
+  font-family: 'Varela Round', sans-serif;
+  resize: vertical;
+  width: 100%;
+  padding: 0;
+}
+
+.gs-status-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-width: 0.1875rem;
+  border-style: solid;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background: var(--bg);
+  cursor: pointer;
+  transition: background var(--transition);
+}
