@@ -6,7 +6,7 @@ export const Footer = () => {
       <div className="container">
         <div className="gs-footer-main">
           <div className="gs-footer-brand">
-            <Link to="/" className="gs-footer-logo">
+            <Link to="/" className="gs-footer-logo gs-spray-pink">
               <svg
                 width="30"
                 height="30"
@@ -39,7 +39,7 @@ export const Footer = () => {
           </div>
 
           <div className="gs-footer-column">
-            <h4>Explore</h4>
+            <h4 className="gs-graffiti-title">Explore</h4>
 
             <nav className="gs-footer-links">
               <Link to="/">Home</Link>
@@ -50,7 +50,7 @@ export const Footer = () => {
           </div>
 
           <div className="gs-footer-column">
-            <h4>Community</h4>
+            <h4 className="gs-graffiti-title">Community</h4>
 
             <nav className="gs-footer-links">
               <Link to="/tierlist">Tier List</Link>
@@ -61,7 +61,7 @@ export const Footer = () => {
           </div>
 
           <div className="gs-footer-column">
-            <h4>Contact</h4>
+            <h4 className="gs-graffiti-title">Contact</h4>
 
             <div className="gs-footer-contact">
               <a href="mailto:contact@game-side.org">
@@ -79,7 +79,7 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="gs-footer-bottom">
+        <div className="gs-footer-bottom gs-spray-dots">
           <small>
             © {new Date().getFullYear()} Game-Side. All rights reserved.
           </small>

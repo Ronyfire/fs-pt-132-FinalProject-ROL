@@ -21,15 +21,18 @@
   inset: 0;
   background-image:
     linear-gradient(rgba(125, 215, 80, 0.05) 0.0625rem, transparent 0.0625rem),
-    linear-gradient(90deg, rgba(125, 215, 80, 0.05) 0.0625rem, transparent 0.0625rem);
-  background-size: 3rem 3rem;
+    linear-gradient(90deg, rgba(125, 215, 80, 0.05) 0.0625rem, transparent 0.0625rem),
+    radial-gradient(circle at 18% 35%, rgba(214, 79, 130, 0.18) 0 0.25rem, transparent 0.3rem),
+    radial-gradient(circle at 78% 22%, rgba(172, 79, 214, 0.16) 0 0.18rem, transparent 0.25rem),
+    radial-gradient(circle at 68% 70%, rgba(214, 79, 130, 0.12) 0 0.35rem, transparent 0.42rem);
+  background-size:
+    3rem 3rem,
+    3rem 3rem,
+    18rem 18rem,
+    14rem 14rem,
+    20rem 20rem;
   mask-image: linear-gradient(to bottom, black, transparent 85%);
   pointer-events: none;
-}
-
-.gs-home-hero .container {
-  position: relative;
-  z-index: 1;
 }
 
 .gs-home-eyebrow {
@@ -483,5 +486,104 @@
   .gs-survey-preview-card {
     left: 1.25rem;
     right: 1.25rem;
+  }
+}
+
+/* HORIZONTAL CAROUSEL --------------------------------------- */
+
+.gs-carousel-shell {
+  position: relative;
+}
+
+.gs-home-carousel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.gs-home-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.gs-home-carousel-draggable {
+  cursor: grab;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gs-home-carousel-draggable:active {
+  cursor: grabbing;
+}
+
+.gs-carousel-arrow {
+  position: absolute;
+  top: 42%;
+  z-index: 5;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999rem;
+  border: 0.0625rem solid var(--green-border);
+  background:
+    radial-gradient(circle at top, rgba(214, 79, 130, 0.24), transparent 60%),
+    rgba(10, 12, 26, 0.92);
+  color: var(--green);
+  font-size: 2rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    0 0.5rem 1.5rem rgba(0, 0, 0, 0.4),
+    var(--green-glow);
+  transition:
+    transform var(--transition),
+    border-color var(--transition),
+    color var(--transition),
+    background var(--transition);
+}
+
+.gs-carousel-arrow:hover {
+  transform: translateY(-50%) scale(1.08);
+  color: var(--pink);
+  border-color: rgba(214, 79, 130, 0.6);
+}
+
+.gs-carousel-arrow-left {
+  left: -1.3rem;
+  transform: translateY(-50%);
+}
+
+.gs-carousel-arrow-right {
+  right: -1.3rem;
+  transform: translateY(-50%);
+}
+
+.gs-carousel-shell::before,
+.gs-carousel-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 4rem;
+  pointer-events: none;
+}
+
+.gs-carousel-shell::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg), transparent);
+}
+
+.gs-carousel-shell::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--bg), transparent);
+}
+
+@media (max-width: 768px) {
+  .gs-carousel-arrow {
+    display: none;
+  }
+
+  .gs-carousel-shell::before,
+  .gs-carousel-shell::after {
+    display: none;
   }
 }
