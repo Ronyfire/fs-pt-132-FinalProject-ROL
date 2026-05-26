@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GameCard from "../components/GameCard.jsx";
+import RakkiTest from "../assets/img/RakkiTEST.png";
+
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -9,6 +11,7 @@ export const Home = () => {
   const [recommendedGames, setRecommendedGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -98,6 +101,15 @@ export const Home = () => {
     <main className="gs-home gs-punk-noise">
       {/* HERO */}
       <section className="gs-home-hero">
+        <Link
+          to="/rakki"
+          className="gs-rakki-easter-egg"
+          aria-label="Find Rakki"
+        >
+          ✦
+          <span>Rakki?</span>
+        </Link>
+
         <div className="container">
           <div className="row align-items-center g-5">
             <div className="col-lg-7 text-center text-lg-start">
@@ -164,9 +176,9 @@ export const Home = () => {
                   <strong>Build your own taste profile</strong>
                 </div>
 
-                <div className="gs-home-mascot-placeholder">
-                  <span>Brand Mascot / Hero Art</span>
-                </div>
+                <div className="gs-rakki-image-box">
+                                        <img src={RakkiTest} alt="Rakki, Game-Side mascot" />
+                                    </div>
               </div>
             </div>
           </div>
