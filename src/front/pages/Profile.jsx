@@ -4,6 +4,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import html2canvas from "html2canvas";
 import { ImageUploader } from "../components/ImageUploader";
 import Rakki from "../components/Rakki";
+import RakkiPng from "../assets/img/RakkiTEST.png";
 const API = import.meta.env.VITE_BACKEND_URL || "";
 // Opciones de estado del juego
 // Los colores viven en CSS: gs-border-{key} / gs-text-{key}
@@ -249,7 +250,10 @@ export const Profile = () => {
     <div className="min-vh-100 py-5">
       <div className="container">
         <div className="d-flex flex-column align-items-center">
-          <Rakki pose="confused" size="lg" text="Something went wrong" />
+          <div className="rakki-wrapper rakki-lg" style={{ width: 180 }}>
+            <img src={RakkiPng} alt="Rakki" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            <p className="rakki-caption">Something went wrong</p>
+          </div>
           <div className="alert alert-danger mt-3">{error}</div>
         </div>
       </div>
@@ -534,7 +538,10 @@ export const Profile = () => {
           )}
           {playing.length === 0 && favorites.length === 0 && (
             <div className="gs-empty">
-              <Rakki pose="confused" size="md" text="No games in your profile yet" />
+              <div className="rakki-wrapper rakki-md" style={{ width: 120 }}>
+                <img src={RakkiPng} alt="Rakki" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                <p className="rakki-caption">No games in your profile yet</p>
+              </div>
             </div>
           )}
         </div>
@@ -542,7 +549,10 @@ export const Profile = () => {
         <h2 className="gs-library-title">My Library</h2>
         {games.length === 0 ? (
           <div className="gs-empty">
-            <Rakki pose="confused" size="md" text="You haven't added any games yet" />
+            <div className="rakki-wrapper rakki-md" style={{ width: 120 }}>
+                <img src={RakkiPng} alt="Rakki" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                <p className="rakki-caption">You haven't added any games yet</p>
+              </div>
           </div>
         ) : (
           <>
