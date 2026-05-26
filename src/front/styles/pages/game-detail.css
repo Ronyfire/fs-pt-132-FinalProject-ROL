@@ -5,12 +5,15 @@
   border-radius: var(--radius-lg);
 }
 
-.gs-stars { display: flex; }
+.gs-stars { display: flex; gap: 0.125rem; }
 
 .gs-star {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   line-height: 1;
-  color: #333;
+  color: #555;
+  transition: color var(--transition), transform var(--transition);
 }
 
-.gs-star.on { color: var(--pink); }
+.gs-star.on { color: #D64F82; }
+
+.gs-star:hover { transform: scale(1.2); }

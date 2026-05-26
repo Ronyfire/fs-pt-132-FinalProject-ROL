@@ -13,10 +13,11 @@ import { Games } from "./pages/Games";
 import { AdminPanel } from "./pages/AdminPanel";
 import { TierList } from "./pages/TierList";
 import { Rakki } from "./pages/Rakki";
+import NotFound from "./pages/NotFound";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>}>
+        <Route path="/" element={<Layout />} errorElement={<NotFound />}>
             {/* Rutas públicas */}
             <Route path="/" element={<Home />} />
             <Route path="/games" element={<Games />} />
@@ -32,6 +33,9 @@ export const router = createBrowserRouter(
             {/* Ruta Admin - Solo para administradores */}
                 <Route path="/admin" element={<AdminPanel />} />
             </Route>
+
+            {/* Captura todo — 404 */}
+            <Route path="*" element={<NotFound />} />
         </Route>
     )
 );
