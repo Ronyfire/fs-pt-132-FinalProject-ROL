@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Rakki from "../components/Rakki";
 
 export const Survey = () => {
   const navigate = useNavigate();
 
+  // Estado del formulario: géneros, plataformas, estilo y temas favoritos
   const [form, setForm] = useState({
     genres: [],
     platforms: [],
@@ -11,12 +13,14 @@ export const Survey = () => {
     favorite_themes: []
   });
 
+  // Estado para mensajes de éxito/error y carga
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("info");
   const [loading, setLoading] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+  // Opciones disponibles para cada sección del survey
   const genreOptions = [
     "Action",
     "Adventure",
@@ -94,6 +98,7 @@ export const Survey = () => {
     }
   ];
 
+  // Agrega o quita un valor del array correspondiente en el formulario
   const toggleArrayValue = (field, value) => {
     setForm((currentForm) => {
       const alreadySelected = currentForm[field].includes(value);
@@ -107,6 +112,7 @@ export const Survey = () => {
     });
   };
 
+  // Cambia el estilo de juego seleccionado (solo uno a la vez)
   const handlePlayStyleChange = (value) => {
     setForm({
       ...form,
@@ -114,6 +120,7 @@ export const Survey = () => {
     });
   };
 
+  // Valida que todas las secciones tengan al menos una opción seleccionada
   const validateSurvey = () => {
     if (form.genres.length === 0) {
       return "Please select at least one genre.";
@@ -130,6 +137,7 @@ export const Survey = () => {
     return "";
   };
 
+  // Envía el survey al backend y redirige al perfil si es exitoso
   const handleSubmit = async (event) => {
     event.preventDefault();
     setMessage("");
@@ -171,6 +179,7 @@ export const Survey = () => {
       setMessageType("success");
       setMessage("Survey successfully saved. Your recommendations are getting smarter.");
 
+      // Redirige al perfil después de guardar
       setTimeout(() => {
         navigate("/profile");
       }, 900);
@@ -182,6 +191,7 @@ export const Survey = () => {
     }
   };
 
+  // Renderiza un grupo de botones tipo pill para opciones múltiples
   const renderPillGroup = (options, field) => {
     return (
       <div className="gs-survey-pill-grid">
@@ -203,12 +213,14 @@ export const Survey = () => {
     );
   };
 
+  // Total de opciones seleccionadas para la barra de progreso
   const selectedCount =
     form.genres.length + form.platforms.length + form.favorite_themes.length;
 
   return (
     <main className="gs-survey-page">
       <section className="container gs-survey-layout">
+        {/* Columna principal: formulario */}
         <div className="gs-survey-main">
           <span className="gs-home-eyebrow">Personalized recommendations</span>
 
@@ -222,13 +234,18 @@ export const Survey = () => {
             recommendations.
           </p>
 
+          {/* Mensaje de éxito o error después de enviar */}
           {message && (
             <div className={`gs-survey-message ${messageType}`}>
+              {messageType === "success" && (
+                <Rakki pose="celebrating" size="sm" className="mb-2" />
+              )}
               {message}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="gs-survey-form">
+            {/* Paso 1: Géneros favoritos */}
             <section className="gs-survey-block">
               <div className="gs-survey-block-header">
                 <span>01</span>
@@ -241,6 +258,7 @@ export const Survey = () => {
               {renderPillGroup(genreOptions, "genres")}
             </section>
 
+            {/* Paso 2: Plataformas */}
             <section className="gs-survey-block">
               <div className="gs-survey-block-header">
                 <span>02</span>
@@ -253,6 +271,7 @@ export const Survey = () => {
               {renderPillGroup(platformOptions, "platforms")}
             </section>
 
+            {/* Paso 3: Estilo de juego */}
             <section className="gs-survey-block">
               <div className="gs-survey-block-header">
                 <span>03</span>
@@ -279,6 +298,7 @@ export const Survey = () => {
               </div>
             </section>
 
+            {/* Paso 4: Temas favoritos */}
             <section className="gs-survey-block">
               <div className="gs-survey-block-header">
                 <span>04</span>
@@ -291,6 +311,7 @@ export const Survey = () => {
               {renderPillGroup(themeOptions, "favorite_themes")}
             </section>
 
+            {/* Botones de navegación */}
             <div className="gs-survey-actions">
               <button
                 type="button"
@@ -311,6 +332,7 @@ export const Survey = () => {
           </form>
         </div>
 
+        {/* Barra lateral: resumen del perfil y mascota */}
         <aside className="gs-survey-side">
           <div className="gs-survey-side-card">
             <span className="gs-survey-side-label">Taste Profile</span>
@@ -322,6 +344,7 @@ export const Survey = () => {
               recommend games that match your actual mood and habits.
             </p>
 
+            {/* Barra de progreso según opciones seleccionadas */}
             <div className="gs-survey-progress">
               <div className="gs-survey-progress-info">
                 <span>Profile data</span>
@@ -337,6 +360,7 @@ export const Survey = () => {
               </div>
             </div>
 
+            {/* Resumen de selecciones por categoría */}
             <div className="gs-survey-summary">
               <div>
                 <span>Genres</span>
@@ -354,8 +378,9 @@ export const Survey = () => {
               </div>
             </div>
 
+            {/* Mascota Rakki con tablet mientras se completa el perfil */}
             <div className="gs-survey-mascot-box">
-              <span>Future Mascot Area</span>
+              <Rakki pose="tablet" size="lg" text="Building your taste profile..." />
             </div>
           </div>
         </aside>

@@ -10,9 +10,11 @@ from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
-from flask_jwt_extended import JWTManager # type: ignore
+from flask_jwt_extended import JWTManager
+from datetime import timedelta
 from extensions import bcrypt
 from flask_cors import CORS
+import cloudinary
 # from models import Person
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
@@ -20,7 +22,13 @@ static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
 app.url_map.strict_slashes = False
-CORS(app)
+CORS(app, supports_credentials=True, resources={r"/api/*": {
+    "origins": [
+        "https://cautious-fortnight-xvpv9pj66qv39vgj-3000.app.github.dev",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+}})
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -28,21 +36,21 @@ if db_url is not None:
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace(
         "postgres://", "postgresql://")
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
 bcrypt.init_app(app)
 app.config["JWT_SECRET_KEY"] = "LOR OF THE RINGS"
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
 jwt = JWTManager(app)
 
 # Credenciales IGDB
 app.config["IGDB_CLIENT_ID"] = os.getenv("IGDB_CLIENT_ID")
 app.config["IGDB_CLIENT_SECRET"] = os.getenv("IGDB_CLIENT_SECRET")
 
-# Cloudinary
-import cloudinary
+# Cloudinary — se configura automáticamente desde CLOUDINARY_URL
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
