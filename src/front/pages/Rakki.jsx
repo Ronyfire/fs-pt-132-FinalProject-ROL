@@ -66,7 +66,7 @@ export const Rakki = () => {
     ];
 
     return (
-        <main className="gs-rakki-page">
+        <main className="gs-rakki-page gs-footer gs-page-bg">
             <section className="container gs-rakki-hero">
                 <div className="gs-rakki-hero-content">
                     <span className="gs-rakki-kicker">Secret mascot file unlocked</span>
@@ -159,7 +159,7 @@ export const Rakki = () => {
             </section>
 
             <section className="container gs-rakki-section pb-5">
-                <div className="gs-rakki-section-header">
+                <div className="gs-rakki-section-header ">
                     <span className="gs-rakki-kicker">Personality</span>
 
                     <h2>
