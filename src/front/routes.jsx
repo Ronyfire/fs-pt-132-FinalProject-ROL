@@ -12,6 +12,7 @@ import { RequireAuth } from "./components/RequireAuth";
 import { Games } from "./pages/Games";
 import { AdminPanel } from "./pages/AdminPanel";
 import { TierList } from "./pages/TierList";
+import { Rakki } from "./pages/Rakki";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -26,6 +27,7 @@ export const router = createBrowserRouter(
             <Route element={<RequireAuth />}>
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/survey" element={<Survey />} />
+                <Route path="/rakki" element={<Rakki />} />
                 
             {/* Ruta Admin - Solo para administradores */}
                 <Route path="/admin" element={<AdminPanel />} />

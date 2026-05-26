@@ -150,3 +150,74 @@
   box-shadow: 0.12rem 0.12rem 0 var(--green);
 }
 
+/* RAKKI EASTER EGG ------------------------------------------ */
+
+.gs-rakki-easter-egg {
+  position: absolute;
+  top: 5.5rem;
+  right: 14%;
+  z-index: 4;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  color: var(--pink);
+  background:
+    radial-gradient(circle, rgba(214, 79, 130, 0.2), transparent 65%),
+    rgba(17, 19, 38, 0.65);
+  border: 0.0625rem solid rgba(214, 79, 130, 0.35);
+  border-radius: 999rem;
+  font-size: 1.25rem;
+  text-decoration: none;
+  box-shadow:
+    0 0 1rem rgba(214, 79, 130, 0.25),
+    0 0 1.4rem rgba(125, 215, 80, 0.12);
+  transform: rotate(-12deg);
+  transition:
+    transform var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.gs-rakki-easter-egg span {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.35rem);
+  transform: translateX(-50%) translateY(-0.2rem);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  color: var(--green);
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--green-border);
+  border-radius: 999rem;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: var(--green-glow);
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.gs-rakki-easter-egg:hover {
+  color: var(--green);
+  border-color: var(--green-border);
+  transform: rotate(8deg) scale(1.15);
+  box-shadow:
+    0 0 1.2rem rgba(125, 215, 80, 0.35),
+    0 0 1.8rem rgba(214, 79, 130, 0.28);
+}
+
+.gs-rakki-easter-egg:hover span {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 768px) {
+  .gs-rakki-easter-egg {
+    top: 3.5rem;
+    right: 1.5rem;
+  }
+}
