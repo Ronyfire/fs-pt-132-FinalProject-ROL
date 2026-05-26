@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GameCard from "../components/GameCard.jsx";
 
@@ -11,6 +11,48 @@ export const Home = () => {
   const [error, setError] = useState("");
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  const recommendedCarouselRef = useRef(null);
+
+  const scrollRecommended = (direction) => {
+    if (!recommendedCarouselRef.current) return;
+
+    recommendedCarouselRef.current.scrollBy({
+      left: direction === "left" ? -450 : 450,
+      behavior: "smooth"
+    });
+  };
+
+  const dragState = useRef({
+    isDown: false,
+    startX: 0,
+    scrollLeft: 0
+  });
+
+  const handleDragStart = (event) => {
+    const carousel = recommendedCarouselRef.current;
+    if (!carousel) return;
+
+    dragState.current.isDown = true;
+    dragState.current.startX = event.pageX - carousel.offsetLeft;
+    dragState.current.scrollLeft = carousel.scrollLeft;
+  };
+
+  const handleDragMove = (event) => {
+    const carousel = recommendedCarouselRef.current;
+    if (!carousel || !dragState.current.isDown) return;
+
+    event.preventDefault();
+
+    const x = event.pageX - carousel.offsetLeft;
+    const walk = (x - dragState.current.startX) * 1.4;
+
+    carousel.scrollLeft = dragState.current.scrollLeft - walk;
+  };
+
+  const handleDragEnd = () => {
+    dragState.current.isDown = false;
+  };
 
   useEffect(() => {
     const loadHomeGames = async () => {
@@ -53,7 +95,7 @@ export const Home = () => {
   }, [backendUrl]);
 
   return (
-    <main className="gs-home">
+    <main className="gs-home gs-punk-noise">
       {/* HERO */}
       <section className="gs-home-hero">
         <div className="container">
@@ -63,12 +105,12 @@ export const Home = () => {
                 Track. Rate. Discover.
               </span>
 
-              <h1 className="gs-home-hero-title">
+              <h1 className="gs-home-hero-title gs-spray-pink">
                 Your Gaming Universe
                 <span> Starts Here</span>
               </h1>
 
-              <p className="gs-home-hero-text">
+              <p className="gs-home-hero-text gs-spray-pink">
                 Discover new games, organize your library, rate your favorites,
                 and get recommendations shaped around the way you actually play.
               </p>
@@ -89,7 +131,7 @@ export const Home = () => {
                 </button>
               </div>
 
-              <div className="gs-home-stats">
+              <div className="gs-home-stats gs-spray-pink">
                 <div>
                   <strong>1000+</strong>
                   <span>Games to explore</span>
@@ -132,7 +174,7 @@ export const Home = () => {
       </section>
 
       {/* EXPERIENCE */}
-      <section className="container gs-home-section">
+      <section className="container gs-home-section gs-spray-pink ">
         <div className="text-center mb-4">
           <span className="gs-home-eyebrow">What can you do?</span>
 
@@ -217,13 +259,13 @@ export const Home = () => {
       {!loading && !error && (
         <>
           {/* TRENDING */}
-          <section className="container gs-home-section">
+          <section className="container gs-home-section gs-spray-dots">
             <div className="gs-section-header">
               <div>
                 <span className="gs-home-eyebrow">Hot right now</span>
 
                 <h2 className="gs-home-section-title text-green mb-0">
-                  Trending Now
+                  <span className="gs-graffiti-title">Trending Now</span>
                 </h2>
               </div>
 
@@ -249,13 +291,16 @@ export const Home = () => {
           </section>
 
           {/* RECOMMENDATIONS */}
-          <section className="container gs-home-section">
+          <section className="container gs-home-section gs-spray-pink">
             <div className="gs-section-header">
               <div>
                 <span className="gs-home-eyebrow">Picked for your next session</span>
 
                 <h2 className="gs-home-section-title text-green mb-0">
-                  Recommended for You
+                  <span className="gs-graffiti-title">Recommended for You</span>
+                  <span className="gs-rakki-tag">
+                    Rakki picked this
+                  </span>
                 </h2>
               </div>
 
@@ -267,28 +312,61 @@ export const Home = () => {
               </button>
             </div>
 
-            <div className="gs-home-carousel">
-              {recommendedGames.length > 0 ? (
-                recommendedGames.map((game) => (
-                  <div className="gs-home-carousel-item" key={game.id}>
-                    <GameCard game={game} />
-                  </div>
-                ))
-              ) : (
-                <p className="text-dim">
-                  Complete the survey to improve your recommendations.
-                </p>
-              )}
+            <div className="gs-carousel-shell">
+              <div
+                className="gs-home-carousel gs-home-carousel-draggable"
+                ref={recommendedCarouselRef}
+                onMouseDown={handleDragStart}
+                onMouseMove={handleDragMove}
+                onMouseUp={handleDragEnd}
+                onMouseLeave={handleDragEnd}
+              ></div>
+              <button
+                type="button"
+                className="gs-carousel-arrow gs-carousel-arrow-left"
+                onClick={() => scrollRecommended("left")}
+                aria-label="Scroll recommendations left"
+              >
+                ‹
+              </button>
+
+              <div
+                className="gs-home-carousel gs-home-carousel-draggable"
+                ref={recommendedCarouselRef}
+              >
+                {recommendedGames.length > 0 ? (
+                  recommendedGames.map((game) => (
+                    <div className="gs-home-carousel-item" key={game.id}>
+                      <GameCard game={game} />
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-dim">
+                    Complete the survey to improve your recommendations.
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="button"
+                className="gs-carousel-arrow gs-carousel-arrow-right"
+                onClick={() => scrollRecommended("right")}
+                aria-label="Scroll recommendations right"
+              >
+                ›
+              </button>
             </div>
           </section>
         </>
       )}
 
       {/* SURVEY CTA */}
-      <section className="container gs-home-section pb-5">
+      <section className="container gs-home-section pb-5 gs-spray-pink">
         <div className="gs-survey-cta">
           <div className="gs-survey-copy">
-            <span className="gs-home-eyebrow">Personalized recommendations</span>
+            <span className="gs-home-eyebrow">Personalized recommendations</span><span className="gs-rakki-tag">
+              Rakki loved this
+            </span>
 
             <h2>
               Your Next Gaming Obsession Starts Here
