@@ -4,7 +4,6 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import html2canvas from "html2canvas";
 import { ImageUploader } from "../components/ImageUploader";
 import Rakki from "../components/Rakki";
-import RakkiPng from "../assets/img/RakkiTEST.png";
 const API = import.meta.env.VITE_BACKEND_URL || "";
 // Opciones de estado del juego
 // Los colores viven en CSS: gs-border-{key} / gs-text-{key}
@@ -138,6 +137,15 @@ export const Profile = () => {
   const cardRef = useRef(null);
   const playingGridRef = useRef(null);
   const favGridRef = useRef(null);
+  // Estados para detectar si las grillas necesitan carrusel (overflow)
+  const [playingOverflow, setPlayingOverflow] = useState(null);
+  const [favOverflow, setFavOverflow] = useState(null);
+
+  const checkOverflow = (ref, setter) => {
+    if (ref.current) {
+      setter(ref.current.scrollWidth > ref.current.clientWidth);
+    }
+  };
   // Obtener datos del perfil desde el backend
   const fetchProfile = async () => {
     const resp = await fetch(`${API}/api/private`, {
@@ -240,6 +248,26 @@ export const Profile = () => {
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
   }, [openDropdown]);
+  // ─────────────── DATOS DERIVADOS ───────────────
+  const avatarUrl = profile?.profile?.avatar_url ||
+    `https://api.dicebear.com/7.x/bottts/svg?seed=${profile?.username || "Gamer"}`;
+  const games = profile?.game_lists?.[0]?.games || [];
+  const redes = profile?.profile?.redes || {};
+  const playing = games.filter((g) => g.status === "playing");
+  const favorites = games.filter((g) => g.is_favorite);
+  const completed = games.filter((g) => g.status === "completed").length;
+  const pending = games.filter((g) => g.status === "want_to_play").length;
+  // ─────────────── DETECCIÓN DE OVERFLOW PARA CARRUSELES ───────────────
+  useEffect(() => { checkOverflow(playingGridRef, setPlayingOverflow); }, [playing]);
+  useEffect(() => { checkOverflow(favGridRef, setFavOverflow); }, [favorites]);
+  useEffect(() => {
+    const onResize = () => {
+      checkOverflow(playingGridRef, setPlayingOverflow);
+      checkOverflow(favGridRef, setFavOverflow);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
   // ─────────────── ESTADOS DE CARGA Y ERROR ───────────────
   if (loading) return (
     <div className="min-vh-100 d-flex align-items-center justify-content-center">
@@ -250,10 +278,7 @@ export const Profile = () => {
     <div className="min-vh-100 py-5">
       <div className="container">
         <div className="d-flex flex-column align-items-center">
-          <div className="rakki-wrapper rakki-lg" style={{ width: 180 }}>
-            <img src={RakkiPng} alt="Rakki" style={{ width: '100%', height: 'auto', display: 'block' }} />
-            <p className="rakki-caption">Something went wrong</p>
-          </div>
+          <Rakki pose="confused" size="lg" text="Something went wrong" />
           <div className="alert alert-danger mt-3">{error}</div>
         </div>
       </div>
@@ -342,22 +367,13 @@ export const Profile = () => {
       setTimeout(() => setStatusMsg(null), 4000);
     }
   };
-  // ─────────────── DATOS DERIVADOS ───────────────
-  const avatarUrl = profile?.profile?.avatar_url ||
-    `https://api.dicebear.com/7.x/bottts/svg?seed=${profile?.username || "Gamer"}`;
-  const games = profile?.game_lists?.[0]?.games || [];
-  const redes = profile?.profile?.redes || {};
-  const playing = games.filter((g) => g.status === "playing");
-  const favorites = games.filter((g) => g.is_favorite);
-  const completed = games.filter((g) => g.status === "completed").length;
-  const pending = games.filter((g) => g.status === "want_to_play").length;
   // ─────────────── RENDERIZADO ───────────────
   return (
-    <div className="gs-profile-page">
+    <div className="gs-profile-page gs-page-bg gs-footer">
       <div className="gs-profile-inner">
-        <div ref={cardRef} className="gs-profile-card mt-5 w-100">
+        <div ref={cardRef} className="gs-profile-card gs-rakki-mood-card mt-5 w-100">
           {/* ── CABECERA: Avatar + Usuario/Desc + Redes + Stats ── */}
-          <div className="gs-profile-header">
+          <div className="gs-profile-header gs-home-hero">
             {/* Grupo izquierdo: Avatar + Usuario + Redes */}
             <div className="gs-profile-header-left">
               {/* Avatar */}
@@ -473,11 +489,13 @@ export const Profile = () => {
           {/* ── Jugando ahora ── */}
           {playing.length > 0 && (
             <>
-              <h2 className="gs-section-title purple">Currently Playing</h2>
-              <div className="gs-carousel-wrap">
-                <button className="gs-carousel-btn gs-carousel-btn--left"
-                  onClick={() => playingGridRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                >‹</button>
+              <h2 className="gs-section-title purple gs-graffiti-title">Currently Playing</h2>
+              <div className="gs-carousel-wrap gs-spray-dots">
+                {playingOverflow === true && (
+                  <button className="gs-carousel-btn gs-carousel-btn--left"
+                    onClick={() => playingGridRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
+                  >‹</button>
+                )}
                 <div className="gs-playing-grid gs-carousel-grid" ref={playingGridRef}>
                   {playing.slice(0, 5).map((entry) => {
                     const g = entry.game;
@@ -489,7 +507,7 @@ export const Profile = () => {
                         <div className="gs-playing-card__body">
                           <div className="gs-playing-card__title">{g?.title}</div>
                           <div className="gs-playing-card__rating">
-                            {g?.game_tier?.average_rating?.toFixed(1) || "—"}
+                            {g?.genres?.slice(0, 2).join(", ") || "—"}
                           </div>
                           <div className="gs-playing-card__meta">
                             {g?.game_tier ? `★${g.game_tier.average_rating.toFixed(1)} | U: ${g.game_tier.vote_count}` : ""}
@@ -499,20 +517,24 @@ export const Profile = () => {
                     );
                   })}
                 </div>
-                <button className="gs-carousel-btn gs-carousel-btn--right"
-                  onClick={() => playingGridRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                >›</button>
+                {playingOverflow === true && (
+                  <button className="gs-carousel-btn gs-carousel-btn--right"
+                    onClick={() => playingGridRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
+                  >›</button>
+                )}
               </div>
             </>
           )}
           {/* ── Juegos favoritos ── */}
           {favorites.length > 0 && (
             <>
-              <h2 className="gs-section-title pink">Favorite Games</h2>
-              <div className="gs-carousel-wrap">
-                <button className="gs-carousel-btn gs-carousel-btn--left"
-                  onClick={() => favGridRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                >‹</button>
+              <h2 className="gs-section-title pink gs-graffiti-title">Favorite Games</h2>
+              <div className="gs-carousel-wrap gs-spray-pink">
+                {favOverflow === true && (
+                  <button className="gs-carousel-btn gs-carousel-btn--left"
+                    onClick={() => favGridRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
+                  >‹</button>
+                )}
                 <div className="gs-fav-grid gs-carousel-grid" ref={favGridRef}>
                   {favorites.slice(0, 5).map((entry) => {
                     const g = entry.game;
@@ -530,29 +552,27 @@ export const Profile = () => {
                     );
                   })}
                 </div>
-                <button className="gs-carousel-btn gs-carousel-btn--right"
-                  onClick={() => favGridRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                >›</button>
+                {favOverflow === true && (
+                  <button className="gs-carousel-btn gs-carousel-btn--right"
+                    onClick={() => favGridRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
+                  >›</button>
+                )}
               </div>
             </>
           )}
           {playing.length === 0 && favorites.length === 0 && (
             <div className="gs-empty">
-              <div className="rakki-wrapper rakki-md" style={{ width: 120 }}>
-                <img src={RakkiPng} alt="Rakki" style={{ width: '100%', height: 'auto', display: 'block' }} />
-                <p className="rakki-caption">No games in your profile yet</p>
-              </div>
+              <Rakki pose="confused" size="md" text="No games in your profile yet" />
+              <span className="gs-rakki-tag">Rakki says: start playing!</span>
             </div>
           )}
         </div>
         {/* ══ MI BIBLIOTECA ══ */}
-        <h2 className="gs-library-title">My Library</h2>
+        <h2 className="gs-library-title gs-graffiti-title">My Library</h2>
         {games.length === 0 ? (
           <div className="gs-empty">
-            <div className="rakki-wrapper rakki-md" style={{ width: 120 }}>
-                <img src={RakkiPng} alt="Rakki" style={{ width: '100%', height: 'auto', display: 'block' }} />
-                <p className="rakki-caption">You haven't added any games yet</p>
-              </div>
+            <Rakki pose="confused" size="md" text="You haven't added any games yet" />
+            <span className="gs-rakki-tag">Rakki picked this — explore games!</span>
           </div>
         ) : (
           <>
