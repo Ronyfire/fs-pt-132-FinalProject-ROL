@@ -6,30 +6,37 @@ import { rakkiToast } from "../components/RakkiToast";
 const API = import.meta.env.VITE_BACKEND_URL || "";
 
 const TIER_META = {
-  S: { color: "#FFD700", bg: "rgba(255,215,0,0.12)", label: "S — Legendary" },
-  A: { color: "#7DD750", bg: "rgba(125,215,80,0.12)", label: "A — Excellent" },
-  B: { color: "#4FC3F7", bg: "rgba(79,195,247,0.12)", label: "B — Good" },
-  C: { color: "#AC4FD6", bg: "rgba(172,79,214,0.12)", label: "C — Average" },
-  D: { color: "#FF9800", bg: "rgba(255,152,0,0.12)", label: "D — Below Average" },
-  F: { color: "#D64F82", bg: "rgba(214,79,130,0.12)", label: "F — Poor" },
-  Undefined: { color: "#555", bg: "rgba(85,85,85,0.08)", label: "Unrated" },
+  S:         { color: "#FF6B00", bg: "rgba(255,107,0,0.15)",   label: "Legendary" },
+  A:         { color: "#FFD700", bg: "rgba(255,215,0,0.15)",   label: "Excellent" },
+  B:         { color: "#AC4FD6", bg: "rgba(172,79,214,0.15)",  label: "Good" },
+  C:         { color: "#4FC3F7", bg: "rgba(79,195,247,0.15)",  label: "Average" },
+  D:         { color: "#7DD750", bg: "rgba(125,215,80,0.15)",  label: "Below Average" },
+  F:         { color: "#D64F82", bg: "rgba(214,79,130,0.15)",  label: "Poor" },
+  Undefined: { color: "#555",    bg: "rgba(85,85,85,0.08)",    label: "Unrated" },
 };
 
-const RATING_LABELS = { 1: "F", 2: "D–C", 3: "B", 4: "A", 5: "S" };
 const TIER_ORDER = ["S", "A", "B", "C", "D", "F", "Undefined"];
+
+const ResetIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+  </svg>
+);
 
 export const TierList = () => {
   const { store } = useGlobalReducer();
   const navigate = useNavigate();
 
-  const [games, setGames] = useState([]);
+  const [games,   setGames]   = useState([]);
   const [myVotes, setMyVotes] = useState({});
   const [loading, setLoading] = useState(true);
-  const [voting, setVoting] = useState(null);
-  const [filter, setFilter] = useState("all");
+  const [voting,  setVoting]  = useState(null);
+  const [filter,  setFilter]  = useState("all");
 
   const loadGames = async () => {
-    const res = await fetch(`${API}/api/games`);
+    const res  = await fetch(`${API}/api/games`);
     const data = await res.json();
     setGames(Array.isArray(data) ? data : []);
   };
@@ -37,12 +44,12 @@ export const TierList = () => {
   const loadMyVotes = async () => {
     if (!store.isAuthenticated) return;
     const token = sessionStorage.getItem("token");
-    const res = await fetch(`${API}/api/user/game-tiers`, {
+    const res   = await fetch(`${API}/api/user/game-tiers`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) return;
     const votes = await res.json();
-    const map = {};
+    const map   = {};
     votes.forEach((v) => { map[v.game_tier_id] = v; });
     setMyVotes(map);
   };
@@ -57,22 +64,22 @@ export const TierList = () => {
 
   const handleVote = async (game, rating) => {
     if (!store.isAuthenticated) { navigate("/"); return; }
-    const tierId = game.game_tier?.id;
+    const tierId   = game.game_tier?.id;
     const existing = myVotes[tierId];
-    const token = sessionStorage.getItem("token");
+    const token    = sessionStorage.getItem("token");
     setVoting(game.id);
     try {
       const res = existing
         ? await fetch(`${API}/api/user/game-tiers/${existing.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ rating }),
-        })
+            method: "PUT",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ rating }),
+          })
         : await fetch(`${API}/api/user/game-tiers`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ game_id: game.id, rating }),
-        });
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ game_id: game.id, rating }),
+          });
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Vote failed");
       rakkiToast.success(`Voted ${rating}/5 for ${game.title}!`);
@@ -84,13 +91,13 @@ export const TierList = () => {
 
   const handleDeleteVote = async (game) => {
     if (!store.isAuthenticated) return;
-    const token = sessionStorage.getItem("token");
+    const token  = sessionStorage.getItem("token");
+    const tierId = game.game_tier?.id;
+    const myVote = myVotes[tierId];
+    if (!myVote) return;
     setVoting(game.id);
     try {
-      const tierId = game.game_tier?.id;
-      const myVote = myVotes[tierId];
-      if (!myVote) return;
-      const res = await fetch(`${API}/api/user/game-tiers/${myVote.id}`, {
+      const res = await fetch(`${API}/api/user/game-tiers/${game.id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -124,21 +131,16 @@ export const TierList = () => {
       <div className="gs-page-content container py-4">
 
         {/* ── HEADER ── */}
-        <div className="d-flex align-items-end justify-content-between flex-wrap gap-3 py-4 mb-2"
-          style={{ borderBottom: "0.0625rem solid var(--border)" }}>
+        <div className="d-flex align-items-end justify-content-between flex-wrap gap-3 py-4 mb-2 gs-tier-header-row">
           <div>
-            <h1 className="gs-h1 text-green mb-1">Global Tier List</h1>
-            <p className="text-muted mb-0">
+            <h1 className="gs-tier-page-title">Global Tier List</h1>
+            <p className="gs-tier-page-subtitle">
               Community rankings — {games.length} games rated by players worldwide
               {!store.isAuthenticated && (
-                <span className="text-pink ms-2">
-                  · <button
-                    className="btn-gs btn-pink-outline py-0 px-2"
-                    style={{ fontSize: "0.8rem" }}
-                    onClick={() => navigate("/")}
-                  >
-                    Log in to vote
-                  </button>
+                <span className="ms-2">
+                  · <button className="btn-gs btn-pink-outline btn-sm" onClick={() => navigate("/")}>
+                      Log in to vote
+                    </button>
                 </span>
               )}
             </p>
@@ -155,13 +157,13 @@ export const TierList = () => {
             {TIER_ORDER.filter((t) => t !== "Undefined" && grouped[t]?.length > 0).map((t) => (
               <button
                 key={t}
-                className="btn-gs"
+                className="btn-gs gs-tier-filter-btn"
                 onClick={() => setFilter(t === filter ? "all" : t)}
                 style={{
-                  background: filter === t ? TIER_META[t].color : "transparent",
-                  color: filter === t ? "#000" : TIER_META[t].color,
-                  border: `0.0625rem solid ${TIER_META[t].color}`,
-                  fontWeight: 700,
+                  "--tier-color": TIER_META[t].color,
+                  background:  filter === t ? TIER_META[t].color : "transparent",
+                  color:       filter === t ? "#000" : TIER_META[t].color,
+                  borderColor: TIER_META[t].color,
                 }}
               >
                 {t}
@@ -173,42 +175,32 @@ export const TierList = () => {
         {/* ── TIER ROWS ── */}
         <div className="d-flex flex-column gap-4 mt-4">
           {tiersToShow.map((tier) => {
-            if (!grouped[tier]?.length) return null;
             const meta = TIER_META[tier];
+            if (!grouped[tier]?.length) return null;
+
             return (
-              <div key={tier}>
+              <div key={tier} style={{ "--tier-color": meta.color, "--tier-bg": meta.bg }}>
+
                 {/* Tier label */}
                 <div className="d-flex align-items-center gap-3 mb-3">
-                  <div className="gs-tier-badge flex-shrink-0"
-                    style={{ color: meta.color, background: meta.bg }}>
+                  <div className="gs-tier-badge">
                     {tier === "Undefined" ? "?" : tier}
                   </div>
-                  <div>
-                    <span className="fw-bold" style={{ fontSize: "1.25rem", color: meta.color }}>
-                      {meta.label}
-                    </span>
-                    <span className="text-dim ms-2 small">
-                      {grouped[tier].length} game{grouped[tier].length !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  <div className="flex-grow-1"
-                    style={{ height: "0.0625rem", background: meta.color + "33" }} />
+                  <span className="gs-tier-label-text">{meta.label}</span>
+                  <div className="gs-tier-divider" />
                 </div>
 
                 {/* Game cards */}
                 <div className="d-flex flex-wrap gap-3">
                   {grouped[tier].map((game) => {
-                    const tierId = game.game_tier?.id;
-                    const myVote = myVotes[tierId];
+                    const tierId   = game.game_tier?.id;
+                    const myVote   = myVotes[tierId];
                     const isVoting = voting === game.id;
 
                     return (
-                      <div key={game.id} className="gs-game-card"
-                        style={{
-                          width: "11.25rem",
-                          border: `0.0625rem solid ${myVote ? meta.color : "var(--border)"}`,
-                          boxShadow: myVote ? `0 0 0.625rem ${meta.color}44` : "none",
-                        }}
+                      <div
+                        key={game.id}
+                        className={`gs-game-card gs-tier-game-card ${myVote ? "gs-tier-game-card--voted" : ""}`}
                       >
                         <Link to={`/games/${game.id}`} className="text-decoration-none">
                           <div className="gs-game-card__cover">
@@ -220,7 +212,7 @@ export const TierList = () => {
                           <div className="gs-game-card__body">
                             <div className="gs-game-card__title">{game.title}</div>
                             <div className="d-flex align-items-center gap-2">
-                              <span className="gs-game-card__tier" style={{ color: meta.color }}>
+                              <span className="gs-game-card__tier">
                                 {game.game_tier?.tier === "Undefined" ? "—" : game.game_tier?.tier}
                               </span>
                               <span className="gs-game-card__meta">
@@ -233,41 +225,41 @@ export const TierList = () => {
                         </Link>
 
                         {/* Voting */}
-                        <div className="gs-game-card__voting"
-                          style={{ borderTop: "0.0625rem solid var(--border)" }}>
+                        <div className="gs-game-card__voting">
                           {store.isAuthenticated ? (
                             <>
-                              <p className="text-dim mb-1" style={{ fontSize: "0.6875rem" }}>
-                                {myVote ? `Your vote: ${myVote.rating}/5` : "Rate this game:"}
-                              </p>
-                              <div className="gs-vote-row">
+                              <div className="d-flex align-items-center justify-content-between mb-1">
+                                <p className="gs-vote-label mb-0">
+                                  {myVote ? `Your vote: ${myVote.rating}/5` : "Rate this game:"}
+                                </p>
+                                {myVote && (
+                                  <button
+                                    className="gs-vote-reset"
+                                    disabled={isVoting}
+                                    onClick={() => handleDeleteVote(game)}
+                                    title="Reset vote"
+                                  >
+                                    <ResetIcon />
+                                  </button>
+                                )}
+                              </div>
+                              <div className="gs-vote-stars">
                                 {[1, 2, 3, 4, 5].map((r) => (
                                   <button
                                     key={r}
                                     disabled={isVoting}
                                     onClick={() => handleVote(game, r)}
-                                    className={`gs-vote-btn ${myVote?.rating === r ? "active" : ""}`}
-                                    style={myVote?.rating === r ? { background: meta.color } : {}}
-                                    title={`Rate ${r}/5 (${RATING_LABELS[r]})`}
+                                    className={`gs-vote-star ${myVote?.rating >= r ? "active" : ""}`}
+                                    title={`Rate ${r}/5`}
                                   >
-                                    {r}
+                                    ★
                                   </button>
                                 ))}
                               </div>
-                              {myVote && (
-                                <button
-                                  onClick={() => handleDeleteVote(game)}
-                                  disabled={isVoting}
-                                  className="gs-vote-remove"
-                                >
-                                  remove vote
-                                </button>
-                              )}
                             </>
                           ) : (
                             <button
-                              className="gs-modal-link w-100 justify-content-center"
-                              style={{ fontSize: "0.6875rem" }}
+                              className="gs-modal-link gs-tier-login-btn"
                               onClick={() => navigate("/")}
                             >
                               Log in to vote →
@@ -293,3 +285,4 @@ export const TierList = () => {
     </div>
   );
 };
+0
