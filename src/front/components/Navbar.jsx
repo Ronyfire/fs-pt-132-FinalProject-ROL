@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import RakkiConcerned from "../assets/img/Rakki_Concerned_Sticker.png";
 
 const API = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -32,18 +33,18 @@ const PcSearchIcon = ({ active }) => (
       className="gs-pc-question" stroke="none"
       style={{ fontFamily: "Inter, sans-serif" }}>?</text>
     <line x1="12" y1="16" x2="12" y2="19" />
-    <line x1="9"  y1="19" x2="15" y2="19" />
+    <line x1="9" y1="19" x2="15" y2="19" />
   </svg>
 );
 
 // ── Search ────────────────────────────────────────────────────
 const SearchBar = () => {
-  const [open, setOpen]       = useState(false);
-  const [query, setQuery]     = useState("");
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigate     = useNavigate();
-  const inputRef     = useRef();
+  const navigate = useNavigate();
+  const inputRef = useRef();
   const containerRef = useRef();
 
   useEffect(() => { if (open) inputRef.current?.focus(); }, [open]);
@@ -98,9 +99,20 @@ const SearchBar = () => {
         />
       </div>
 
-      {open && (results.length > 0 || loading) && (
+      {open && query.trim() && (
         <div className="gs-search-results">
           {loading && <p className="px-3 py-2 mb-0 text-dim small">Searching...</p>}
+
+          {!loading && results.length === 0 && (
+            <div className="gs-search-no-results">
+              <img src={RakkiConcerned} alt="" className="gs-search-no-results__icon" />
+              <div>
+                <div className="gs-search-result-title">No game found</div>
+                <div className="gs-search-result-tier">Try a different name</div>
+              </div>
+            </div>
+          )}
+
           {results.map((g) => (
             <Link key={g.id} to={`/games/${g.id}`} className="gs-search-result" onClick={close}>
               <div className="gs-search-result-cover rounded overflow-hidden flex-shrink-0">
@@ -120,10 +132,10 @@ const SearchBar = () => {
 
 // ── Login Dropdown ────────────────────────────────────────────
 const LoginDropdown = ({ onClose, dispatch }) => {
-  const [mode, setMode]       = useState("login");
-  const [form, setForm]       = useState({ username: "", email: "", password: "" });
+  const [mode, setMode] = useState("login");
+  const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const set = (e) => { setForm({ ...form, [e.target.name]: e.target.value }); setError(""); };
@@ -132,7 +144,7 @@ const LoginDropdown = ({ onClose, dispatch }) => {
     e.preventDefault();
     setLoading(true); setError("");
     try {
-      const res  = await fetch(`${API}/api/login`, {
+      const res = await fetch(`${API}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: form.username, password: form.password }),
@@ -151,7 +163,7 @@ const LoginDropdown = ({ onClose, dispatch }) => {
     e.preventDefault();
     setLoading(true); setError("");
     try {
-      const res  = await fetch(`${API}/api/signup`, {
+      const res = await fetch(`${API}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: form.username, email: form.email, password: form.password }),
@@ -173,7 +185,7 @@ const LoginDropdown = ({ onClose, dispatch }) => {
         <button className="gs-modal-close position-static" onClick={onClose}>×</button>
       </div>
 
-      {error   && <div className="gs-alert-error mb-3">{error}</div>}
+      {error && <div className="gs-alert-error mb-3">{error}</div>}
       {success && <p className="text-green small mb-3">{success}</p>}
 
       {mode === "login" && (
@@ -224,8 +236,8 @@ const LoginDropdown = ({ onClose, dispatch }) => {
       )}
 
       <div className="gs-modal-footer">
-        {mode !== "signup"  && <button className="gs-modal-link" onClick={() => { setMode("signup");  setError(""); }}>👤 Sign Up</button>}
-        {mode !== "login"   && <button className="gs-modal-link" onClick={() => { setMode("login");   setError(""); }}>🔑 Log In</button>}
+        {mode !== "signup" && <button className="gs-modal-link" onClick={() => { setMode("signup"); setError(""); }}>👤 Sign Up</button>}
+        {mode !== "login" && <button className="gs-modal-link" onClick={() => { setMode("login"); setError(""); }}>🔑 Log In</button>}
         {mode !== "recover" && <button className="gs-modal-link" onClick={() => { setMode("recover"); setError(""); }}>🔐 Forgot Password</button>}
       </div>
     </div>
@@ -258,7 +270,7 @@ const UserMenu = ({ user, onLogout }) => {
             <div className="text-dim" style={{ fontSize: "0.75rem" }}>{user?.email}</div>
           </div>
           <Link to="/profile" className="gs-dropdown-item" onClick={() => setOpen(false)}>👤 My Profile</Link>
-          <Link to="/survey"  className="gs-dropdown-item" onClick={() => setOpen(false)}>🎮 Survey</Link>
+          <Link to="/survey" className="gs-dropdown-item" onClick={() => setOpen(false)}>🎮 Survey</Link>
           {user?.is_admin && <Link to="/admin" className="gs-dropdown-item" onClick={() => setOpen(false)}>⚙ Admin Panel</Link>}
           <button className="gs-dropdown-item danger" onClick={() => { onLogout(); setOpen(false); }}>🚪 Log Out</button>
         </div>
@@ -269,7 +281,7 @@ const UserMenu = ({ user, onLogout }) => {
 
 // ── Mobile Menu ───────────────────────────────────────────────
 const MobileMenu = ({ user, onLogout, dispatch, location }) => {
-  const [open, setOpen]       = useState(false);
+  const [open, setOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const ref = useRef();
 
@@ -296,7 +308,7 @@ const MobileMenu = ({ user, onLogout, dispatch, location }) => {
 
       {open && !showLogin && (
         <div className="gs-mobile-menu">
-          <Link to="/games"    className={`gs-mobile-menu-item ${location.pathname === "/games"    ? "active" : ""}`} onClick={close}>🎮 Games</Link>
+          <Link to="/games" className={`gs-mobile-menu-item ${location.pathname === "/games" ? "active" : ""}`} onClick={close}>🎮 Games</Link>
           <Link to="/tierlist" className={`gs-mobile-menu-item ${location.pathname === "/tierlist" ? "active" : ""}`} onClick={close}>🏆 Tier List</Link>
           <hr className="gs-mobile-divider" />
           {user ? (
@@ -306,7 +318,7 @@ const MobileMenu = ({ user, onLogout, dispatch, location }) => {
                 <span className="text-green fw-bold small">{user.username}</span>
               </div>
               <Link to="/profile" className="gs-mobile-menu-item" onClick={close}>👤 My Profile</Link>
-              <Link to="/survey"  className="gs-mobile-menu-item" onClick={close}>📋 Survey</Link>
+              <Link to="/survey" className="gs-mobile-menu-item" onClick={close}>📋 Survey</Link>
               {user?.is_admin && <Link to="/admin" className="gs-mobile-menu-item" onClick={close}>⚙ Admin Panel</Link>}
               <button className="gs-mobile-menu-item danger" onClick={() => { onLogout(); close(); }}>🚪 Log Out</button>
             </>
@@ -360,7 +372,7 @@ export const Navbar = () => {
 
         {/* Desktop */}
         <div className="d-none d-md-flex align-items-center gap-1">
-          <Link to="/games"    className={`gs-nav-link ${location.pathname === "/games"    ? "active" : ""}`}>Games</Link>
+          <Link to="/games" className={`gs-nav-link ${location.pathname === "/games" ? "active" : ""}`}>Games</Link>
           <Link to="/tierlist" className={`gs-nav-link ${location.pathname === "/tierlist" ? "active" : ""}`}>Tier List</Link>
           <div className="position-relative ms-2" ref={loginRef}>
             {store.isAuthenticated ? (

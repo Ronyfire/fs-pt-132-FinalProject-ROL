@@ -281,3 +281,17 @@
 }
 
 .gs-hamburger:hover .gs-hamburger-line { background: var(--green); }
+
+.gs-search-no-results {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.875rem;
+}
+
+.gs-search-no-results__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
