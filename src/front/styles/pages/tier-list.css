@@ -1,58 +1,157 @@
+/* ── TIER BADGE -------------------------------------------- */
 .gs-tier-badge {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: var(--radius-sm);
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
+  font-size: 2.25rem;
+  font-weight: 900;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.08em;
+  flex-shrink: 0;
+  color: var(--tier-color);
+  background: radial-gradient(
+    circle at 35% 35%,
+    color-mix(in srgb, var(--tier-color) 25%, transparent),
+    var(--tier-bg) 70%
+  );
+  border: 0.125rem solid color-mix(in srgb, var(--tier-color) 60%, transparent);
+  box-shadow:
+    inset 0 0.0625rem 0 color-mix(in srgb, var(--tier-color) 30%, transparent),
+    0 0.25rem 0.75rem color-mix(in srgb, var(--tier-color) 20%, transparent);
+  -webkit-text-stroke: 0.04em color-mix(in srgb, var(--tier-color) 80%, #fff);
+  text-shadow:
+    0 0.125rem 0.25rem color-mix(in srgb, var(--tier-color) 40%, transparent);
+}
+
+/* ── TIER HEADER ------------------------------------------- */
+.gs-tier-header-row {
+  border-bottom: 0.0625rem solid var(--border);
+}
+
+.gs-tier-label-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--tier-color);
+}
+
+.gs-tier-divider {
+  height: 0.0625rem;
+  opacity: 0.2;
+  flex: 1;
+  background: var(--tier-color);
+}
+
+/* ── FILTER BUTTONS ---------------------------------------- */
+.gs-tier-filter-btn {
+  font-weight: 700;
+  border-width: 0.0625rem;
+  border-style: solid;
+}
+
+/* ── GAME CARD — tier specific ----------------------------- */
+.gs-tier-game-card {
+  width: 11.25rem;
+}
+
+.gs-tier-game-card--voted {
+  border-color: var(--tier-color) !important;
+  box-shadow: 0 0 0.625rem color-mix(in srgb, var(--tier-color) 30%, transparent);
+}
+
+.gs-game-card__tier {
+  font-size: 1.125rem;
   font-weight: 800;
-  border: 0.125rem solid currentColor;
+  color: var(--tier-color);
+}
+
+/* ── VOTE STARS ------------------------------------------- */
+.gs-vote-stars {
+  display: flex;
+  gap: 0.1rem;
+}
+
+.gs-vote-star {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.1rem;
+  transition: color 0.15s, transform 0.1s;
+}
+
+.gs-vote-star:hover    { color: var(--pink); transform: scale(1.2); }
+.gs-vote-star.active   { color: var(--pink); }
+.gs-vote-star:disabled { cursor: not-allowed; opacity: 0.5; }
+
+/* ── MISC -------------------------------------------------- */
+.gs-vote-label {
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  margin-bottom: 0.25rem;
+}
+
+.gs-tier-login-btn {
+  font-size: 0.6875rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.gs-game-card__voting {
+  padding: 0.375rem 0.625rem 0.625rem;
+  border-top: 0.0625rem solid var(--border);
+}
+
+/* ── TIER LIST PAGE HEADER --------------------------------- */
+.gs-tier-page-title {
+  font-size: clamp(2.6rem, 7vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  margin: 0;
+  background: linear-gradient(135deg, var(--green) 0%, #a8f060 40%, var(--purple) 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
+.gs-tier-page-subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.gs-tier-page-subtitle .text-pink {
+  opacity: 1;
+}
+
+/* ── RESET VOTE BUTTON ------------------------------------- */
+.gs-vote-reset {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.1rem;
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  transition: color var(--transition), transform var(--transition);
   flex-shrink: 0;
 }
 
-.gs-vote-row {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.gs-vote-btn {
-  flex: 1;
-  height: 1.625rem;
-  background: var(--bg-hover);
-  color: var(--text-dim);
-  border: 0.0625rem solid var(--border);
-  border-radius: 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.15s;
-}
-
-.gs-vote-btn:hover {
-  color: var(--text);
-  border-color: #555;
-}
-
-.gs-vote-btn.active {
-  color: var(--bg);
-  font-weight: 800;
-}
-
-.gs-vote-remove {
-  width: 100%;
-  background: transparent;
-  border: 0.0625rem solid var(--border);
-  border-radius: 0.25rem;
-  color: var(--text-dim);
-  font-size: 0.625rem;
-  padding: 0.1875rem 0;
-  font-family: 'Inter', sans-serif;
-  margin-top: 0.3rem;
-  transition: color var(--transition), border-color var(--transition);
-}
-
-.gs-vote-remove:hover {
+.gs-vote-reset:hover {
   color: var(--pink);
-  border-color: var(--pink);
+  transform: rotate(-180deg);
+}
+
+.gs-vote-reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
