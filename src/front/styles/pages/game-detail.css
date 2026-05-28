@@ -1,19 +1,79 @@
-.gs-game-hero {
+/* ═══════════════════════════════════════
+   GamePage CSS — clases del componente GamePage
+   ═══════════════════════════════════════ */
+
+:root {
+  --bg-main: #0D0F1F;
+  --bg-card: #241E25;
+  --bg-input: #1B1823;
+  --green-accent: #7DD750;
+  --purple-accent: #AC4FD6;
+}
+
+/* ─── Fondo global ─── */
+body {
+  background-color: var(--bg-main) !important;
+  color: #ffffff;
+}
+
+/* ─── Tipografía custom ─── */
+.font-game {
+  font-family: 'GAME', 'Inter', sans-serif;
+  text-transform: uppercase;
+}
+
+/* ─── Fondos ─── */
+.bg-main { background-color: var(--bg-main) !important; }
+.bg-card { background-color: var(--bg-card) !important; }
+.bg-input { background-color: var(--bg-input) !important; }
+
+/* ─── Colores de texto ─── */
+.text-green { color: var(--green-accent) !important; }
+.text-purple { color: var(--purple-accent) !important; }
+
+/* ─── Bordes ─── */
+.border-purple { border: 3px solid var(--purple-accent) !important; }
+.border-green { border: 3px solid var(--green-accent) !important; }
+
+/* ─── Sombras ─── */
+.shadow-green { box-shadow: 0px 4px 15px var(--green-accent) !important; }
+.glow-green { box-shadow: 0px 0px 5px var(--green-accent) !important; }
+.text-shadow-green { text-shadow: 0px 4px 4px var(--green-accent); }
+
+/* ─── Hero banner ─── */
+.hero-banner {
+  position: relative;
   width: 100%;
-  max-height: 28rem;
-  object-fit: cover;
-  border-radius: var(--radius-lg);
+  max-width: 1440px;
+  height: 810px;
+  margin: 0 auto;
+  background: url('/53b7bb2e4ae64030bccf706c6bd5897f.jpg') center/cover no-repeat;
+  background-color: #222;
 }
 
-.gs-stars { display: flex; gap: 0.125rem; }
-
-.gs-star {
-  font-size: 1.25rem;
-  line-height: 1;
-  color: #555;
-  transition: color var(--transition), transform var(--transition);
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, #0D0F1F 100%);
+  pointer-events: none;
 }
 
-.gs-star.on { color: #D64F82; }
+.hero-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-bottom: 2rem;
+  z-index: 2;
+  color: #fff;
+}
 
-.gs-star:hover { transform: scale(1.2); }
+/* ─── Flecha de volver atrás (Slab style) ─── */
+/* ─── Card de descripción ─── */
+.gd-desc-card {
+  width: 100%;
+}
+
+/* ─── Tamaños de fuente ─── */
+.fs-custom-title { font-size: 36px; }
+.fs-custom-desc { font-size: 24px; line-height: 150%; }
