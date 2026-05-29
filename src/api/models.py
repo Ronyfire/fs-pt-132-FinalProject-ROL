@@ -20,6 +20,9 @@ class User(db.Model):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
     is_admin: Mapped[bool] = mapped_column(Boolean(), default=False, nullable=False)
+    #reset password
+    reset_code        = db.Column(db.String(5),  nullable=True)
+    reset_code_expiry = db.Column(db.DateTime,   nullable=True)
 
     # Relaciones
     profile: Mapped["Profile"] = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")
