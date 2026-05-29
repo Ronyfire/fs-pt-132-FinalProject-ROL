@@ -23,6 +23,7 @@ flask-bcrypt = "*"
 pytz = "*"
 requests = "*"
 cloudinary = "*"
+flask-mail = "*"
 
 [requires]
 python_version = "3.13"

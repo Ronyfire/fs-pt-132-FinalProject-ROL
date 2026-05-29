@@ -116,7 +116,6 @@ const SearchBar = () => {
         {open && query.trim() && (
           <div className="gs-search-results">
             {loading && <p className="px-3 py-2 mb-0 text-dim small">Searching...</p>}
-
             {!loading && results.length === 0 && (
               <div className="gs-search-no-results">
                 <img src={RakkiConcerned} alt="" className="gs-search-no-results__icon" />
@@ -126,7 +125,6 @@ const SearchBar = () => {
                 </div>
               </div>
             )}
-
             {results.map((g) => (
               <Link key={g.id} to={`/games/${g.id}`} className="gs-search-result" onClick={close}>
                 <div className="gs-search-result-cover rounded overflow-hidden flex-shrink-0">
@@ -147,14 +145,17 @@ const SearchBar = () => {
 
 // ── Login Dropdown ────────────────────────────────────────────
 const LoginDropdown = ({ onClose, dispatch }) => {
+  // Modos: login | signup | recover | verify | new_password
   const [mode, setMode]       = useState("login");
-  const [form, setForm]       = useState({ username: "", email: "", password: "" });
+  const [form, setForm]       = useState({ username: "", email: "", password: "", code: "", newPassword: "", confirmPassword: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
   const [success, setSuccess] = useState("");
 
   const set = (e) => { setForm({ ...form, [e.target.name]: e.target.value }); setError(""); };
+  const reset = (m) => { setMode(m); setError(""); setSuccess(""); };
 
+  // ── Login ──
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true); setError("");
@@ -174,6 +175,7 @@ const LoginDropdown = ({ onClose, dispatch }) => {
     finally { setLoading(false); }
   };
 
+  // ── Signup ──
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true); setError("");
@@ -186,12 +188,77 @@ const LoginDropdown = ({ onClose, dispatch }) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Signup failed");
       setSuccess("Account created! Please log in.");
-      setTimeout(() => { setMode("login"); setSuccess(""); }, 1500);
+      setTimeout(() => reset("login"), 1500);
     } catch (err) { setError(err.message); }
     finally { setLoading(false); }
   };
 
-  const titles = { login: "Log In", signup: "Sign Up", recover: "Reset Password" };
+  // ── Forgot password — enviar código ──
+  const handleForgot = async (e) => {
+    e.preventDefault();
+    setLoading(true); setError("");
+    try {
+      const res  = await fetch(`${API}/api/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || "Error");
+      setSuccess("Code sent! Check your email.");
+      setTimeout(() => { setSuccess(""); setMode("verify"); }, 1500);
+    } catch (err) { setError(err.message); }
+    finally { setLoading(false); }
+  };
+
+  // ── Verificar código ──
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    setLoading(true); setError("");
+    try {
+      const res  = await fetch(`${API}/api/auth/verify-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, code: form.code }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || "Invalid code");
+      setMode("new_password");
+    } catch (err) { setError(err.message); }
+    finally { setLoading(false); }
+  };
+
+  // ── Nueva contraseña ──
+  const handleNewPassword = async (e) => {
+    e.preventDefault();
+    if (form.newPassword !== form.confirmPassword) {
+      setError("Passwords do not match."); return;
+    }
+    if (form.newPassword.length < 6) {
+      setError("Password must be at least 6 characters."); return;
+    }
+    setLoading(true); setError("");
+    try {
+      const res  = await fetch(`${API}/api/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, code: form.code, new_password: form.newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || "Error");
+      setSuccess("Password updated! You can now log in.");
+      setTimeout(() => reset("login"), 2000);
+    } catch (err) { setError(err.message); }
+    finally { setLoading(false); }
+  };
+
+  const titles = {
+    login:        "Log In",
+    signup:       "Sign Up",
+    recover:      "Forgot Password",
+    verify:       "Enter Code",
+    new_password: "New Password",
+  };
 
   return (
     <div className="gs-login-dropdown">
@@ -203,6 +270,7 @@ const LoginDropdown = ({ onClose, dispatch }) => {
       {error   && <div className="gs-alert-error mb-3">{error}</div>}
       {success && <p className="text-green small mb-3">{success}</p>}
 
+      {/* ── LOGIN ── */}
       {mode === "login" && (
         <form onSubmit={handleLogin} className="d-flex flex-column gap-3">
           <div>
@@ -219,6 +287,7 @@ const LoginDropdown = ({ onClose, dispatch }) => {
         </form>
       )}
 
+      {/* ── SIGNUP ── */}
       {mode === "signup" && (
         <form onSubmit={handleSignup} className="d-flex flex-column gap-3">
           <div>
@@ -239,21 +308,74 @@ const LoginDropdown = ({ onClose, dispatch }) => {
         </form>
       )}
 
+      {/* ── FORGOT — pide email ── */}
       {mode === "recover" && (
-        <div className="d-flex flex-column gap-3">
+        <form onSubmit={handleForgot} className="d-flex flex-column gap-3">
+          <p className="text-dim small mb-0">Enter your email and we'll send you a 5-digit code.</p>
           <div>
             <label className="gs-label">Email</label>
-            <input name="email" type="email" value={form.email} onChange={set} className="gs-input" placeholder="your@email.com" />
+            <input name="email" type="email" value={form.email} onChange={set} className="gs-input" placeholder="your@email.com" required />
           </div>
-          <button className="btn-gs btn-green w-100">Send reset link</button>
-          <p className="text-dim text-center mb-0 small">Coming soon</p>
-        </div>
+          <button type="submit" disabled={loading} className="btn-gs btn-green w-100">
+            {loading ? "Sending..." : "Send Code"}
+          </button>
+        </form>
       )}
 
+      {/* ── VERIFY — pide código ── */}
+      {mode === "verify" && (
+        <form onSubmit={handleVerify} className="d-flex flex-column gap-3">
+          <p className="text-dim small mb-0">Enter the 5-digit code sent to <strong className="text-green">{form.email}</strong>.</p>
+          <div>
+            <label className="gs-label">Code</label>
+            <input
+              name="code"
+              value={form.code}
+              onChange={set}
+              className="gs-input gs-input-code"
+              placeholder="_ _ _ _ _"
+              maxLength={5}
+              required
+            />
+          </div>
+          <button type="submit" disabled={loading} className="btn-gs btn-green w-100">
+            {loading ? "Verifying..." : "Verify Code"}
+          </button>
+          <button type="button" className="btn-gs btn-ghost w-100" onClick={() => reset("recover")}>
+            ← Resend code
+          </button>
+        </form>
+      )}
+
+      {/* ── NEW PASSWORD ── */}
+      {mode === "new_password" && (
+        <form onSubmit={handleNewPassword} className="d-flex flex-column gap-3">
+          <p className="text-dim small mb-0">Code verified ✅ Set your new password.</p>
+          <div>
+            <label className="gs-label">New Password</label>
+            <input name="newPassword" type="password" value={form.newPassword} onChange={set} className="gs-input" required />
+          </div>
+          <div>
+            <label className="gs-label">Confirm Password</label>
+            <input name="confirmPassword" type="password" value={form.confirmPassword} onChange={set} className="gs-input" required />
+          </div>
+          <button type="submit" disabled={loading} className="btn-gs btn-green w-100">
+            {loading ? "Saving..." : "Update Password"}
+          </button>
+        </form>
+      )}
+
+      {/* ── Footer links ── */}
       <div className="gs-modal-footer">
-        {mode !== "signup"  && <button className="gs-modal-link" onClick={() => { setMode("signup");  setError(""); }}>👤 Sign Up</button>}
-        {mode !== "login"   && <button className="gs-modal-link" onClick={() => { setMode("login");   setError(""); }}>🔑 Log In</button>}
-        {mode !== "recover" && <button className="gs-modal-link" onClick={() => { setMode("recover"); setError(""); }}>🔐 Forgot Password</button>}
+        {mode !== "signup"  && mode !== "verify" && mode !== "new_password" && (
+          <button className="gs-modal-link" onClick={() => reset("signup")}>👤 Sign Up</button>
+        )}
+        {mode !== "login" && mode !== "verify" && mode !== "new_password" && (
+          <button className="gs-modal-link" onClick={() => reset("login")}>🔑 Log In</button>
+        )}
+        {mode === "login" && (
+          <button className="gs-modal-link" onClick={() => reset("recover")}>🔐 Forgot Password</button>
+        )}
       </div>
     </div>
   );
