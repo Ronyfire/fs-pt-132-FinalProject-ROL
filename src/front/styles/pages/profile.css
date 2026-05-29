@@ -284,8 +284,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.gs-playing-card__rating { color: var(--pink); font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+.gs-playing-card__rating { color: var(--pink); font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gs-playing-card__meta { color: #fff; font-size: 0.875rem; }
+
+/* ─── ESTRELLAS DE CALIFICACIÓN ──────────────────────────────────── */
+.gs-stars { display: inline-flex; gap: 2px; }
+.gs-star { color: #555; font-size: 1.25rem; transition: color var(--transition); }
+.gs-star.on { color: #D4B609; }
 
 /* ─── TARJETA DE FAVORITOS ──────────────────────────────────────── */
 .gs-fav-grid {
