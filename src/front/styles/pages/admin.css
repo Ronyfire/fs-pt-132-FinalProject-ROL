@@ -1,0 +1,117 @@
+/* ── ADMIN PANEL ─────────────────────────────────────────── */
+
+.gs-admin-page {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* ── TABS ─────────────────────────────────────────────────── */
+.gs-admin-tabs {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  border-bottom: 0.0625rem solid var(--border);
+}
+
+.gs-admin-tab {
+  background: none;
+  border: none;
+  border-bottom: 0.175rem solid transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+  margin-bottom: -0.0625rem;
+}
+
+.gs-admin-tab:hover        { color: var(--text); }
+.gs-admin-tab.active       { color: var(--green); border-bottom-color: var(--green); }
+
+/* ── CARD ─────────────────────────────────────────────────── */
+.gs-admin-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  transition: border-color var(--transition);
+}
+
+.gs-admin-card:hover         { border-color: rgba(125,215,80,0.2); }
+.gs-admin-card--danger       { border-color: rgba(173,0,3,0.4); }
+
+/* Cover image in suggestion card */
+.gs-admin-cover-img {
+  width: 5rem;
+  height: 6.5rem;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.gs-admin-cover-empty {
+  width: 5rem;
+  height: 6.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Game title in suggestion card */
+.gs-admin-game-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Genre tag */
+.gs-admin-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: var(--bg-hover);
+  color: var(--purple);
+  border: 0.0625rem solid rgba(172,79,214,0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.125rem 0.5rem;
+}
+
+/* Quoted comment */
+.gs-admin-quote {
+  border-left: 0.2rem solid var(--pink);
+  padding-left: 0.75rem;
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text);
+  font-style: italic;
+}
+
+/* Badges */
+.gs-admin-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.gs-admin-badge--pink    { background: rgba(214,79,130,0.15); color: var(--pink); }
+.gs-admin-badge--green   { background: rgba(125,215,80,0.12); color: var(--green); }
+.gs-admin-badge--red     { background: rgba(173,0,3,0.15);    color: #ff4444; }
+.gs-admin-badge--neutral { background: var(--bg-hover);        color: var(--text-muted); }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .gs-admin-tab  { padding: 0.625rem 0.75rem; font-size: 0.8125rem; }
+  .gs-admin-card { flex-wrap: wrap; }
+}
