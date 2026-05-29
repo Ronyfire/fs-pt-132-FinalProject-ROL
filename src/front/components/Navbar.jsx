@@ -5,6 +5,21 @@ import RakkiConcerned from "../assets/img/Rakki_Concerned_Sticker.png";
 
 const API = import.meta.env.VITE_BACKEND_URL || "";
 
+// ── Helper avatar ─────────────────────────────────────────────
+const getAvatar = (user) =>
+  user?.profile?.avatar_url ||
+  `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.username || "User"}`;
+
+// ── Links compartidos usuario ─────────────────────────────────
+const UserLinks = ({ user, onClose, onLogout }) => (
+  <>
+    <Link to="/profile" className="gs-dropdown-item" onClick={onClose}>👤 My Profile</Link>
+    <Link to="/survey"  className="gs-dropdown-item" onClick={onClose}>🎮 Survey</Link>
+    {user?.is_admin && <Link to="/admin" className="gs-dropdown-item" onClick={onClose}>⚙ Admin Panel</Link>}
+    <button className="gs-dropdown-item danger" onClick={() => { onLogout(); onClose(); }}>🚪 Log Out</button>
+  </>
+);
+
 // ── Logo ──────────────────────────────────────────────────────
 const Logo = () => (
   <Link to="/" className="gs-logo-link text-decoration-none d-flex align-items-center gap-2 flex-shrink-0">
@@ -33,7 +48,7 @@ const PcSearchIcon = ({ active }) => (
       className="gs-pc-question" stroke="none"
       style={{ fontFamily: "Inter, sans-serif" }}>?</text>
     <line x1="12" y1="16" x2="12" y2="19" />
-    <line x1="9" y1="19" x2="15" y2="19" />
+    <line x1="9"  y1="19" x2="15" y2="19" />
   </svg>
 );
 
@@ -98,7 +113,6 @@ const SearchBar = () => {
           placeholder="Search games..."
         />
 
-        {/* Resultados dentro del search-box para alineación correcta */}
         {open && query.trim() && (
           <div className="gs-search-results">
             {loading && <p className="px-3 py-2 mb-0 text-dim small">Searching...</p>}
@@ -256,24 +270,18 @@ const UserMenu = ({ user, onLogout }) => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const avatar = user?.profile?.avatar_url ||
-    `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.username || "User"}`;
-
   return (
     <div ref={ref} className="position-relative">
       <button className="gs-avatar-btn" onClick={() => setOpen(!open)} aria-label="User menu">
-        <img src={avatar} alt={user?.username} />
+        <img src={getAvatar(user)} alt={user?.username} />
       </button>
       {open && (
         <div className="gs-dropdown">
           <div className="gs-dropdown-header px-3 py-2">
             <div className="text-green fw-bold small">{user?.username}</div>
-            <div className="text-dim" style={{ fontSize: "0.75rem" }}>{user?.email}</div>
+            <div className="gs-dropdown-email">{user?.email}</div>
           </div>
-          <Link to="/profile" className="gs-dropdown-item" onClick={() => setOpen(false)}>👤 My Profile</Link>
-          <Link to="/survey"  className="gs-dropdown-item" onClick={() => setOpen(false)}>🎮 Survey</Link>
-          {user?.is_admin && <Link to="/admin" className="gs-dropdown-item" onClick={() => setOpen(false)}>⚙ Admin Panel</Link>}
-          <button className="gs-dropdown-item danger" onClick={() => { onLogout(); setOpen(false); }}>🚪 Log Out</button>
+          <UserLinks user={user} onClose={() => setOpen(false)} onLogout={onLogout} />
         </div>
       )}
     </div>
@@ -296,9 +304,6 @@ const MobileMenu = ({ user, onLogout, dispatch, location }) => {
 
   const close = () => { setOpen(false); setShowLogin(false); };
 
-  const avatar = user?.profile?.avatar_url ||
-    `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.username || "User"}`;
-
   return (
     <div ref={ref} className="position-relative">
       <button className="gs-hamburger" onClick={() => { setOpen(!open); setShowLogin(false); }} aria-label="Menu">
@@ -315,13 +320,10 @@ const MobileMenu = ({ user, onLogout, dispatch, location }) => {
           {user ? (
             <>
               <div className="d-flex align-items-center gap-2 px-3 py-2">
-                <img src={avatar} alt="" className="gs-avatar-sm" />
+                <img src={getAvatar(user)} alt="" className="gs-avatar-sm" />
                 <span className="text-green fw-bold small">{user.username}</span>
               </div>
-              <Link to="/profile" className="gs-mobile-menu-item" onClick={close}>👤 My Profile</Link>
-              <Link to="/survey"  className="gs-mobile-menu-item" onClick={close}>📋 Survey</Link>
-              {user?.is_admin && <Link to="/admin" className="gs-mobile-menu-item" onClick={close}>⚙ Admin Panel</Link>}
-              <button className="gs-mobile-menu-item danger" onClick={() => { onLogout(); close(); }}>🚪 Log Out</button>
+              <UserLinks user={user} onClose={close} onLogout={onLogout} />
             </>
           ) : (
             <button className="gs-mobile-menu-item" onClick={() => setShowLogin(true)}>🔑 Log In / Sign Up</button>
