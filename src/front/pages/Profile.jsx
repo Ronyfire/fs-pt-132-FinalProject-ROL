@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import html2canvas from "html2canvas";
 import { ImageUploader } from "../components/ImageUploader";
-import Rakki from "../components/Rakki";
+import RakkiTest from "../assets/img/RakkiTEST.png";
 const API = import.meta.env.VITE_BACKEND_URL || "";
 // Opciones de estado del juego
 // Los colores viven en CSS: gs-border-{key} / gs-text-{key}
@@ -271,7 +271,9 @@ export const Profile = () => {
   // ─────────────── ESTADOS DE CARGA Y ERROR ───────────────
   if (loading) return (
     <div className="min-vh-100 d-flex align-items-center justify-content-center">
-      <Rakki pose="searching" size="lg" text="Loading profile..." />
+      <div className="gs-rakki-image-box">
+        <img src={RakkiTest} alt="Rakki, Game-Side mascot" />
+      </div>
     </div>
   );
   if (error) return (
