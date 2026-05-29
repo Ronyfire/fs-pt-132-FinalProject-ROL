@@ -271,8 +271,9 @@ export const Profile = () => {
   // ─────────────── ESTADOS DE CARGA Y ERROR ───────────────
   if (loading) return (
     <div className="min-vh-100 d-flex align-items-center justify-content-center">
-      <div className="gs-rakki-image-box">
-        <img src={RakkiTest} alt="Rakki, Game-Side mascot" />
+      <div className="text-center">
+        <img src={RakkiTest} alt="Rakki" style={{ width: 200, height: 'auto' }} />
+        <p className="text-white-50 mt-3">Loading profile...</p>
       </div>
     </div>
   );
@@ -280,7 +281,8 @@ export const Profile = () => {
     <div className="min-vh-100 py-5">
       <div className="container">
         <div className="d-flex flex-column align-items-center">
-          <Rakki pose="confused" size="lg" text="Something went wrong" />
+          <img src={RakkiTest} alt="Rakki" style={{ width: 200, height: 'auto' }} />
+          <p className="text-white-50 mt-2 mb-3">Something went wrong</p>
           <div className="alert alert-danger mt-3">{error}</div>
         </div>
       </div>
@@ -564,7 +566,8 @@ export const Profile = () => {
           )}
           {playing.length === 0 && favorites.length === 0 && (
             <div className="gs-empty">
-              <Rakki pose="confused" size="md" text="No games in your profile yet" />
+              <img src={RakkiTest} alt="Rakki" style={{ width: 120, height: 'auto' }} />
+              <p className="text-white-50 mt-2">No games in your profile yet</p>
               <span className="gs-rakki-tag">Rakki says: start playing!</span>
             </div>
           )}
@@ -573,7 +576,8 @@ export const Profile = () => {
         <h2 className="gs-library-title gs-graffiti-title">My Library</h2>
         {games.length === 0 ? (
           <div className="gs-empty">
-            <Rakki pose="confused" size="md" text="You haven't added any games yet" />
+            <img src={RakkiTest} alt="Rakki" style={{ width: 120, height: 'auto' }} />
+            <p className="text-white-50 mt-2">You haven't added any games yet</p>
             <span className="gs-rakki-tag">Rakki picked this — explore games!</span>
           </div>
         ) : (
@@ -603,7 +607,7 @@ export const Profile = () => {
         {statusMsg && (
           <div className={`gs-toast ${statusMsg.type === "error" ? "error" : "ok"}`}>
             {statusMsg.type !== "error" && (
-              <Rakki pose="celebrating" size="sm" />
+              <img src={RakkiTest} alt="Rakki" style={{ width: 40, height: 'auto' }} />
             )}
             <span>{statusMsg.text}</span>
           </div>

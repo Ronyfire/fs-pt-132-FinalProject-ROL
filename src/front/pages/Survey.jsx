@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Rakki from "../components/Rakki";
+import RakkiTest from "../assets/img/RakkiTEST.png";
 
 export const Survey = () => {
   const navigate = useNavigate();
@@ -238,7 +238,9 @@ export const Survey = () => {
           {message && (
             <div className={`gs-survey-message ${messageType}`}>
               {messageType === "success" && (
-                <Rakki pose="celebrating" size="sm" className="mb-2" />
+                <div className="gs-feature-img gs-rakki-mood-card">
+                  <span>Succes</span>
+                </div>
               )}
               {message}
             </div>
@@ -380,7 +382,9 @@ export const Survey = () => {
 
             {/* Mascota Rakki con tablet mientras se completa el perfil */}
             <div className="gs-survey-mascot-box">
-              <Rakki pose="tablet" size="lg" text="Building your taste profile..." />
+              <div className="gs-feature-img gs-rakki-mood-card">
+                  <span>Building your taste profile...</span>
+                </div>
             </div>
           </div>
         </aside>
