@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import '../styles/pages/game-detail.css';
-
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import CommentCard from "../components/CommentCard";
+import CommentForm from "../components/CommentForm";
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
-
 /* ─── Helper: label bonito para plataformas ─── */
 const PLATFORM_LABELS = {
   pc: 'PC',
@@ -22,7 +23,6 @@ const PLATFORM_LABELS = {
   ios: 'iOS',
   android: 'Android',
 };
-
 /* ─── Formatear fecha ─── */
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -32,26 +32,20 @@ const formatDate = (dateStr) => {
     day: 'numeric',
   });
 };
-
 export const Game = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
-
+  const { store } = useGlobalReducer();
   /* ── Estado del juego ── */
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   /* ── Comentarios ── */
   const [comments, setComments] = useState([]);
-  const [commentText, setCommentText] = useState('');
-  const [posting, setPosting] = useState(false);
-
   /* ── Voto del usuario ── */
   const [userRating, setUserRating] = useState(0);
   const [userVoteId, setUserVoteId] = useState(null);
   const [ratingLoading, setRatingLoading] = useState(false);
-
   /* ── Cargar comentarios desde el endpoint dedicado ── */
   const loadComments = () => {
     fetch(`${VITE_BACKEND_URL}/api/games/${gameId}/comments`)
@@ -63,17 +57,13 @@ export const Game = () => {
       })
       .catch(() => {});
   };
-
   /* ── Cargar datos ── */
   useEffect(() => {
     if (!gameId) return;
-
     setLoading(true);
     setError(null);
-
     const token = sessionStorage.getItem('token');
     const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
-
     Promise.all([
       fetch(`${VITE_BACKEND_URL}/api/games/${gameId}`),
       fetch(`${VITE_BACKEND_URL}/api/user/game-tiers`, { headers: authHeaders }),
@@ -82,10 +72,8 @@ export const Game = () => {
         if (!gameRes.ok) throw new Error(`Error ${gameRes.status}`);
         const gameData = await gameRes.json();
         setGame(gameData);
-
         // Cargar comentarios del endpoint dedicado
         loadComments();
-
         // Buscar si el usuario ya votó este juego
         if (voteRes.ok) {
           const votes = await voteRes.json();
@@ -99,7 +87,6 @@ export const Game = () => {
             }
           }
         }
-
         setLoading(false);
       })
       .catch((err) => {
@@ -107,47 +94,14 @@ export const Game = () => {
         setLoading(false);
       });
   }, [gameId]);
-
-  /* ───── Publicar comentario ───── */
-  const handlePublish = async (e) => {
-    e.preventDefault();
-    if (!commentText.trim() || !gameId) return;
-
-    const token = sessionStorage.getItem('token');
-    setPosting(true);
-
-    try {
-      const res = await fetch(`${VITE_BACKEND_URL}/api/games/${gameId}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ content: commentText }),
-      });
-
-      if (!res.ok) throw new Error('Error al publicar');
-
-      // Recargar comentarios para tener la lista fresca con username y avatar
-      loadComments();
-      setCommentText('');
-    } catch (err) {
-      console.error('Error posting comment:', err);
-    } finally {
-      setPosting(false);
-    }
-  };
-
   /* ───── Votar (crear o actualizar) ───── */
   const handleRate = async (star) => {
     const token = sessionStorage.getItem('token');
     if (!token) return;
-
     setRatingLoading(true);
     try {
       const authHeaders = { Authorization: `Bearer ${token}` };
       const body = { game_id: parseInt(gameId), rating: star };
-
       if (userVoteId) {
         const res = await fetch(`${VITE_BACKEND_URL}/api/user/game-tiers/${userVoteId}`, {
           method: 'PUT',
@@ -163,11 +117,9 @@ export const Game = () => {
         });
         if (!res.ok) throw new Error('Error al crear voto');
       }
-
       // Refrescar datos del juego (actualiza promedio)
       const gameRes = await fetch(`${VITE_BACKEND_URL}/api/games/${gameId}`);
       if (gameRes.ok) setGame(await gameRes.json());
-
       setUserRating(star);
     } catch (err) {
       console.error('Error rating game:', err);
@@ -175,7 +127,6 @@ export const Game = () => {
       setRatingLoading(false);
     }
   };
-
   /* ═══════ LOADING ═══════ */
   if (loading) {
     return (
@@ -188,7 +139,6 @@ export const Game = () => {
       </div>
     );
   }
-
   /* ═══════ ERROR ═══════ */
   if (error || !game) {
     return (
@@ -205,14 +155,14 @@ export const Game = () => {
       </div>
     );
   }
-
   /* ═══════ DATOS ═══════ */
   const coverUrl = game.cover_img_url || game.background_image || '';
   const genres = game.genres || [];
   const platforms = game.platforms || [];
   const rating = game.game_tier?.average_rating ?? game.rating ?? 0;
   const voteCount = game.game_tier?.vote_count ?? game.ratings_count ?? 0;
-
+  const currentUser = store.user || null;
+  const isAdmin = store.user?.is_admin || false;
   const features = [
     'Online co-op for up to 4 players',
     'Wide variety of characters with unique abilities',
@@ -223,9 +173,8 @@ export const Game = () => {
     'PvE missions and endgame content',
     'Player trading',
   ];
-
+  // Comentarios principales (sin parent_id) y sus respuestas
   const parentComments = (comments || []).filter((c) => !c.parent_id);
-
   return (
     <div className="gs-page-bg">
       <div className="mx-auto gs-page-content" style={{ maxWidth: '1440px' }}>
@@ -262,7 +211,6 @@ export const Game = () => {
             </div>
           </div>
         </div>
-
         {/* CUERPO PRINCIPAL */}
         <main className="px-4 px-md-5 py-5 text-white">
           
@@ -276,7 +224,6 @@ export const Game = () => {
                 <p className="fs-custom-desc mb-5">
                   {game.description || game.summary || 'No description available.'}
                 </p>
-
                 <h2 className="gs-rakki-mood-card fs-3 fw-bold mb-4">Features</h2>
                 <ul className="list-unstyled fs-custom-desc">
                   {features.map((feature, idx) => (
@@ -287,7 +234,6 @@ export const Game = () => {
                 </ul>
               </div>
             </div>
-
             {/* Columna Derecha: Información */}
             <div className="col-12 col-xl-4">
               <div className="bg-card p-4 p-md-5 rounded-3 h-100">
@@ -299,14 +245,12 @@ export const Game = () => {
                     <div className="fs-4 fw-bold">{game.developer}</div>
                   </div>
                 )}
-
                 {game.release_date && (
                   <div className="mb-4">
                     <div className="fs-5 opacity-75 mb-1">Release date</div>
                     <div className="fs-4 fw-bold">📅 {formatDate(game.release_date)}</div>
                   </div>
                 )}
-
                 {platforms.length > 0 && (
                   <div className="mb-4">
                     <div className="fs-5 opacity-75 mb-1">Platforms</div>
@@ -317,7 +261,6 @@ export const Game = () => {
                     </div>
                   </div>
                 )}
-
                 {/* Tu voto */}
                 <div className="mt-5">
                   <h2 className="fs-3 fw-bold mb-3">Your rating</h2>
@@ -338,58 +281,44 @@ export const Game = () => {
                 </div>
               </div>
             </div>
-
           </div>
-
           {/* SECCIÓN COMENTARIOS */}
           <div className="row mb-5">
             <div className="col-12 col-xl-8">
               <div className="bg-card p-4 p-md-5 rounded-3">
                 <h2 className="display-6 fw-bold mb-4">Comments ({comments.length})</h2>
-                
-                <form onSubmit={handlePublish}>
-                  <textarea 
-                    className="form-control bg-input text-white border-green glow-green p-3 mb-4 fs-5" 
-                    rows="6" 
-                    placeholder="Write your review about this game..." 
-                    style={{ resize: 'none' }}
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
+                {/* Formulario para nuevo comentario */}
+                {sessionStorage.getItem('token') && (
+                  <CommentForm
+                    gameId={gameId}
+                    buttonText="Publish comment"
+                    onCommentCreated={loadComments}
                   />
-                  <button type="submit" className="btn btn-success fw-medium px-4 py-3 fs-5 mb-5" style={{ backgroundColor: 'var(--green-accent)', border: 'none', borderRadius: '8px' }} disabled={posting || !commentText.trim()}>
-                    {posting ? 'Publishing...' : 'Post comment'}
-                  </button>
-                </form>
-
+                )}
                 <div className="d-flex flex-column gap-4">
                   {parentComments.length === 0 ? (
                     <p className="text-white-50">No comments yet. Be the first to share your opinion.</p>
                   ) : (
                     parentComments.map((comment) => {
-                      const initials = (comment.username || '?').slice(0, 2).toUpperCase();
+                      const replies = (comments || []).filter((c) => c.parent_id === comment.id);
                       return (
-                        <div key={comment.id} className="d-flex gap-3">
-                          {comment.avatar_url ? (
-                            <img src={comment.avatar_url} alt="" className="flex-shrink-0 rounded-circle shadow-green" style={{ width: '54.8px', height: '54.8px', objectFit: 'cover' }} />
-                          ) : (
-                            <div className="flex-shrink-0 rounded-circle bg-secondary shadow-green d-flex align-items-center justify-content-center fw-bold text-white" style={{ width: '54.8px', height: '54.8px', fontSize: '1.2rem' }}>{initials}</div>
-                          )}
-                          <div>
-                            <div className="fw-bold text-green fs-5 mb-1">{comment.username || 'Unknown'} <span style={{ color: '#D64F82' }}>✋</span></div>
-                            <div className="fw-bold fs-5">{comment.content || comment.text}</div>
-                          </div>
-                        </div>
+                        <CommentCard
+                          key={comment.id}
+                          comment={comment}
+                          replies={replies}
+                          gameId={gameId}
+                          currentUser={currentUser}
+                          isAdmin={isAdmin}
+                          onRefresh={loadComments}
+                        />
                       );
                     })
                   )}
                 </div>
-
               </div>
             </div>
           </div>
-
         </main>
-
       </div>
     </div>
   );
