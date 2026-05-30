@@ -179,9 +179,8 @@ export const Survey = () => {
       setMessageType("success");
       setMessage("Survey successfully saved. Your recommendations are getting smarter.");
 
-      // Redirige al perfil después de guardar
       setTimeout(() => {
-        navigate("/profile");
+        navigate("/");
       }, 900);
     } catch (error) {
       setMessageType("error");
