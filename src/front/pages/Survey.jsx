@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import RakkiTest from "../assets/img/RakkiTEST.png";
+import RakkiSurvey from "../assets/img/RakkiSurvey.png";
 
 export const Survey = () => {
   const navigate = useNavigate();
@@ -288,9 +288,8 @@ export const Survey = () => {
                   <button
                     type="button"
                     key={style.value}
-                    className={`gs-playstyle-card ${
-                      form.play_style === style.value ? "selected" : ""
-                    }`}
+                    className={`gs-playstyle-card ${form.play_style === style.value ? "selected" : ""
+                      }`}
                     onClick={() => handlePlayStyleChange(style.value)}
                   >
                     <strong>{style.title}</strong>
@@ -382,9 +381,15 @@ export const Survey = () => {
 
             {/* Mascota Rakki con tablet mientras se completa el perfil */}
             <div className="gs-survey-mascot-box">
-              <div className="gs-feature-img gs-rakki-mood-card">
-                  <span>Building your taste profile...</span>
-                </div>
+              <img
+                src={RakkiSurvey}
+                alt="Rakki building your taste profile"
+                className="gs-survey-rakki-img"
+              />
+
+              <span className="gs-survey-mascot-caption">
+                Building your taste profile...
+              </span>
             </div>
           </div>
         </aside>
