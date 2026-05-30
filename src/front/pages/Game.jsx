@@ -52,6 +52,9 @@ export const Game = () => {
   const [userVoteId, setUserVoteId] = useState(null);
   const [ratingLoading, setRatingLoading] = useState(false);
 
+  const [libraryEntry, setLibraryEntry] = useState(null);
+  const [libraryLoading, setLibraryLoading] = useState(false);
+
   /* ── Cargar comentarios desde el endpoint dedicado ── */
   const loadComments = () => {
     fetch(`${VITE_BACKEND_URL}/api/games/${gameId}/comments`)
@@ -61,7 +64,7 @@ export const Game = () => {
           setComments(data.comments || []);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   /* ── Cargar datos ── */
@@ -177,6 +180,94 @@ export const Game = () => {
   };
 
   /* ═══════ LOADING ═══════ */
+  const requireLogin = (message = "Log in to use this feature!") => {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      rakkiToast.info(message);
+      return null;
+    }
+
+    return token;
+  };
+
+  const addToLibrary = async () => {
+    const token = requireLogin("Log in to add games to your library!");
+    if (!token) return;
+
+    setLibraryLoading(true);
+
+    try {
+      const res = await fetch(`${VITE_BACKEND_URL}/api/user/glg`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          game_id: parseInt(gameId),
+          status: "want_to_play",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.msg === "Game already in your list") {
+          rakkiToast.info("Already in your library!");
+          return;
+        }
+
+        throw new Error(data.msg || "Could not add game to library");
+      }
+
+      setLibraryEntry(data.entry);
+      rakkiToast.success(`${game.title} added to your library!`);
+    } catch (err) {
+      rakkiToast.error(err.message);
+    } finally {
+      setLibraryLoading(false);
+    }
+  };
+
+  const toggleFavorite = async () => {
+    const token = requireLogin("Log in to add favorites!");
+    if (!token) return;
+
+    if (!libraryEntry?.id) {
+      rakkiToast.info("Add this game to your library first!");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${VITE_BACKEND_URL}/api/user/games/${libraryEntry.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          is_favorite: !libraryEntry.is_favorite,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.msg || "Could not update favorite");
+      }
+
+      setLibraryEntry(data.entry);
+      rakkiToast.success(
+        data.entry.is_favorite
+          ? "Added to favorites!"
+          : "Removed from favorites!"
+      );
+    } catch (err) {
+      rakkiToast.error(err.message);
+    }
+  };
+
   if (loading) {
     return (
       <div className="gs-page-bg">
@@ -228,168 +319,262 @@ export const Game = () => {
 
   return (
     <div className="gs-page-bg">
-      <div className="mx-auto gs-page-content" style={{ maxWidth: '1440px' }}>
-        
-        {/* HERO BANNER */}
-        <div
-          className="hero-banner"
-          style={
-            coverUrl
-              ? { backgroundImage: `url(${coverUrl})` }
-              : {}
-          }
+      <div className="container-xxl gs-page-content py-4 py-lg-5">
+
+        {/* HERO */}
+        <section
+          className="gd-hero mb-4 mb-lg-5"
+          style={coverUrl ? { backgroundImage: `url(${coverUrl})` } : {}}
         >
-          <div className="hero-overlay" />
-          <div className="hero-content px-4 px-md-5">
-            {/* Volver atrás */}
-            <div className="d-flex align-items-center gap-2 fs-4 fw-medium mb-3" style={{ cursor: 'pointer' }} onClick={() => navigate(-1)}>
-              <span style={{ fontWeight: 900, fontSize: '1.8rem', lineHeight: 1, WebkitTextStroke: '2px currentColor' }}>←</span> Back
-            </div>
-            
-            {/* Título */}
-            <h1 className="display-3 fw-bold mb-3">{game.title}</h1>
-            
-            {/* Etiquetas + Rating */}
-            <div className="d-flex flex-wrap align-items-center gap-3">
-              {genres.map((tag, i) => (
-                <span key={i} className="badge text-white px-4 py-3 fs-6" style={{ backgroundColor: 'var(--green-accent)', borderRadius: '8px' }}>{tag}</span>
-              ))}
-              <div className="d-flex align-items-center gap-2 fw-bold fs-5 ms-lg-3">
-                <span style={{ color: '#D4B609' }}>★</span>
-                <span>{Number(rating).toFixed(1)}</span>
-                <span className="fw-normal opacity-75">({Number(voteCount).toLocaleString('es-ES')})</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          <div className="gd-hero-overlay" />
 
-        {/* CUERPO PRINCIPAL */}
-        <main className="px-4 px-md-5 py-5 text-white">
-          
-          {/* SECCIÓN DOS COLUMNAS */}
-          <div className="row g-4 mb-5">
-            
-            {/* Columna Izquierda: Descripción */}
-            <div className="col-12 col-xl-8">
-              <div className="bg-card p-4 p-md-5 rounded-3 gd-desc-card">
-                <h2 className="gs-rakki-mood-card fs-3 fw-bold mb-4">Description</h2>
-                <p className="fs-custom-desc mb-5">
-                  {game.description || game.summary || 'No description available.'}
-                </p>
+          <div className="gd-hero-content">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-light border-0 px-0 mb-3 gd-back-btn"
+              onClick={() => navigate(-1)}
+            >
+              ← Back to games
+            </button>
 
-                <h2 className="gs-rakki-mood-card fs-3 fw-bold mb-4">Features</h2>
-                <ul className="list-unstyled fs-custom-desc">
-                  {features.map((feature, idx) => (
-                    <li key={idx} className="mb-3 d-flex align-items-start gap-3">
-                      <span className="text-green">★</span> {feature}
-                    </li>
+            <div className="row align-items-end g-4">
+              <div className="col-lg-8">
+                <div className="d-flex flex-wrap gap-2 mb-3">
+                  {genres.slice(0, 4).map((tag) => (
+                    <span key={tag} className="badge gd-badge-green">
+                      {tag}
+                    </span>
                   ))}
-                </ul>
+                </div>
+
+                <h1 className="display-3 fw-black text-white mb-3">
+                  {game.title}
+                </h1>
+
+                <div className="d-flex flex-wrap align-items-center gap-3">
+                  <span className="gd-rating-pill">
+                    <span>★</span>
+                    {Number(rating).toFixed(1)}
+                    <small>({Number(voteCount).toLocaleString("es-ES")} votes)</small>
+                  </span>
+
+                  {game.game_tier?.tier && (
+                    <span className="gd-tier-pill">
+                      Tier {game.game_tier.tier}
+                    </span>
+                  )}
+
+                  {game.favorite_count !== undefined && (
+                    <span className="gd-soft-pill">
+                      ♥ {game.favorite_count} favorites
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Columna Derecha: Información */}
-            <div className="col-12 col-xl-4">
-              <div className="bg-card p-4 p-md-5 rounded-3 h-100">
-                <h2 className="gs-rakki-mood-card fs-3 fw-bold mb-4">Information</h2>
-                
-                {game.developer && (
-                  <div className="mb-4">
-                    <div className="fs-5 opacity-75 mb-1">Developer</div>
-                    <div className="fs-4 fw-bold">{game.developer}</div>
-                  </div>
-                )}
+              <div className="col-lg-4">
+                <div className="gd-action-panel">
+                  <button
+                    type="button"
+                    className="btn-gs btn-green w-100 mb-2"
+                    onClick={addToLibrary}
+                    disabled={libraryLoading}
+                  >
+                    {libraryLoading ? "Adding..." : "+ Add to Library"}
+                  </button>
 
-                {game.release_date && (
-                  <div className="mb-4">
-                    <div className="fs-5 opacity-75 mb-1">Release date</div>
-                    <div className="fs-4 fw-bold">📅 {formatDate(game.release_date)}</div>
-                  </div>
-                )}
+                  <button
+                    type="button"
+                    className="btn-gs btn-pink-outline w-100 mb-3"
+                    onClick={toggleFavorite}
+                  >
+                    {libraryEntry?.is_favorite ? "♥ Favorite" : "♡ Add to Favorites"}
+                  </button>
 
-                {platforms.length > 0 && (
-                  <div className="mb-4">
-                    <div className="fs-5 opacity-75 mb-1">Platforms</div>
-                    <div className="fs-4 fw-bold lh-base">
-                      {platforms
-                        .map((p) => PLATFORM_LABELS[p.toLowerCase()] || p)
-                        .join(' | ')}
+                  <div className="gd-user-rating">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span>Your rating</span>
+                      <strong>{userRating ? `${userRating}/5` : "Not rated"}</strong>
                     </div>
-                  </div>
-                )}
 
-                {/* Tu voto */}
-                <div className="mt-5">
-                  <h2 className="fs-3 fw-bold mb-3">Your rating</h2>
-                  <div className="progress mb-3" style={{ height: '6px', backgroundColor: '#E8DEF8' }}>
-                    <div className="progress-bar" role="progressbar" style={{ width: '100%', backgroundColor: '#E8DEF8' }}></div>
-                  </div>
-                  <div className="d-flex gap-1 fs-5" style={{ color: '#D4B609' }}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span
-                        key={star}
-                        onClick={() => handleRate(star)}
-                        style={{ cursor: sessionStorage.getItem('token') ? 'pointer' : 'default', opacity: ratingLoading && star > userRating ? 0.5 : 1 }}
-                      >
-                        {star <= userRating ? '★' : '☆'}
-                      </span>
-                    ))}
+                    <div className="d-flex gap-1 fs-3">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          className="gd-star-btn"
+                          onClick={() => handleRate(star)}
+                          disabled={ratingLoading}
+                          aria-label={`Rate ${star} stars`}
+                        >
+                          {star <= userRating ? "★" : "☆"}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
+        </section>
 
-          {/* SECCIÓN COMENTARIOS */}
-          <div className="row mb-5">
-            <div className="col-12 col-xl-8">
-              <div className="bg-card p-4 p-md-5 rounded-3">
-                <h2 className="display-6 fw-bold mb-4">Comments ({comments.length})</h2>
-                
-                <form onSubmit={handlePublish}>
-                  <textarea 
-                    className="form-control bg-input text-white border-green glow-green p-3 mb-4 fs-5" 
-                    rows="6" 
-                    placeholder="Write your review about this game..." 
-                    style={{ resize: 'none' }}
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
+        {/* CONTENT */}
+        <main className="row g-4 align-items-start">
+
+          {/* LEFT */}
+          <section className="col-lg-8">
+            <div className="card gs-card gd-card mb-4">
+              <div className="card-body p-4 p-lg-5">
+                <span className="gs-home-eyebrow">Overview</span>
+
+                <h2 className="h3 fw-bold text-green mb-3">
+                  Description
+                </h2>
+
+                <p className="gd-description mb-0">
+                  {game.description || game.summary || "No description available."}
+                </p>
+              </div>
+            </div>
+
+            <div className="card gs-card gd-card mb-4">
+              <div className="card-body p-4 p-lg-5">
+                <span className="gs-home-eyebrow">Gameplay</span>
+
+                <h2 className="h3 fw-bold text-green mb-4">
+                  Features
+                </h2>
+
+                <div className="row g-3">
+                  {features.map((feature) => (
+                    <div className="col-md-6" key={feature}>
+                      <div className="gd-feature-item">
+                        <span>✦</span>
+                        <p>{feature}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="card gs-card gd-card">
+              <div className="card-body p-4 p-lg-5">
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                  <div>
+                    <span className="gs-home-eyebrow">Community</span>
+                    <h2 className="h3 fw-bold text-green mb-0">
+                      Comments ({comments.length})
+                    </h2>
+                  </div>
+                </div>
+
+                {sessionStorage.getItem("token") ? (
+                  <CommentForm
+                    gameId={gameId}
+                    buttonText="Publish comment"
+                    onCommentCreated={loadComments}
                   />
-                  <button type="submit" className="btn btn-success fw-medium px-4 py-3 fs-5 mb-5" style={{ backgroundColor: 'var(--green-accent)', border: 'none', borderRadius: '8px' }} disabled={posting || !commentText.trim()}>
-                    {posting ? 'Publishing...' : 'Post comment'}
-                  </button>
-                </form>
+                ) : (
+                  <div className="alert gd-login-alert">
+                    Log in to leave a comment.
+                  </div>
+                )}
 
-                <div className="d-flex flex-column gap-4">
+                <div className="d-flex flex-column gap-4 mt-4">
                   {parentComments.length === 0 ? (
-                    <p className="text-white-50">No comments yet. Be the first to share your opinion.</p>
+                    <p className="text-dim mb-0">
+                      No comments yet. Be the first to share your opinion.
+                    </p>
                   ) : (
                     parentComments.map((comment) => {
-                      const initials = (comment.username || '?').slice(0, 2).toUpperCase();
+                      const replies = (comments || []).filter(
+                        (c) => c.parent_id === comment.id
+                      );
+
                       return (
-                        <div key={comment.id} className="d-flex gap-3">
-                          {comment.avatar_url ? (
-                            <img src={comment.avatar_url} alt="" className="flex-shrink-0 rounded-circle shadow-green" style={{ width: '54.8px', height: '54.8px', objectFit: 'cover' }} />
-                          ) : (
-                            <div className="flex-shrink-0 rounded-circle bg-secondary shadow-green d-flex align-items-center justify-content-center fw-bold text-white" style={{ width: '54.8px', height: '54.8px', fontSize: '1.2rem' }}>{initials}</div>
-                          )}
-                          <div>
-                            <div className="fw-bold text-green fs-5 mb-1">{comment.username || 'Unknown'} <span style={{ color: '#D64F82' }}>✋</span></div>
-                            <div className="fw-bold fs-5">{comment.content || comment.text}</div>
-                          </div>
-                        </div>
+                        <CommentCard
+                          key={comment.id}
+                          comment={comment}
+                          replies={replies}
+                          gameId={gameId}
+                          currentUser={currentUser}
+                          isAdmin={isAdmin}
+                          onRefresh={loadComments}
+                        />
                       );
                     })
                   )}
                 </div>
-
               </div>
             </div>
-          </div>
+          </section>
 
+          {/* RIGHT */}
+          <aside className="col-lg-4">
+            <div className="card gs-card gd-card gd-sticky-card mb-4">
+              <div className="card-body p-4">
+                <span className="gs-home-eyebrow">Game info</span>
+
+                <h2 className="h4 fw-bold text-green mb-4">
+                  Information
+                </h2>
+
+                <div className="gd-info-list">
+                  {game.developer && (
+                    <div>
+                      <span>Developer</span>
+                      <strong>{game.developer}</strong>
+                    </div>
+                  )}
+
+                  {game.publisher && (
+                    <div>
+                      <span>Publisher</span>
+                      <strong>{game.publisher}</strong>
+                    </div>
+                  )}
+
+                  {game.release_date && (
+                    <div>
+                      <span>Release date</span>
+                      <strong>{formatDate(game.release_date)}</strong>
+                    </div>
+                  )}
+
+                  {platforms.length > 0 && (
+                    <div>
+                      <span>Platforms</span>
+                      <strong>
+                        {platforms
+                          .map((p) => PLATFORM_LABELS[p.toLowerCase()] || p)
+                          .join(" · ")}
+                      </strong>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="card gs-card gd-card">
+              <div className="card-body p-4">
+                <span className="gs-home-eyebrow">Tags</span>
+
+                <div className="d-flex flex-wrap gap-2 mt-2">
+                  {genres.length > 0 ? (
+                    genres.map((genre) => (
+                      <span key={genre} className="badge gd-badge-purple">
+                        {genre}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-dim">No genres available.</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </aside>
         </main>
-
       </div>
     </div>
   );
