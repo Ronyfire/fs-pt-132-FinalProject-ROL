@@ -2,6 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import RakkiConcerned from "../assets/img/Rakki_Concerned_Sticker.png";
+// Base verde
+import RakkiLogoBase from "../assets/img/RakkiLogo.png";
+// Hover rosa
+import RakkiLogoHover from "../assets/img/RakkiLogo2.png";
+// Click violeta
+import RakkiLogoClick from "../assets/img/RakkiLogoAlter.png";
 
 const API = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -22,15 +28,16 @@ const UserLinks = ({ user, onClose, onLogout }) => (
 
 // ── Logo ──────────────────────────────────────────────────────
 const Logo = () => (
-  <Link to="/" className="gs-logo-link text-decoration-none d-flex align-items-center gap-2 flex-shrink-0">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7DD750" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="6" width="20" height="12" rx="5" />
-      <path d="M6 10v4M8 12H4" />
-      <circle cx="16" cy="10.5" r="0.8" fill="#7DD750" stroke="none" />
-      <circle cx="18.5" cy="12.5" r="0.8" fill="#7DD750" stroke="none" />
-      <circle cx="13.5" cy="12.5" r="0.8" fill="#7DD750" stroke="none" />
-      <circle cx="16" cy="14.5" r="0.8" fill="#7DD750" stroke="none" />
-    </svg>
+  <Link
+    to="/"
+    className="gs-logo-link text-decoration-none d-flex align-items-center gap-2 flex-shrink-0"
+  >
+    <span className="gs-logo-icon-wrap">
+      <img src={RakkiLogoBase} alt="Game-Side logo" className="gs-logo-icon gs-logo-icon-base" />
+      <img src={RakkiLogoHover} alt="" className="gs-logo-icon gs-logo-icon-hover" aria-hidden="true" />
+      <img src={RakkiLogoClick} alt="" className="gs-logo-icon gs-logo-icon-click" aria-hidden="true" />
+    </span>
+
     <span className="gs-logo-text">Game-Side</span>
   </Link>
 );

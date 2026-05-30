@@ -31,15 +31,82 @@
 .gs-navbar > * { position: relative; z-index: 1; }
 
 /* ── LOGO ──────────────────────────────────────────────── */
+.gs-logo-link {
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.gs-logo-link:hover {
+  transform: translateY(-1px);
+}
+
+.gs-logo-link:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.gs-logo-icon-wrap {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gs-logo-icon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.18s ease, filter 0.18s ease;
+}
+
+.gs-logo-icon-base {
+  opacity: 1;
+}
+
+.gs-logo-icon-hover,
+.gs-logo-icon-click {
+  opacity: 0;
+}
+
+.gs-logo-link:hover .gs-logo-icon-base {
+  opacity: 0;
+}
+
+.gs-logo-link:hover .gs-logo-icon-hover {
+  opacity: 1;
+  filter: drop-shadow(0 0 0.45rem rgba(214, 79, 130, 0.45));
+}
+
+.gs-logo-link:active .gs-logo-icon-base,
+.gs-logo-link:active .gs-logo-icon-hover {
+  opacity: 0;
+}
+
+.gs-logo-link:active .gs-logo-icon-click {
+  opacity: 1;
+  filter: drop-shadow(0 0 0.45rem rgba(172, 79, 214, 0.55));
+}
+
 .gs-logo-text {
   font-size: 1.375rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--green);
-  transition: color var(--transition);
+  transition: color var(--transition), text-shadow var(--transition);
 }
-.gs-logo-link:active .gs-logo-text { color: var(--pink) !important; }
-.gs-logo-link:active svg            { stroke: var(--pink) !important; }
+
+.gs-logo-link:hover .gs-logo-text {
+  color: var(--pink);
+  text-shadow: 0 0 0.6rem rgba(214, 79, 130, 0.35);
+}
+
+.gs-logo-link:active .gs-logo-text {
+  color: var(--purple, #AC4FD6) !important;
+  text-shadow: 0 0 0.6rem rgba(172, 79, 214, 0.45);
+}
 
 /* ── NAV LINKS ─────────────────────────────────────────── */
 .gs-nav-link {
