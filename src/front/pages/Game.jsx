@@ -4,6 +4,7 @@ import '../styles/pages/game-detail.css';
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import CommentCard from "../components/CommentCard";
 import CommentForm from "../components/CommentForm";
+import { rakkiToast } from "../components/RakkiToast";
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
 /* ─── Helper: label bonito para plataformas ─── */
 const PLATFORM_LABELS = {
@@ -55,7 +56,7 @@ export const Game = () => {
           setComments(data.comments || []);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   };
   /* ── Cargar datos ── */
   useEffect(() => {
@@ -178,7 +179,7 @@ export const Game = () => {
   return (
     <div className="gs-page-bg">
       <div className="mx-auto gs-page-content" style={{ maxWidth: '1440px' }}>
-        
+
         {/* HERO BANNER */}
         <div
           className="hero-banner"
@@ -194,10 +195,10 @@ export const Game = () => {
             <div className="d-flex align-items-center gap-2 fs-4 fw-medium mb-3" style={{ cursor: 'pointer' }} onClick={() => navigate(-1)}>
               <span style={{ fontWeight: 900, fontSize: '1.8rem', lineHeight: 1, WebkitTextStroke: '2px currentColor' }}>←</span> Back
             </div>
-            
+
             {/* Título */}
             <h1 className="display-3 fw-bold mb-3">{game.title}</h1>
-            
+
             {/* Etiquetas + Rating */}
             <div className="d-flex flex-wrap align-items-center gap-3">
               {genres.map((tag, i) => (
@@ -213,10 +214,10 @@ export const Game = () => {
         </div>
         {/* CUERPO PRINCIPAL */}
         <main className="px-4 px-md-5 py-5 text-white">
-          
+
           {/* SECCIÓN DOS COLUMNAS */}
           <div className="row g-4 mb-5">
-            
+
             {/* Columna Izquierda: Descripción */}
             <div className="col-12 col-xl-8">
               <div className="bg-card p-4 p-md-5 rounded-3 gd-desc-card">
@@ -238,7 +239,7 @@ export const Game = () => {
             <div className="col-12 col-xl-4">
               <div className="bg-card p-4 p-md-5 rounded-3 h-100">
                 <h2 className="gs-rakki-mood-card fs-3 fw-bold mb-4">Information</h2>
-                
+
                 {game.developer && (
                   <div className="mb-4">
                     <div className="fs-5 opacity-75 mb-1">Developer</div>
@@ -258,6 +259,44 @@ export const Game = () => {
                       {platforms
                         .map((p) => PLATFORM_LABELS[p.toLowerCase()] || p)
                         .join(' | ')}
+                    </div>
+                    {/* Botón añadir a librería */}
+                    <div className="mt-4">
+                      <button
+                        className="btn-gs btn-green w-100"
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          const token = sessionStorage.getItem("token");
+                          if (!token) {
+                            rakkiToast.info("Log in to add games to your library!");
+                            return;
+                          }
+                          try {
+                            const res = await fetch(`${VITE_BACKEND_URL}/api/user/glg`, {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                              },
+                              body: JSON.stringify({ game_id: parseInt(gameId), status: "want_to_play" }),
+                            });
+                            const data = await res.json();
+                            if (!res.ok) {
+                              if (data.msg === "Game already in your list") {
+                                rakkiToast.info("Already in your library!");
+                              } else {
+                                throw new Error(data.msg || "Error");
+                              }
+                              return;
+                            }
+                            rakkiToast.success(`${game.title} added to library!`);
+                          } catch (err) {
+                            rakkiToast.error(err.message);
+                          }
+                        }}
+                      >
+                        + Add to Library
+                      </button>
                     </div>
                   </div>
                 )}

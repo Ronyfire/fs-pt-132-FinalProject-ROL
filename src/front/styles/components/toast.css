@@ -1,80 +1,56 @@
-/* ── TOAST LEGACY (gs-toast) -------------------------------- */
-.gs-toast {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  z-index: 500;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.4);
-  animation: toastIn 0.2s ease;
-}
-
-.gs-toast.ok {
-  background: var(--green);
-  color: var(--bg);
-}
-.gs-toast.error {
-  background: var(--red);
-  color: #fff;
-}
-
-@keyframes toastIn {
-  from {
-    opacity: 0;
-    transform: translateY(0.5rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ── RAKKI TOAST (react-hot-toast) -------------------------- */
+/* ── RAKKI TOAST (react-hot-toast) ─────────────────────────── */
 .gs-rakki-toast {
   position: relative;
   overflow: hidden;
-  background: var(--bg-card) !important;
-  color: var(--text) !important;
-  border-radius: var(--radius-md) !important;
-  font-size: 0.8125rem !important;
-  font-family: 'Inter', sans-serif !important;
-  padding: 0.6rem 0.875rem 0.6rem 0.5rem !important;
   display: flex !important;
   align-items: center !important;
   gap: 0.5rem !important;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.5) !important;
-  max-width: 16rem !important;
+  background: #0D0F1F !important;
+  color: var(--text) !important;
+  border-radius: 999rem !important;      /* pill shape */
+  font-size: 0.8125rem !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1rem 0.4rem 0.4rem !important;
+  box-shadow: 0 0.25rem 1.5rem rgba(0,0,0,0.5) !important;
+  max-width: 18rem !important;
   width: auto !important;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  font-size: 0.75rem !important;
 }
 
+/* Borde por variante */
+.gs-rakki-toast--success        { border: 0.125rem solid var(--green) !important; }
+.gs-rakki-toast--error          { border: 0.125rem solid var(--red)   !important; }
+.gs-rakki-toast--info           { border: 0.125rem solid var(--purple) !important; }
+.gs-rakki-toast--favorite_add   { border: 0.125rem solid var(--pink)  !important; }
+.gs-rakki-toast--favorite_remove { border: 0.125rem solid var(--text-dim) !important; }
+
+/* Punto de color antes del texto (el ✦ de la imagen) */
 .gs-rakki-toast::before {
-  content: "";
-  position: absolute;
-  top: 0; bottom: 0; left: 0;
-  width: 0.2rem;
-}
-
-.gs-rakki-toast--success { border: 0.0625rem solid rgba(125, 215, 80, 0.45) !important; }
-.gs-rakki-toast--success::before { background: var(--green); }
-
-.gs-rakki-toast--error   { border: 0.0625rem solid rgba(214, 79, 130, 0.45) !important; }
-.gs-rakki-toast--error::before   { background: var(--pink); }
-
-.gs-rakki-toast--info    { border: 0.0625rem solid var(--border) !important; }
-.gs-rakki-toast--info::before    { background: var(--purple); }
-
-.gs-rakki-toast__icon {
-  width: 2.25rem;
-  height: 2.25rem;
-  object-fit: contain;
+  content: "✦";
+  font-size: 0.625rem;
   flex-shrink: 0;
 }
 
+.gs-rakki-toast--success::before        { color: var(--green); }
+.gs-rakki-toast--error::before          { color: var(--red); }
+.gs-rakki-toast--info::before           { color: var(--purple); }
+.gs-rakki-toast--favorite_add::before   { color: var(--pink); }
+.gs-rakki-toast--favorite_remove::before { color: var(--text-dim); }
+
+/* Icono Rakki */
+.gs-rakki-toast__icon {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  flex-shrink: 0;
+  order: 10;    /* siempre al final a la derecha */
+}
+
+/* Texto */
 .gs-rakki-toast__msg {
   flex: 1;
-  font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.2;
 }
