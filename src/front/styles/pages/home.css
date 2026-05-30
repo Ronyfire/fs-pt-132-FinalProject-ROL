@@ -638,3 +638,58 @@
     display: none;
   }
 }
+
+/* ── RAKKI SECRET BUTTON ───────────────────────────────── */
+
+.gs-rakki-easter-egg {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  z-index: 20;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  padding: 0.45rem 0.75rem;
+  border-radius: 999rem;
+
+  color: var(--pink);
+  background: rgba(13, 15, 31, 0.75);
+  border: 0.0625rem solid rgba(214, 79, 130, 0.45);
+
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+
+  opacity: 0.45;
+  backdrop-filter: blur(0.75rem);
+
+  transition:
+    opacity var(--transition),
+    transform var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.gs-rakki-easter-egg:hover {
+  opacity: 1;
+  color: var(--green);
+  border-color: var(--green);
+  transform: translateY(-0.1rem);
+  box-shadow: var(--green-glow);
+}
+
+.gs-rakki-easter-egg:active {
+  color: var(--purple);
+  border-color: var(--purple);
+  transform: scale(0.96);
+}
+
+.gs-rakki-easter-egg span {
+  display: inline-block;
+}
+
