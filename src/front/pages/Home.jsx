@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import GameCard from "../components/GameCard.jsx";
-import RakkiTest from "../assets/img/RakkiTEST.png";
+import RakkiPlaying from "../assets/img/RakkiPlaying.png";
 
 
 export const Home = () => {
@@ -178,7 +178,7 @@ export const Home = () => {
                   </div>
 
                   <div className="gs-rakki-image-box">
-                    <img src={RakkiTest} alt="Rakki, Game-Side mascot" />
+                    <img src={RakkiPlaying} alt="Rakki, Game-Side mascot" />
                   </div>
                 </div>
               </div>
