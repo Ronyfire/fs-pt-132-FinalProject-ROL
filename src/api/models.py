@@ -125,7 +125,7 @@ class UserSurvey(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
     genres: Mapped[List[str]] = mapped_column(ARRAY(String(60)), nullable=False)
     platforms: Mapped[List[str]] = mapped_column(ARRAY(String(40)), nullable=False)
-    play_style: Mapped[str] = mapped_column(String(20), nullable=False)
+    play_styles: Mapped[List[str]] = mapped_column(ARRAY(String(40)), nullable=False)
     favorite_themes: Mapped[List[str]] = mapped_column(ARRAY(String(50)), nullable=False)
     completed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
@@ -139,7 +139,7 @@ class UserSurvey(db.Model):
             "user_id": self.user_id,
             "genres": self.genres,
             "platforms": self.platforms,
-            "play_style": self.play_style,
+            "play_styles": self.play_styles,
             "favorite_themes": self.favorite_themes,
             "completed_at": self.completed_at.isoformat(),
         }
@@ -221,8 +221,9 @@ class Comment(db.Model):
             "created_at": self.created_at.isoformat(),
             "parent_id": self.parent_id,          # Cambiado de reply_id
             "reply_count": len(self.replies),
+            "report_count": len(self.reports),
         }
-    
+
 class GameTier(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     game_id: Mapped[int] = mapped_column(ForeignKey('game.id'), unique=True, nullable=False)
