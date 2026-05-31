@@ -1,47 +1,40 @@
-.gs-card {
-  background: var(--bg-card);
-  border: 0.0625rem solid var(--border);
-  border-radius: var(--radius-md);
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
-
-.gs-card:hover {
-  border-color: var(--green-border);
-  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.3);
-}
-
-.gs-card-green {
-  border-color: var(--green);
-  box-shadow: 0 0.25rem 0.9375rem rgba(125, 215, 80, 0.25);
-}
+/* GAME CARD -------------------------------------------------- */
 
 .gs-game-card {
-  width: 400px;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-decoration: none;
   background: var(--bg-card);
   border: 0.0625rem solid var(--border);
   border-radius: var(--radius-md);
-  overflow: hidden;
-  transition: border-color var(--transition), box-shadow var(--transition);
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
 }
 
 .gs-game-card:hover {
   border-color: var(--green-border);
   box-shadow: var(--green-glow);
+  transform: translateY(-0.12rem);
 }
 
 .gs-game-card__cover {
+  position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  background: var(--bg-hover);
+  aspect-ratio: 4 / 3;
+  min-height: 13rem;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-dim);
+  background: var(--bg-hover);
   font-size: 2rem;
-  overflow: hidden;
 }
 
 .gs-game-card__cover img {
@@ -51,20 +44,18 @@
   object-position: center;
 }
 
-
-
 .gs-game-card__body {
-  padding: 0.75rem;
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  padding: 0.75rem;
 }
 
 .gs-game-card__title {
   color: var(--text);
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -72,10 +63,53 @@
 
 .gs-game-card__tier {
   font-size: 1.125rem;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .gs-game-card__meta {
   color: var(--text-dim);
   font-size: 0.75rem;
+}
+
+.gs-game-card__library-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 0.9rem;
+  z-index: 3;
+  width: calc(100% - 1.5rem);
+  padding: 0.55rem 0.7rem;
+  border: 0.0625rem solid var(--green);
+  border-radius: 999rem;
+  background: var(--green);
+  color: var(--bg);
+  font-size: 0.82rem;
+  font-weight: 900;
+  box-shadow: var(--green-glow);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(0.75rem);
+  transition:
+    opacity var(--transition),
+    transform var(--transition),
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.gs-game-card:hover .gs-game-card__library-btn {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.gs-game-card__library-btn:hover {
+  background: var(--pink);
+  border-color: var(--pink);
+}
+
+@media (max-width: 768px) {
+  .gs-game-card__library-btn {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
 }

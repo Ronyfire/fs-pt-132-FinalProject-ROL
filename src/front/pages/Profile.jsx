@@ -69,7 +69,7 @@ const LibraryCard = ({ entry, openDropdown, setOpenDropdown, updateStatus, toggl
   return (
     <div
       onClick={() => navigate(`/games/${g.id}`)}
-      className={`gs-library-card${sc ? ` gs-border-${sc} gs-glow-${sc}` : ""}${entry.status === "dropped" ? " dropped" : ""}`}
+      className={`gs-library-card${sc ? ` gs-border-${sc} gs-glow-${sc}` : ""}${entry.status === "dropped" ? " dropped" : ""}${isOpen ? " is-open" : ""}`}
     >
       <div className="gs-library-card__cover">
         {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}

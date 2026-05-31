@@ -167,7 +167,7 @@ class UserSurvey(db.Model):
         ARRAY(String(60)), nullable=False)
     platforms: Mapped[List[str]] = mapped_column(
         ARRAY(String(40)), nullable=False)
-    play_style: Mapped[List[str]] = mapped_column(
+    play_styles: Mapped[List[str]] = mapped_column(
         ARRAY(String(40)), nullable=False)
     favorite_themes: Mapped[List[str]] = mapped_column(
         ARRAY(String(50)), nullable=False)
@@ -184,7 +184,7 @@ class UserSurvey(db.Model):
             "user_id": self.user_id,
             "genres": self.genres,
             "platforms": self.platforms,
-            "play_style": self.play_style,
+            "play_styles": self.play_styles,
             "favorite_themes": self.favorite_themes,
             "completed_at": self.completed_at.isoformat(),
         }

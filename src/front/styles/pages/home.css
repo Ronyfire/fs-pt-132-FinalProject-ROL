@@ -707,3 +707,46 @@
   display: block;
   border-radius: var(--radius-md);
 }
+
+.gs-feature-link {
+  display: flex;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.gs-feature-link::after {
+  content: "Open →";
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  z-index: 2;
+  color: var(--bg);
+  background: var(--green);
+  border-radius: 999rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity var(--transition),
+    transform var(--transition),
+    background var(--transition);
+}
+
+.gs-feature-link:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gs-feature-link:hover img {
+  transform: scale(1.04);
+  filter: brightness(1.15);
+}
+
+.gs-feature-link img {
+  transition:
+    transform var(--transition),
+    filter var(--transition);
+}

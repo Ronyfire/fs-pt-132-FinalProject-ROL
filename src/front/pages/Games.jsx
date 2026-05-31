@@ -8,23 +8,65 @@ const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
 
 const FILTERS = [
     {
-        label: 'Genre',
+        label: "Genre",
         options: [
-            'Action', 'Adventure', 'RPG', 'Shooter',
-            'Strategy', 'Sports', 'Simulation', 'Horror',
+            "Action",
+            "Adventure",
+            "RPG",
+            "Strategy",
+            "Simulation",
+            "Sports",
+            "Racing",
+            "Shooter",
+            "Puzzle",
+            "Horror",
+            "Platformer",
+            "Fighting",
+            "Roguelike",
+            "Survival",
+            "Role-playing (RPG)"
         ],
     },
     {
-        label: 'Release',
-        options: ['2026', '2025', '2024', '2023', '2022', 'Earlier'],
+        label: "Release",
+        options: [
+            "2026",
+            "2025",
+            "2024",
+            "2023",
+            "2022",
+            "2020-2021",
+            "2015-2019",
+            "2010-2014",
+            "2000-2009",
+            "Retro"
+        ],
     },
     {
-        label: 'Platform',
-        options: ['PC', 'PlayStation', 'Xbox', 'Nintendo', 'Mobile'],
+        label: "Platform",
+        options: [
+            "PC",
+            "PlayStation",
+            "PS5",
+            "PS4",
+            "Xbox",
+            "Xbox Series X/S",
+            "Xbox One",
+            "Nintendo Switch",
+            "Nintendo",
+            "Mobile"
+        ],
     },
     {
-        label: 'Score',
-        options: ['9+', '8+', '7+', '6+', 'Under 6'],
+        label: "Score",
+        options: [
+            "Legendary",
+            "Excellent",
+            "Good",
+            "Average",
+            "Below Average",
+            "Unrated"
+        ],
     },
 ];
 
@@ -67,6 +109,19 @@ export const Games = () => {
             .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase();
 
+    const getTierLabel = (tier) => {
+        const labels = {
+            S: "Legendary",
+            A: "Excellent",
+            B: "Good",
+            C: "Average",
+            D: "Below Average",
+            Undefined: "Unrated"
+        };
+
+        return labels[tier || "Undefined"] || "Unrated";
+    };
+
     /* ── Toggle filter option ── */
     const toggleFilter = (filterLabel, option) => {
         setSelectedFilters(prev => {
@@ -98,9 +153,18 @@ export const Games = () => {
             const gameYear = game.release_date
                 ? new Date(game.release_date).getFullYear().toString()
                 : null;
-            const matchesRelease = selReleases.some(r => {
-                if (r === 'Earlier') return gameYear && parseInt(gameYear) < 2022;
-                return gameYear === r;
+            const matchesRelease = selReleases.some((release) => {
+                const year = gameYear ? parseInt(gameYear) : null;
+
+                if (!year) return false;
+
+                if (release === "2020-2021") return year >= 2020 && year <= 2021;
+                if (release === "2015-2019") return year >= 2015 && year <= 2019;
+                if (release === "2010-2014") return year >= 2010 && year <= 2014;
+                if (release === "2000-2009") return year >= 2000 && year <= 2009;
+                if (release === "Retro") return year < 2000;
+
+                return gameYear === release;
             });
             if (!matchesRelease) return false;
         }
@@ -117,15 +181,8 @@ export const Games = () => {
         // Score filter
         const selScores = selectedFilters['Score'] || [];
         if (selScores.length > 0) {
-            const rating = game.game_tier?.average_rating;
-            const matchesScore = selScores.some(s => {
-                if (s === '9+') return rating >= 9;
-                if (s === '8+') return rating >= 8;
-                if (s === '7+') return rating >= 7;
-                if (s === '6+') return rating >= 6;
-                if (s === 'Under 6') return rating != null && rating < 6;
-                return false;
-            });
+            const tierLabel = getTierLabel(game.game_tier?.tier);
+            const matchesScore = selScores.includes(tierLabel);
             if (!matchesScore) return false;
         }
 
@@ -215,7 +272,7 @@ export const Games = () => {
                     {FILTERS.map((filter) => {
                         const activeCount = (selectedFilters[filter.label] || []).length;
                         return (
-                            <div key={filter.label} style={{ position: 'relative' }}>
+                            <div key={filter.label} className="games-filter-wrap">
                                 <button
                                     type="button"
                                     className={
@@ -228,14 +285,14 @@ export const Games = () => {
                                             openDropdown === filter.label ? null : filter.label
                                         )
                                     }
-                            >
-                                <span className="games-filter-btn__label">
-                                    {activeCount > 0 && (
-                                        <span className="games-filter-btn__badge">{activeCount}</span>
-                                    )}
-                                    {filter.label}
-                                </span>
-                                <span
+                                >
+                                    <span className="games-filter-btn__label">
+                                        {activeCount > 0 && (
+                                            <span className="games-filter-btn__badge">{activeCount}</span>
+                                        )}
+                                        {filter.label}
+                                    </span>
+                                    <span
                                         className={
                                             'games-filter-btn__arrow' +
                                             (openDropdown === filter.label ? ' open' : '')
@@ -272,10 +329,10 @@ export const Games = () => {
 
                 {/* ── Game Grid or Empty State ── */}
                 {filteredGames.length > 0 ? (
-                    <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 g-4">
                         {filteredGames.map((game) => (
                             <div key={game.id} className="col">
-                                <GameCard game={game} />
+                                <GameCard game={game} showLibraryAction />
                             </div>
                         ))}
                     </div>

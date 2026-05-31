@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import GameCard from "../components/GameCard.jsx";
 import RakkiPlaying from "../assets/img/RakkiPlaying.png";
 import TierListScreen from "../assets/img/TierListScreen.jpg";
+import ProfileScreen from "../assets/img/ProfileScreen.jpg";
+import GamesScreen from "../assets/img/GamesScreen.jpg";
 
 
 export const Home = () => {
@@ -205,10 +207,13 @@ export const Home = () => {
           <div className="row g-4 mt-2">
             <div className="col-md-4">
               <article className="gs-feature-card">
-                <div className="gs-feature-img gs-rakki-mood-card">
-                  <span>Games Page Preview</span>
-                </div>
-
+                <Link
+                  to="/games"
+                  className="gs-feature-img gs-feature-img-preview gs-feature-link"
+                  aria-label="Go to Games"
+                >
+                  <img src={GamesScreen} alt="Games page preview" />
+                </Link>
                 <div className="gs-feature-content">
                   <span className="gs-feature-number">01</span>
                   <h4>Discover</h4>
@@ -222,9 +227,13 @@ export const Home = () => {
 
             <div className="col-md-4">
               <article className="gs-feature-card">
-                <div className="gs-feature-img gs-rakki-mood-card">
-                  <span>Profile Page Preview</span>
-                </div>
+                <Link
+                  to="/profile"
+                  className="gs-feature-img gs-feature-img-preview gs-feature-link"
+                  aria-label="Go to Profile"
+                >
+                  <img src={ProfileScreen} alt="Profile page preview" />
+                </Link>
 
                 <div className="gs-feature-content">
                   <span className="gs-feature-number">02</span>
@@ -239,10 +248,13 @@ export const Home = () => {
 
             <div className="col-md-4">
               <article className="gs-feature-card">
-                <div className="gs-feature-img gs-feature-img-preview">
-                  <img src={TierListScreen} alt="Tier List preview" />
-                </div>
-
+                <Link
+                  to="/tier-list"
+                  className="gs-feature-img gs-feature-img-preview gs-feature-link"
+                  aria-label="Go to Tier List"
+                >
+                  <img src={TierListScreen} alt="Tier list preview" />
+                </Link>
                 <div className="gs-feature-content">
                   <span className="gs-feature-number">03</span>
                   <h4>Rank</h4>
