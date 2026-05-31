@@ -252,6 +252,19 @@ export const Profile = () => {
   const completed = games.filter((g) => g.status === "completed").length;
   const pending = games.filter((g) => g.status === "want_to_play").length;
 
+  const latestSurvey = profile?.latest_survey || profile?.surveys?.[profile?.surveys?.length - 1];
+
+  const PLAY_STYLE_LABELS = {
+    casual: "Casual",
+    competitive: "Competitive",
+    completionist: "Completionist",
+    story: "Story-focused",
+    exploration: "Exploration",
+    social: "Social / Multiplayer"
+  };
+
+  const playStyles = latestSurvey?.play_styles || [];
+
   useEffect(() => { checkOverflow(playingGridRef, setPlayingOverflow); }, [playing]);
   useEffect(() => { checkOverflow(favGridRef, setFavOverflow); }, [favorites]);
   useEffect(() => {
@@ -351,10 +364,10 @@ export const Profile = () => {
         <div ref={cardRef} className="gs-profile-card mt-4 mt-md-5">
 
           {/* ── CABECERA ── */}
-          <div className="d-flex justify-content-between align-items-start flex-wrap gap-3">
+          <div className="gs-profile-header">
 
             {/* Izquierda: avatar + detalles + redes */}
-            <div className="d-flex align-items-start gap-3 flex-wrap flex-grow-1">
+            <div className="gs-profile-main-info">
               {/* Avatar */}
               <div className="gs-avatar-wrap flex-shrink-0">
                 <img src={avatarUrl} alt="" className="gs-profile-avatar" />
@@ -406,8 +419,25 @@ export const Profile = () => {
                 ) : (
                   <>
                     <h1 className="gs-profile-username">{profile?.username}</h1>
+
                     {profile?.profile?.description && (
                       <p className="gs-profile-desc mb-0">{profile.profile.description}</p>
+                    )}
+
+                    {playStyles.length > 0 && (
+                      <div className="gs-profile-taste mt-3">
+                        <span className="gs-profile-taste-label">
+                          Taste Profile
+                        </span>
+
+                        <div className="gs-profile-taste-tags">
+                          {playStyles.map((style) => (
+                            <span key={style} className="gs-profile-taste-tag">
+                              {PLAY_STYLE_LABELS[style] || style}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </>
                 )}
@@ -430,14 +460,17 @@ export const Profile = () => {
             </div>
 
             {/* Derecha: stats + botones */}
-            <div className="text-end flex-shrink-0">
-              <div className="d-flex gap-4 justify-content-end">
-                <span className="gs-profile-stat text-green">{completed}</span>
-                <span className="gs-profile-stat text-purple">{pending}</span>
-              </div>
-              <div className="d-flex gap-4 justify-content-end small fw-bold">
-                <span>Completed</span>
-                <span>Pending</span>
+            <div className="gs-profile-side-panel">
+              <div className="gs-profile-stats-box">
+                <div className="gs-profile-stat-item">
+                  <span className="gs-profile-stat text-green">{completed}</span>
+                  <small>Completed</small>
+                </div>
+
+                <div className="gs-profile-stat-item">
+                  <span className="gs-profile-stat text-purple">{pending}</span>
+                  <small>Pending</small>
+                </div>
               </div>
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button onClick={handleStartEdit} className="gs-round-btn" title="Edit profile">
@@ -466,115 +499,115 @@ export const Profile = () => {
                     onClick={() => playingGridRef.current?.scrollBy({ left: -300, behavior: "smooth" })}>‹</button>
                 )}
                 <div className="gs-playing-grid gs-carousel-grid" ref={playingGridRef}>
-                {playing.map((entry) => {
-                  const g = entry.game;
-                  return (
-                    <Link key={entry.id} to={`/games/${g.id}`} className="gs-playing-card">
-                      <div className="gs-playing-card__cover">
-                        {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
-                      </div>
-                      <div className="gs-playing-card__body">
-                        <div className="gs-playing-card__title">{g?.title}</div>
-                        <div className="gs-playing-card__rating">{g?.genres?.slice(0, 2).join(", ") || "—"}</div>
-                        <div className="gs-playing-card__meta">
-                          {g?.game_tier ? `★${g.game_tier.average_rating.toFixed(1)} | ${g.game_tier.vote_count}v` : ""}
+                  {playing.map((entry) => {
+                    const g = entry.game;
+                    return (
+                      <Link key={entry.id} to={`/games/${g.id}`} className="gs-playing-card">
+                        <div className="gs-playing-card__cover">
+                          {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
                         </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+                        <div className="gs-playing-card__body">
+                          <div className="gs-playing-card__title">{g?.title}</div>
+                          <div className="gs-playing-card__rating">{g?.genres?.slice(0, 2).join(", ") || "—"}</div>
+                          <div className="gs-playing-card__meta">
+                            {g?.game_tier ? `★${g.game_tier.average_rating.toFixed(1)} | ${g.game_tier.vote_count}v` : ""}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+                {playingOverflow === true && (
+                  <button className="gs-carousel-btn gs-carousel-btn--right"
+                    onClick={() => playingGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
+                )}
               </div>
-              {playingOverflow === true && (
-                <button className="gs-carousel-btn gs-carousel-btn--right"
-                  onClick={() => playingGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
-              )}
-            </div>
-        </>
+            </>
           )}
 
-        {/* ── FAVORITOS ── */}
-        {favorites.length > 0 && (
-          <>
-            <h2 className="gs-section-title pink gs-graffiti-title">Favorite Games</h2>
-            <div className="gs-carousel-wrap">
-              {favOverflow === true && (
-                <button className="gs-carousel-btn gs-carousel-btn--left"
-                  onClick={() => favGridRef.current?.scrollBy({ left: -300, behavior: "smooth" })}>‹</button>
-              )}
-              <div className="gs-fav-grid gs-carousel-grid" ref={favGridRef}>
-                {favorites.map((entry) => {
-                  const g = entry.game;
-                  return (
-                    <div key={entry.id} onClick={() => navigate(`/games/${g.id}`)} className="gs-fav-card">
-                      <div className="gs-fav-card__cover">
-                        {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
+          {/* ── FAVORITOS ── */}
+          {favorites.length > 0 && (
+            <>
+              <h2 className="gs-section-title pink gs-graffiti-title">Favorite Games</h2>
+              <div className="gs-carousel-wrap">
+                {favOverflow === true && (
+                  <button className="gs-carousel-btn gs-carousel-btn--left"
+                    onClick={() => favGridRef.current?.scrollBy({ left: -300, behavior: "smooth" })}>‹</button>
+                )}
+                <div className="gs-fav-grid gs-carousel-grid" ref={favGridRef}>
+                  {favorites.map((entry) => {
+                    const g = entry.game;
+                    return (
+                      <div key={entry.id} onClick={() => navigate(`/games/${g.id}`)} className="gs-fav-card">
+                        <div className="gs-fav-card__cover">
+                          {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
+                        </div>
+                        <div className="gs-fav-card__body">
+                          <span className="gs-fav-card__title">{g?.title}</span>
+                          <span className="gs-fav-card__score">{g?.genres?.slice(0, 2).join(", ") || "—"}</span>
+                          <Stars rating={entry.rating} onRate={(val) => updateRating(entry.id, val)} />
+                        </div>
                       </div>
-                      <div className="gs-fav-card__body">
-                        <span className="gs-fav-card__title">{g?.title}</span>
-                        <span className="gs-fav-card__score">{g?.genres?.slice(0, 2).join(", ") || "—"}</span>
-                        <Stars rating={entry.rating} onRate={(val) => updateRating(entry.id, val)} />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+                {favOverflow === true && (
+                  <button className="gs-carousel-btn gs-carousel-btn--right"
+                    onClick={() => favGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
+                )}
               </div>
-              {favOverflow === true && (
-                <button className="gs-carousel-btn gs-carousel-btn--right"
-                  onClick={() => favGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
-              )}
+            </>
+          )}
+
+          {/* Empty state */}
+          {playing.length === 0 && favorites.length === 0 && (
+            <div className="text-center py-4">
+              <img src={RakkiWaving} alt="Rakki" width={120} className="d-block mx-auto" />
+              <p className="text-white-50 mt-2">No games in your profile yet</p>
+              <span className="gs-rakki-tag">Rakki says: start playing!</span>
+            </div>
+          )}
+        </div>
+
+        {/* ── BIBLIOTECA ── */}
+        <h2 className="gs-library-title gs-graffiti-title">My Library</h2>
+        {games.length === 0 ? (
+          <div className="text-center py-4">
+            <img src={RakkiWaving} alt="Rakki" width={120} className="d-block mx-auto" />
+            <span className="gs-rakki-tag">You haven't added any games yet</span>
+          </div>
+        ) : (
+          <>
+            <div className="gs-filter-bar">
+              {[{ key: "all", label: "All" }, ...Object.entries(STATUS).map(([k, v]) => ({ key: k, label: v.label }))].map((f) => (
+                <button key={f.key}
+                  onClick={() => setLibraryFilter(f.key === libraryFilter ? "" : f.key)}
+                  className={`gs-filter-btn${libraryFilter === f.key ? " active" : ""}${f.key !== "all" ? ` ${f.key}` : ""}`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+            <div className="gs-library-grid">
+              {games
+                .filter((g) => !libraryFilter || libraryFilter === "all" || g.status === libraryFilter)
+                .sort((a, b) => statusPriority(a.status) - statusPriority(b.status))
+                .map((entry) => (
+                  <LibraryCard
+                    key={entry.id}
+                    entry={entry}
+                    openDropdown={openDropdown}
+                    setOpenDropdown={setOpenDropdown}
+                    updateStatus={updateStatus}
+                    toggleFavorite={toggleFavorite}
+                    updateRating={updateRating}
+                    navigate={navigate}
+                  />
+                ))}
             </div>
           </>
         )}
-
-        {/* Empty state */}
-        {playing.length === 0 && favorites.length === 0 && (
-          <div className="text-center py-4">
-            <img src={RakkiWaving} alt="Rakki" width={120} className="d-block mx-auto" />
-            <p className="text-white-50 mt-2">No games in your profile yet</p>
-            <span className="gs-rakki-tag">Rakki says: start playing!</span>
-          </div>
-        )}
       </div>
-
-      {/* ── BIBLIOTECA ── */}
-      <h2 className="gs-library-title gs-graffiti-title">My Library</h2>
-      {games.length === 0 ? (
-        <div className="text-center py-4">
-          <img src={RakkiWaving} alt="Rakki" width={120} className="d-block mx-auto" />
-          <span className="gs-rakki-tag">You haven't added any games yet</span>
-        </div>
-      ) : (
-        <>
-          <div className="gs-filter-bar">
-            {[{ key: "all", label: "All" }, ...Object.entries(STATUS).map(([k, v]) => ({ key: k, label: v.label }))].map((f) => (
-              <button key={f.key}
-                onClick={() => setLibraryFilter(f.key === libraryFilter ? "" : f.key)}
-                className={`gs-filter-btn${libraryFilter === f.key ? " active" : ""}${f.key !== "all" ? ` ${f.key}` : ""}`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-          <div className="gs-library-grid">
-            {games
-              .filter((g) => !libraryFilter || libraryFilter === "all" || g.status === libraryFilter)
-              .sort((a, b) => statusPriority(a.status) - statusPriority(b.status))
-              .map((entry) => (
-                <LibraryCard
-                  key={entry.id}
-                  entry={entry}
-                  openDropdown={openDropdown}
-                  setOpenDropdown={setOpenDropdown}
-                  updateStatus={updateStatus}
-                  toggleFavorite={toggleFavorite}
-                  updateRating={updateRating}
-                  navigate={navigate}
-                />
-              ))}
-          </div>
-        </>
-      )}
-    </div>
     </div >
   );
 };

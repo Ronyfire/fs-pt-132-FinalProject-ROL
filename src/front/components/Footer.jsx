@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
 
+import RakkiLogoBase from "../assets/img/RakkiLogo.png";
+import RakkiLogoHover from "../assets/img/RakkiLogo2.png";
+import RakkiLogoClick from "../assets/img/RakkiLogoAlter.png";
+
 export const Footer = () => {
   return (
     <footer className="gs-footer">
@@ -7,34 +11,40 @@ export const Footer = () => {
         <div className="gs-footer-main">
           <div className="gs-footer-brand">
             <Link to="/" className="gs-footer-logo gs-spray-pink">
-              <svg
-                width="30"
-                height="30"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#7DD750"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="2" y="6" width="20" height="12" rx="5" />
-                <path d="M6 10v4M8 12H4" />
-                <circle cx="16" cy="10.5" r="0.8" fill="#7DD750" stroke="none" />
-                <circle cx="18.5" cy="12.5" r="0.8" fill="#7DD750" stroke="none" />
-                <circle cx="13.5" cy="12.5" r="0.8" fill="#7DD750" stroke="none" />
-                <circle cx="16" cy="14.5" r="0.8" fill="#7DD750" stroke="none" />
-              </svg>
+              <span className="gs-footer-logo-icon-wrap">
+                <img
+                  src={RakkiLogoBase}
+                  alt="Game-Side logo"
+                  className="gs-footer-logo-icon gs-footer-logo-icon-base"
+                />
+
+                <img
+                  src={RakkiLogoHover}
+                  alt=""
+                  className="gs-footer-logo-icon gs-footer-logo-icon-hover"
+                  aria-hidden="true"
+                />
+
+                <img
+                  src={RakkiLogoClick}
+                  alt=""
+                  className="gs-footer-logo-icon gs-footer-logo-icon-click"
+                  aria-hidden="true"
+                />
+              </span>
 
               <span>Game-Side</span>
             </Link>
 
-            <p>
-              Discover, organize, rate, and share your favorite video games in a
-              modern, personalized experience built for players.
-            </p>
+            <div className="gs-footer-brand-content">
+              <p>
+                Discover, organize, rate, and share your favorite video games in a
+                modern, personalized experience built for players.
+              </p>
 
-            <div className="gs-footer-tagline">
-              Track. Rate. Discover.
+              <div className="gs-footer-tagline">
+                Track. Rate. Discover.
+              </div>
             </div>
           </div>
 
