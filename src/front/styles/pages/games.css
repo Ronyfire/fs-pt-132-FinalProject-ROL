@@ -1,6 +1,6 @@
 /* ─── Games Page Layout ─── */
 .games-page {
-  max-width: 1440px;
+  width: min(100%, 1500px);
   margin: 0 auto;
   padding: 2rem 1rem;
   position: relative;
@@ -64,106 +64,108 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
-/* ─── Filter Buttons ─── */
 .games-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  width: min(100%, 58rem);
+  margin-inline: auto;
 }
+
+.games-filter-wrap {
+  position: relative;
+}
+
 .games-filter-btn {
-  width: 290px;
-  background: var(--bg);
-  border: 3px solid var(--purple);
-  border-radius: 8px;
+  width: 100%;
+  min-height: 3.25rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(172, 79, 214, 0.12), transparent 9rem),
+    rgba(10, 12, 26, 0.72);
+  border: 0.125rem solid rgba(172, 79, 214, 0.75);
+  border-radius: var(--radius-md);
   color: var(--purple);
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 900;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
   font-family: 'Inter', sans-serif;
-  transition: background var(--transition);
-  position: relative;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
 }
+
 .games-filter-btn:hover,
 .games-filter-btn.active {
   background: rgba(172, 79, 214, 0.12);
-}
-.games-filter-btn__arrow {
-  font-size: 0.75rem;
-  transition: transform var(--transition);
-}
-.games-filter-btn__arrow.open {
-  transform: rotate(180deg);
-}
-
-/* ─── Filter Dropdown ─── */
-.games-filter-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  width: 290px;
-  background: var(--bg-card);
-  border: 1px solid var(--purple);
-  border-radius: 8px;
-  z-index: 100;
-  padding: 0.5rem 0;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
-}
-.games-filter-option {
-  padding: 0.625rem 1rem;
-  color: var(--text);
-  font-size: 16px;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  transition: background var(--transition);
-}
-.games-filter-option:hover {
-  background: rgba(172, 79, 214, 0.15);
-  color: var(--purple);
-}
-.games-filter-option.selected {
-  background: rgba(172, 79, 214, 0.25);
-  color: var(--purple);
-  font-weight: 600;
-}
-.games-filter-option.selected:hover {
-  background: rgba(172, 79, 214, 0.35);
-}
-.games-filter-option__check {
-  float: right;
+  border-color: var(--green);
   color: var(--green);
-  margin-left: 0.75rem;
+  box-shadow: var(--green-glow);
+  transform: translateY(-0.08rem);
 }
 
-/* ─── Filter button with active selection ─── */
 .games-filter-btn.has-selection {
   border-color: var(--green);
-  box-shadow: 0 0 0 1px var(--green);
-}
-.games-filter-btn__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: var(--green);
+  box-shadow: 0 0 0.8rem rgba(125, 215, 80, 0.16);
 }
 
-.games-filter-btn__badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--green);
-  color: #111326;
-  font-size: 11px;
-  font-weight: 700;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 9px;
-  margin-right: 6px;
-  padding: 0 5px;
-  line-height: 1;
+.games-filter-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: 100%;
+  max-height: 18rem;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(214, 79, 130, 0.12), transparent 8rem),
+    var(--bg-card);
+  border: 0.0625rem solid rgba(172, 79, 214, 0.65);
+  border-radius: var(--radius-md);
+  z-index: 100;
+  padding: 0.45rem;
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.55);
+}
+
+.games-filter-option {
+  padding: 0.65rem 0.75rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 0.65rem;
+  font-family: 'Inter', sans-serif;
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+
+.games-filter-option:hover {
+  background: rgba(172, 79, 214, 0.16);
+  color: var(--green);
+}
+
+.games-filter-option.selected {
+  background: rgba(125, 215, 80, 0.12);
+  color: var(--green);
+  font-weight: 900;
+}
+
+@media (max-width: 991px) {
+  .games-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .games-filters {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ─── Empty State ─── */
