@@ -459,122 +459,122 @@ export const Profile = () => {
           {/* ── JUGANDO AHORA ── */}
           {playing.length > 0 && (
             <>
-              <h2 className="gs-section-title purple gs-graffiti-title">Currently Playing</h2>
-              <div className="gs-carousel-wrap gs-spray-pink">
+              <h2 className="gs-section-title purple gs-graffiti-title gs-spray-pink">Currently Playing</h2>
+              <div className="gs-carousel-wrap">
                 {playingOverflow === true && (
                   <button className="gs-carousel-btn gs-carousel-btn--left"
                     onClick={() => playingGridRef.current?.scrollBy({ left: -300, behavior: "smooth" })}>‹</button>
                 )}
                 <div className="gs-playing-grid gs-carousel-grid" ref={playingGridRef}>
-                  {playing.slice(0, 5).map((entry) => {
-                    const g = entry.game;
-                    return (
-                      <Link key={entry.id} to={`/games/${g.id}`} className="gs-playing-card">
-                        <div className="gs-playing-card__cover">
-                          {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
-                        </div>
-                        <div className="gs-playing-card__body">
-                          <div className="gs-playing-card__title">{g?.title}</div>
-                          <div className="gs-playing-card__rating">{g?.genres?.slice(0, 2).join(", ") || "—"}</div>
-                          <div className="gs-playing-card__meta">
-                            {g?.game_tier ? `★${g.game_tier.average_rating.toFixed(1)} | ${g.game_tier.vote_count}v` : ""}
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-                {playingOverflow === true && (
-                  <button className="gs-carousel-btn gs-carousel-btn--right"
-                    onClick={() => playingGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
-                )}
-              </div>
-            </>
-          )}
-
-          {/* ── FAVORITOS ── */}
-          {favorites.length > 0 && (
-            <>
-              <h2 className="gs-section-title pink gs-graffiti-title">Favorite Games</h2>
-              <div className="gs-carousel-wrap">
-                {favOverflow === true && (
-                  <button className="gs-carousel-btn gs-carousel-btn--left"
-                    onClick={() => favGridRef.current?.scrollBy({ left: -300, behavior: "smooth" })}>‹</button>
-                )}
-                <div className="gs-fav-grid gs-carousel-grid" ref={favGridRef}>
-                  {favorites.slice(0, 5).map((entry) => {
-                    const g = entry.game;
-                    return (
-                      <div key={entry.id} onClick={() => navigate(`/games/${g.id}`)} className="gs-fav-card">
-                        <div className="gs-fav-card__cover">
-                          {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
-                        </div>
-                        <div className="gs-fav-card__body">
-                          <span className="gs-fav-card__title">{g?.title}</span>
-                          <span className="gs-fav-card__score">{g?.genres?.slice(0, 2).join(", ") || "—"}</span>
-                          <Stars rating={entry.rating} onRate={(val) => updateRating(entry.id, val)} />
+                {playing.map((entry) => {
+                  const g = entry.game;
+                  return (
+                    <Link key={entry.id} to={`/games/${g.id}`} className="gs-playing-card">
+                      <div className="gs-playing-card__cover">
+                        {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
+                      </div>
+                      <div className="gs-playing-card__body">
+                        <div className="gs-playing-card__title">{g?.title}</div>
+                        <div className="gs-playing-card__rating">{g?.genres?.slice(0, 2).join(", ") || "—"}</div>
+                        <div className="gs-playing-card__meta">
+                          {g?.game_tier ? `★${g.game_tier.average_rating.toFixed(1)} | ${g.game_tier.vote_count}v` : ""}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-                {favOverflow === true && (
-                  <button className="gs-carousel-btn gs-carousel-btn--right"
-                    onClick={() => favGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
-                )}
+                    </Link>
+                  );
+                })}
               </div>
-            </>
-          )}
-
-          {/* Empty state */}
-          {playing.length === 0 && favorites.length === 0 && (
-            <div className="text-center py-4">
-              <img src={RakkiWaving} alt="Rakki" width={120} className="d-block mx-auto" />
-              <p className="text-white-50 mt-2">No games in your profile yet</p>
-              <span className="gs-rakki-tag">Rakki says: start playing!</span>
+              {playingOverflow === true && (
+                <button className="gs-carousel-btn gs-carousel-btn--right"
+                  onClick={() => playingGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
+              )}
             </div>
+        </>
           )}
-        </div>
 
-        {/* ── BIBLIOTECA ── */}
-        <h2 className="gs-library-title gs-graffiti-title">My Library</h2>
-        {games.length === 0 ? (
-          <div className="text-center py-4">
-            <img src={RakkiWaving} alt="Rakki" width={120} className="d-block mx-auto" />
-            <span className="gs-rakki-tag">You haven't added any games yet</span>
-          </div>
-        ) : (
+        {/* ── FAVORITOS ── */}
+        {favorites.length > 0 && (
           <>
-            <div className="gs-filter-bar">
-              {[{ key: "all", label: "All" }, ...Object.entries(STATUS).map(([k, v]) => ({ key: k, label: v.label }))].map((f) => (
-                <button key={f.key}
-                  onClick={() => setLibraryFilter(f.key === libraryFilter ? "" : f.key)}
-                  className={`gs-filter-btn${libraryFilter === f.key ? " active" : ""}${f.key !== "all" ? ` ${f.key}` : ""}`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-            <div className="gs-library-grid">
-              {games
-                .filter((g) => !libraryFilter || libraryFilter === "all" || g.status === libraryFilter)
-                .sort((a, b) => statusPriority(a.status) - statusPriority(b.status))
-                .map((entry) => (
-                  <LibraryCard
-                    key={entry.id}
-                    entry={entry}
-                    openDropdown={openDropdown}
-                    setOpenDropdown={setOpenDropdown}
-                    updateStatus={updateStatus}
-                    toggleFavorite={toggleFavorite}
-                    updateRating={updateRating}
-                    navigate={navigate}
-                  />
-                ))}
+            <h2 className="gs-section-title pink gs-graffiti-title">Favorite Games</h2>
+            <div className="gs-carousel-wrap">
+              {favOverflow === true && (
+                <button className="gs-carousel-btn gs-carousel-btn--left"
+                  onClick={() => favGridRef.current?.scrollBy({ left: -300, behavior: "smooth" })}>‹</button>
+              )}
+              <div className="gs-fav-grid gs-carousel-grid" ref={favGridRef}>
+                {favorites.map((entry) => {
+                  const g = entry.game;
+                  return (
+                    <div key={entry.id} onClick={() => navigate(`/games/${g.id}`)} className="gs-fav-card">
+                      <div className="gs-fav-card__cover">
+                        {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
+                      </div>
+                      <div className="gs-fav-card__body">
+                        <span className="gs-fav-card__title">{g?.title}</span>
+                        <span className="gs-fav-card__score">{g?.genres?.slice(0, 2).join(", ") || "—"}</span>
+                        <Stars rating={entry.rating} onRate={(val) => updateRating(entry.id, val)} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {favOverflow === true && (
+                <button className="gs-carousel-btn gs-carousel-btn--right"
+                  onClick={() => favGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
+              )}
             </div>
           </>
         )}
+
+        {/* Empty state */}
+        {playing.length === 0 && favorites.length === 0 && (
+          <div className="text-center py-4">
+            <img src={RakkiWaving} alt="Rakki" width={120} className="d-block mx-auto" />
+            <p className="text-white-50 mt-2">No games in your profile yet</p>
+            <span className="gs-rakki-tag">Rakki says: start playing!</span>
+          </div>
+        )}
       </div>
+
+      {/* ── BIBLIOTECA ── */}
+      <h2 className="gs-library-title gs-graffiti-title">My Library</h2>
+      {games.length === 0 ? (
+        <div className="text-center py-4">
+          <img src={RakkiWaving} alt="Rakki" width={120} className="d-block mx-auto" />
+          <span className="gs-rakki-tag">You haven't added any games yet</span>
+        </div>
+      ) : (
+        <>
+          <div className="gs-filter-bar">
+            {[{ key: "all", label: "All" }, ...Object.entries(STATUS).map(([k, v]) => ({ key: k, label: v.label }))].map((f) => (
+              <button key={f.key}
+                onClick={() => setLibraryFilter(f.key === libraryFilter ? "" : f.key)}
+                className={`gs-filter-btn${libraryFilter === f.key ? " active" : ""}${f.key !== "all" ? ` ${f.key}` : ""}`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <div className="gs-library-grid">
+            {games
+              .filter((g) => !libraryFilter || libraryFilter === "all" || g.status === libraryFilter)
+              .sort((a, b) => statusPriority(a.status) - statusPriority(b.status))
+              .map((entry) => (
+                <LibraryCard
+                  key={entry.id}
+                  entry={entry}
+                  openDropdown={openDropdown}
+                  setOpenDropdown={setOpenDropdown}
+                  updateStatus={updateStatus}
+                  toggleFavorite={toggleFavorite}
+                  updateRating={updateRating}
+                  navigate={navigate}
+                />
+              ))}
+          </div>
+        </>
+      )}
     </div>
+    </div >
   );
 };

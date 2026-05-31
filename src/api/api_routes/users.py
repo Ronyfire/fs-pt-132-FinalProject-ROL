@@ -180,16 +180,25 @@ def create_survey():
     if not body:
         return jsonify({"msg": "No data provided"}), 400
 
-    required = ["genres", "platforms", "play_style", "favorite_themes"] # se puede cambiar en funcion de lo que pongamos en la encuesta
+    required = ["genres", "platforms", "play_styles", "favorite_themes"] # se puede cambiar en funcion de lo que pongamos en la encuesta
     for field in required:
         if field not in body:
             return jsonify({"msg": f"Missing field: {field}"}), 400
+    
+    list_fields = ["genres", "platforms", "play_styles", "favorite_themes"]
+
+    for field in list_fields:
+        if not isinstance(body.get(field), list):
+            return jsonify({"msg": f"{field} must be a list"}), 400
+
+        if len(body[field]) == 0:
+            return jsonify({"msg": f"You must select at least one option for {field}"}), 400
     survey = UserSurvey(
             # esto se podria cambiar si se pide otras cosas en la encuesta
          user_id= current_user_id,
          genres=body["genres"],
          platforms=body["platforms"],
-         play_style=body["play_style"],
+         play_styles=body["play_styles"],
          favorite_themes=body["favorite_themes"],
          completed_at=utcnow()    
     )

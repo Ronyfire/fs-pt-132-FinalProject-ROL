@@ -7,6 +7,7 @@
   box-shadow: 0 0.25rem 1rem rgba(125, 215, 80, 0.2);
   background: var(--bg);
   padding: 2.5rem;
+  overflow: visible;
 }
 
 /* Avatar */
@@ -180,6 +181,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  overflow: visible;
 }
 .gs-carousel-grid {
   display: flex;

@@ -9,7 +9,7 @@ export const Survey = () => {
   const [form, setForm] = useState({
     genres: [],
     platforms: [],
-    play_style: "casual",
+    play_styles: [],
     favorite_themes: []
   });
 
@@ -65,6 +65,19 @@ export const Survey = () => {
     "Comedy"
   ];
 
+  const togglePlayStyle = (style) => {
+    setForm((prev) => {
+      const alreadySelected = prev.play_styles.includes(style);
+
+      return {
+        ...prev,
+        play_styles: alreadySelected
+          ? prev.play_styles.filter((item) => item !== style)
+          : [...prev.play_styles, style]
+      };
+    });
+  };
+
   const playStyleOptions = [
     {
       value: "casual",
@@ -112,14 +125,6 @@ export const Survey = () => {
     });
   };
 
-  // Cambia el estilo de juego seleccionado (solo uno a la vez)
-  const handlePlayStyleChange = (value) => {
-    setForm({
-      ...form,
-      play_style: value
-    });
-  };
-
   // Valida que todas las secciones tengan al menos una opción seleccionada
   const validateSurvey = () => {
     if (form.genres.length === 0) {
@@ -128,6 +133,10 @@ export const Survey = () => {
 
     if (form.platforms.length === 0) {
       return "Please select at least one platform.";
+    }
+
+    if (form.play_styles.length === 0) {
+      return "Please select at least one play style.";
     }
 
     if (form.favorite_themes.length === 0) {
@@ -164,7 +173,7 @@ export const Survey = () => {
         body: JSON.stringify({
           genres: form.genres,
           platforms: form.platforms,
-          play_style: form.play_style,
+          play_styles: form.play_styles,
           favorite_themes: form.favorite_themes,
           completed_at: new Date().toISOString()
         })
@@ -214,7 +223,10 @@ export const Survey = () => {
 
   // Total de opciones seleccionadas para la barra de progreso
   const selectedCount =
-    form.genres.length + form.platforms.length + form.favorite_themes.length;
+    form.genres.length +
+    form.platforms.length +
+    form.play_styles.length +
+    form.favorite_themes.length;
 
   return (
     <main className="gs-survey-page">
@@ -283,18 +295,21 @@ export const Survey = () => {
               </div>
 
               <div className="gs-playstyle-grid">
-                {playStyleOptions.map((style) => (
-                  <button
-                    type="button"
-                    key={style.value}
-                    className={`gs-playstyle-card ${form.play_style === style.value ? "selected" : ""
-                      }`}
-                    onClick={() => handlePlayStyleChange(style.value)}
-                  >
-                    <strong>{style.title}</strong>
-                    <span>{style.description}</span>
-                  </button>
-                ))}
+                {playStyleOptions.map((style) => {
+                  const selected = form.play_styles.includes(style.value);
+
+                  return (
+                    <button
+                      type="button"
+                      key={style.value}
+                      className={`gs-playstyle-card ${selected ? "selected" : ""}`}
+                      onClick={() => togglePlayStyle(style.value)}
+                    >
+                      <strong>{style.title}</strong>
+                      <span>{style.description}</span>
+                    </button>
+                  );
+                })}
               </div>
             </section>
 
