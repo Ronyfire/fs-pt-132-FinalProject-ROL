@@ -343,3 +343,7 @@
 .gs-form__message--success {
   color: var(--green);
 }
+
+.gd-comments-section {
+  border-color: rgba(214, 79, 130, 0.24);
+}
