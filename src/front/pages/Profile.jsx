@@ -555,8 +555,7 @@ export const Profile = () => {
         {games.length === 0 ? (
           <div className="gs-empty">
             <img src={RakkiWaving} alt="Rakki" width={120} style={{ objectFit: "contain" }} />
-            <p className="text-white-50 mt-2">You haven't added any games yet</p>
-            <span className="gs-rakki-tag">Rakki picked this — explore games!</span>
+            <span className="gs-rakki-tag">You haven't added any games yet</span>
           </div>
         ) : (
           <>
