@@ -7,27 +7,49 @@
   box-shadow: 0 0.25rem 1rem rgba(125, 215, 80, 0.2);
   background: var(--bg);
   padding: 2.5rem;
+  overflow: visible;
+}
+
+/* Avatar */
+.gs-avatar-wrap {
+  width: 14.25rem;
+  height: 14.25rem;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 0 1.5rem rgba(125, 215, 80, 0.5);
+  border: 0.15rem solid rgba(125, 215, 80, 0.6);
 }
 
 .gs-profile-avatar {
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  filter: drop-shadow(0 0.25rem 1rem var(--green));
 }
 
+/* Textos de perfil */
 .gs-profile-username {
-  font-size: clamp(2rem, 5vw, 4rem);
+  font-size: clamp(1.75rem, 4vw, 3.5rem);
   font-weight: 700;
   color: var(--green);
   margin: 0;
 }
 
 .gs-profile-stat {
-  font-size: clamp(2rem, 5vw, 4rem);
+  font-size: clamp(2rem, 4vw, 3.5rem);
   font-weight: 700;
   line-height: 1;
 }
 
+.gs-profile-desc {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #FFEDF4;
+  max-width: 29.9375rem;
+  margin-top: 0.5rem;
+}
+
+/* Inputs modo edición */
 .gs-profile-input {
   background: transparent;
   border: none;
@@ -39,6 +61,8 @@
   width: 100%;
   padding: 0;
 }
+
+.gs-profile-input--xl { font-size: 2.5rem; font-weight: 700; }
 
 .gs-profile-textarea {
   background: transparent;
@@ -52,117 +76,18 @@
   padding: 0;
 }
 
-/* Badge de estado en la biblioteca */
-.gs-status-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-width: 0.1875rem;
-  border-style: solid;
-  border-radius: var(--radius-sm);
-  padding: 0.5rem 1rem;
+.gs-profile-textarea--lg {
   font-size: 1rem;
-  font-weight: 500;
-  background: var(--bg);
-  cursor: pointer;
-  transition: background var(--transition);
+  max-width: 29.9375rem;
+  margin-top: 0.5rem;
 }
 
-/* ─── LAYOUT DEL PERFIL ─────────────────────────────────────── */
-.gs-profile-page {
-  min-height: 100vh;
-  padding-bottom: 5rem;
+.gs-upload-wrap {
+  margin-bottom: 0.5rem;
+  max-width: 29.9375rem;
 }
 
-.gs-profile-inner {
-  max-width: 90.125rem; /* 1442px */
-  margin: 0 auto;
-  padding: 0 3.6875rem; /* 59px */
-}
-
-/* Cabecera */
-.gs-profile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.gs-profile-header-left {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.gs-profile-details {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Contenedor del avatar — tamaño fijo de Figma */
-.gs-avatar-wrap {
-  width: 14.25rem;   /* 228px */
-  height: 14.25rem;
-  border-radius: 20.75rem; /* 332px */
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-/* Estadísticas a la derecha */
-.gs-profile-stats {
-  text-align: right;
-  flex-shrink: 0;
-}
-
-.gs-stats-row {
-  display: flex;
-  gap: 3rem;
-  justify-content: flex-end;
-}
-
-.gs-stats-label {
-  display: flex;
-  gap: 3rem;
-  justify-content: flex-end;
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
-.gs-profile-btns {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-}
-
-/* Botón redondo (editar / compartir) */
-.gs-round-btn {
-  width: 3rem;
-  height: 3rem;
-  background: var(--green);
-  border: none;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: transform var(--transition);
-}
-.gs-round-btn:hover { transform: scale(1.1); }
-.gs-round-btn svg {
-  width: 1.375rem;
-  height: 1.375rem;
-  stroke: #000;
-}
-
-/* Columna de redes sociales */
-.gs-social-col {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  flex-shrink: 0;
-}
-
+/* Redes sociales — vista */
 .gs-social-icon {
   display: inline-flex;
   align-items: center;
@@ -176,368 +101,7 @@
 }
 .gs-social-icon:hover { transform: scale(1.15); }
 
-/* Títulos de sección */
-.gs-section-title {
-  font-size: 2.5rem; /* 40px */
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin: 3.75rem 0 1.5rem;
-}
-.gs-section-title--sm { font-size: 1.75rem; }
-.gs-section-title.purple { color: var(--purple); }
-.gs-section-title.pink   { color: var(--pink); }
-.gs-section-title.green  { color: var(--green); }
-
-.gs-library-title {
-  font-size: 4rem; /* 64px */
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin: 3.75rem 0 2rem;
-}
-
-/* Estado vacío */
-.gs-empty {
-  text-align: center;
-  padding: 2.5rem;
-  color: var(--text-dim);
-}
-
-/* ─── TARJETA DE "JUGANDO AHORA" ────────────────────────── */
-.gs-carousel-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.gs-carousel-grid {
-  display: flex;
-  gap: 0.75rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.gs-carousel-grid::-webkit-scrollbar { display: none; }
-.gs-carousel-grid > * {
-  scroll-snap-align: start;
-  flex-shrink: 0;
-}
-.gs-carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  border: 0.125rem solid #555;
-  background: var(--bg);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 5;
-  transition: all var(--transition);
-  font-size: 1.25rem;
-  line-height: 1;
-}
-.gs-carousel-btn:hover {
-  border-color: var(--green);
-  color: var(--green);
-}
-.gs-carousel-btn--left  { left: -1.25rem; }
-.gs-carousel-btn--right { right: -1.25rem; }
-
-.gs-playing-card {
-  width: 16.4375rem;  /* 263px */
-  height: 8.125rem;   /* 130px — fija para mantener armonía */
-  background: rgba(49, 38, 42, 0.39);
-  border-radius: 0.3125rem;
-  display: flex;
-  padding: 0.9375rem;
-  text-decoration: none;
-  gap: 0.75rem;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.gs-playing-card__cover {
-  width: 6.25rem;   /* 100px */
-  height: 6.25rem;
-  border-radius: 0.3125rem;
-  overflow: hidden;
-  flex-shrink: 0;
-  background: var(--bg-hover);
-}
-.gs-playing-card__cover img { width: 100%; height: 100%; object-fit: contain; }
-
-.gs-playing-card__body {
-  flex: 1;
-  min-width: 0;      /* permite que se contraiga en flex */
-  overflow: hidden;  /* contiene el truncado del título */
-}
-
-.gs-playing-card__title {
-  color: var(--green);
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.gs-playing-card__rating { color: var(--pink); font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.gs-playing-card__meta { color: #fff; font-size: 0.875rem; }
-
-/* ─── ESTRELLAS DE CALIFICACIÓN ──────────────────────────────────── */
-.gs-stars { display: inline-flex; gap: 2px; }
-.gs-star { color: #555; font-size: 1.25rem; transition: color var(--transition); }
-.gs-star.on { color: #D4B609; }
-
-/* ─── TARJETA DE FAVORITOS ──────────────────────────────────────── */
-.gs-fav-grid {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.gs-fav-card {
-  width: 15.625rem;  /* 250px */
-  background: var(--bg);
-  border-radius: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  text-decoration: none;
-  overflow: hidden;
-  flex-shrink: 0;
-  border: 0.0625rem solid var(--border);
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
-.gs-fav-card:hover {
-  border-color: var(--green-border);
-  box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.3);
-}
-
-.gs-fav-card__cover {
-  width: 13.625rem;  /* 218px */
-  height: 15.4375rem; /* 247px */
-  overflow: hidden;
-  background: var(--bg-hover);
-  margin: 1rem;
-}
-.gs-fav-card__cover img { width: 100%; height: 100%; object-fit: contain; }
-
-.gs-fav-card__body {
-  padding: 0 1rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow: hidden;
-  min-width: 0;
-  box-sizing: border-box;
-  width: 100%;
-}
-.gs-fav-card__title {
-  color: var(--green);
-  font-size: 1rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-  max-width: 100%;
-  width: 100%;
-}
-.gs-fav-card__score { color: var(--pink); font-size: 1rem; font-weight: 600; }
-
-/* ─── TARJETA DE BIBLIOTECA ────────────────────────────────────────── */
-.gs-library-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.6875rem; /* 27px */
-}
-
-.gs-library-card {
-  width: 26.375rem;  /* 422px */
-  background: var(--bg);
-  border-radius: 0.5rem;
-  border: 0.0625rem solid #333;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: visible;
-  box-shadow: none;
-  transition: border-color var(--transition);
-}
-.gs-library-card.dropped {
-  border-color: #AD0003;
-  box-shadow: 0 0.25rem 0.35rem #ff0000;
-}
-
-.gs-library-card__cover {
-  width: 100%;
-  height: 15.4375rem; /* 247px */
-  overflow: hidden;
-  background: var(--bg-hover);
-  position: relative;
-  border-radius: 0.5rem 0.5rem 0 0;
-}
-.gs-library-card__cover img { width: 100%; height: 100%; object-fit: contain; }
-
-.gs-library-card__heart {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 4.75rem;
-  height: 4.6875rem;
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 5;
-  transition: transform var(--transition);
-}
-.gs-library-card__heart:hover { transform: scale(1.2); }
-
-.gs-library-card__body {
-  padding: 1rem 0.125rem 1rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  flex: 1;
-}
-
-
-
-.gs-library-card__title { color: var(--green); font-size: 1rem; display: block; }
-.gs-library-card__score { color: var(--pink); font-size: 1rem; font-weight: 600; display: block; }
-
-/* Dropdown de estado dentro de la tarjeta de biblioteca */
-.gs-status-wrap {
-  position: relative;
-  align-self: flex-start;
-}
-
-.gs-status-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  background: var(--bg);
-  cursor: pointer;
-  position: relative;
-  box-sizing: border-box;
-  border-style: solid;
-  border-width: 0.1875rem; /* 3px */
-  width: 208px;
-  height: 37px;
-}
-
-/* Modificadores de color por estado — el color coincide con el estado del juego */
-.gs-border-completed    { border-color: #7DD750; }
-.gs-border-playing      { border-color: #D64F82; }
-.gs-border-want_to_play { border-color: #AC4FD6; }
-.gs-border-dropped      { border-color: #AD0003; }
-
-.gs-text-completed    { color: #7DD750; }
-.gs-text-playing      { color: #D64F82; }
-.gs-text-want_to_play { color: #AC4FD6; }
-.gs-text-dropped      { color: #AD0003; }
-
-.gs-status-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.25rem;
-  background: var(--bg);
-  border: 0.0625rem solid #444;
-  border-radius: 0.5rem;
-  z-index: 10;
-  min-width: 11.25rem;
-  overflow: hidden;
-}
-
-.gs-status-option {
-  padding: 0.75rem 2rem;
-  cursor: pointer;
-  border-bottom: 0.0625rem solid #222;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.125rem;
-  font-weight: 500;
-  transition: background var(--transition);
-  background: transparent;
-  border-left: none;
-  border-right: none;
-  border-top: none;
-  width: 208px;
-  height: 37px;
-  text-align: left;
-  font-family: 'Inter', sans-serif;
-}
-.gs-status-option:hover { background: rgba(255,255,255,0.1); }
-.gs-status-option.active { background: rgba(255,255,255,0.05); }
-
-/* ─── BARRA DE FILTROS (biblioteca) ──────────────────────────────── */
-.gs-filter-bar {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-}
-
-.gs-filter-btn {
-  padding: 0.5rem 1.25rem;
-  border-radius: var(--radius-sm);
-  border: 0.0625rem solid var(--border);
-  background: transparent;
-  color: var(--text-muted);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-  width: 208px;
-  height: 37px;
-}
-.gs-filter-btn:hover { color: var(--text); border-color: #444; }
-.gs-filter-btn.active { color: var(--bg); background: #7DD750; border-color: #7DD750; }
-
-/* Hover por estado — muestra el color sin relleno */
-.gs-filter-btn.playing:hover      { color: #D64F82; border-color: #D64F82; }
-.gs-filter-btn.want_to_play:hover { color: #AC4FD6; border-color: #AC4FD6; }
-.gs-filter-btn.completed:hover    { color: #7DD750; border-color: #7DD750; }
-.gs-filter-btn.dropped:hover      { color: #AD0003; border-color: #AD0003; }
-
-/* Colores de filtro activos por estado */
-.gs-filter-btn.active.playing      { background: #D64F82; border-color: #D64F82; color: #fff; }
-.gs-filter-btn.active.want_to_play { background: #AC4FD6; border-color: #AC4FD6; color: #fff; }
-.gs-filter-btn.active.completed    { background: #7DD750; border-color: #7DD750; color: var(--bg); }
-.gs-filter-btn.active.dropped      { background: #AD0003; border-color: #AD0003; color: #fff; }
-
-/* Efecto glow en tarjetas de biblioteca por estado */
-.gs-glow-completed    { box-shadow: 0 0 1.5rem rgba(125, 215, 80, 0.15), 0 0 0.5rem rgba(125, 215, 80, 0.08); }
-.gs-glow-playing      { box-shadow: 0 0 1.5rem rgba(214, 79, 130, 0.15), 0 0 0.5rem rgba(214, 79, 130, 0.08); }
-.gs-glow-want_to_play { box-shadow: 0 0 1.5rem rgba(172, 79, 214, 0.15), 0 0 0.5rem rgba(172, 79, 214, 0.08); }
-.gs-glow-dropped      { box-shadow: 0 0 1.5rem rgba(173, 0, 3, 0.15), 0 0 0.5rem rgba(173, 0, 3, 0.08); }
-
-/* Border glow por estado (ganan sobre .gs-glow-*) */
-.gs-library-card.completed {
-  border-color: #7DD750;
-  box-shadow: 0 0.25rem 0.6rem #7DD750;
-}
-.gs-library-card.playing {
-  border-color: #D64F82;
-  box-shadow: 0 0.25rem 0.6rem #FF7AB8;
-}
-.gs-library-card.want_to_play {
-  border-color: #AC4FD6;
-  box-shadow: 0 0.25rem 0.6rem #D47EFF;
-}
-
-/* ─── INPUTS DE REDES SOCIALES EN MODO EDICIÓN ─────────────────────────────── */
+/* Redes sociales — edición */
 .gs-social-edit-row {
   display: flex;
   align-items: center;
@@ -561,54 +125,361 @@
   font-family: 'Varela Round', sans-serif;
 }
 
-.gs-edit-actions {
+/* Botón redondo (editar / compartir) */
+.gs-round-btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--green);
+  border: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: transform var(--transition);
+}
+.gs-round-btn:hover { transform: scale(1.1); }
+.gs-round-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke: #000;
+}
+
+/* ─── LAYOUT DEL PERFIL ─────────────────────────────────────── */
+.gs-profile-page {
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+.gs-profile-inner {
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Títulos de sección */
+.gs-section-title {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 2.5rem 0 1.25rem;
+}
+.gs-section-title.purple { color: var(--purple); }
+.gs-section-title.pink   { color: var(--pink); }
+.gs-section-title.green  { color: var(--green); }
+
+.gs-library-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 2.5rem 0 1.5rem;
+}
+
+/* ─── CARRUSELES ────────────────────────────────────────── */
+.gs-carousel-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+.gs-carousel-grid {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0.25rem 0;
+}
+.gs-carousel-grid::-webkit-scrollbar { display: none; }
+.gs-carousel-grid > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+.gs-carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 0.125rem solid #555;
+  background: var(--bg);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: all var(--transition);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.gs-carousel-btn:hover { border-color: var(--green); color: var(--green); }
+.gs-carousel-btn--left  { left: -1.125rem; }
+.gs-carousel-btn--right { right: -1.125rem; }
+
+/* ─── TARJETA "JUGANDO AHORA" ────────────────────────── */
+.gs-playing-card {
+  width: 16rem;
+  height: 8rem;
+  background: rgba(49, 38, 42, 0.39);
+  border-radius: 0.5rem;
+  display: flex;
+  padding: 0.875rem;
+  text-decoration: none;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: border-color var(--transition);
+  border: 0.0625rem solid transparent;
+}
+.gs-playing-card:hover { border-color: var(--green); }
+
+.gs-playing-card__cover {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 0.3125rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-hover);
+}
+.gs-playing-card__cover img { width: 100%; height: 100%; object-fit: cover; }
+
+.gs-playing-card__body {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.gs-playing-card__title {
+  color: var(--green);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gs-playing-card__rating {
+  color: var(--pink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gs-playing-card__meta { color: #fff; font-size: 0.75rem; }
+
+/* ─── ESTRELLAS ──────────────────────────────────────── */
+.gs-stars { display: inline-flex; gap: 2px; }
+.gs-star   { color: #555; font-size: 1.125rem; transition: color var(--transition); cursor: pointer; }
+.gs-star.on { color: #D4B609; }
+
+/* ─── TARJETA FAVORITOS ──────────────────────────────── */
+.gs-fav-card {
+  width: 15rem;
+  background: var(--bg);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 0.0625rem solid var(--border);
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.gs-fav-card:hover {
+  border-color: var(--green-border);
+  box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.3);
+}
+.gs-fav-card__cover {
+  width: 100%;
+  height: 13rem;
+  overflow: hidden;
+  background: var(--bg-hover);
+}
+.gs-fav-card__cover img { width: 100%; height: 100%; object-fit: cover; }
+.gs-fav-card__body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  overflow: hidden;
+  min-width: 0;
+}
+.gs-fav-card__title {
+  color: var(--green);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.gs-fav-card__score { color: var(--pink); font-size: 0.8125rem; font-weight: 600; }
+
+/* ─── TARJETA BIBLIOTECA ─────────────────────────────── */
+.gs-library-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
 }
 
-/* Inputs específicos de modo edición */
-.gs-profile-input--xl { font-size: 4rem; font-weight: 700; }
-
-.gs-profile-textarea--lg {
-  font-size: 1.5rem;
-  max-width: 29.9375rem; /* 479px */
-  margin-top: 0.5rem;
+.gs-library-card {
+  width: 24rem;
+  background: var(--bg);
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #333;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: visible;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+.gs-library-card.dropped {
+  border-color: #AD0003;
+  box-shadow: 0 0.25rem 0.35rem rgba(173,0,3,0.4);
 }
 
-/* Contenedor del uploader en modo edición */
-.gs-upload-wrap {
-  margin-bottom: 0.5rem;
-  max-width: 29.9375rem;
+.gs-library-card__cover {
+  width: 100%;
+  height: 14rem;
+  overflow: hidden;
+  background: var(--bg-hover);
+  position: relative;
+  border-radius: 0.5rem 0.5rem 0 0;
 }
+.gs-library-card__cover img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Grupo de inputs de redes sociales */
-.gs-social-edit-group {
+.gs-library-card__heart {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.375rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 5;
+  transition: transform var(--transition);
+}
+.gs-library-card__heart:hover { transform: scale(1.2); }
+
+.gs-library-card__body {
+  padding: 0.875rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-top: 1rem;
-  max-width: 29.9375rem;
+  flex: 1;
 }
 
-/* Descripción del perfil — modo vista */
-.gs-profile-desc {
-  font-size: 1.5rem;
-  line-height: 150%;
-  color: #FFEDF4;
-  max-width: 29.9375rem;
-  margin-top: 0.5rem;
+.gs-library-card__title { color: var(--green); font-size: 0.9375rem; font-weight: 600; display: block; }
+.gs-library-card__score { color: var(--pink); font-size: 0.875rem; font-weight: 600; display: block; }
+
+/* Status dropdown */
+.gs-status-wrap    { position: relative; align-self: flex-start; }
+.gs-status-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.75rem;
+  background: var(--bg);
+  cursor: pointer;
+  border-style: solid;
+  border-width: 0.1875rem;
+  min-width: 11rem;
+  height: 2.25rem;
 }
-
-/* Label y flecha de estado (color inline, resto en CSS) */
-.gs-status-label { font-size: 1.25rem; font-weight: 500; }
-.gs-status-arrow { font-size: 1.25rem; }
-
-/* Checkmark y spacer en dropdown de estado */
-.gs-check { font-size: 0.875rem; }
+.gs-status-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  background: var(--bg);
+  border: 0.0625rem solid #444;
+  border-radius: 0.5rem;
+  z-index: 10;
+  min-width: 11rem;
+  overflow: hidden;
+}
+.gs-status-option {
+  padding: 0.625rem 1.25rem;
+  cursor: pointer;
+  border-bottom: 0.0625rem solid #222;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background var(--transition);
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  width: 100%;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+.gs-status-option:hover   { background: rgba(255,255,255,0.1); }
+.gs-status-option.active  { background: rgba(255,255,255,0.05); }
+.gs-status-label { font-size: 1rem; font-weight: 500; }
+.gs-status-arrow { font-size: 1rem; }
+.gs-check  { font-size: 0.875rem; }
 .gs-spacer { width: 0.875rem; display: inline-block; }
 
-/* ─── ImageUploader ─────────────────────────────────────────── */
+/* Color por estado */
+.gs-border-completed    { border-color: #7DD750; }
+.gs-border-playing      { border-color: #D64F82; }
+.gs-border-want_to_play { border-color: #AC4FD6; }
+.gs-border-dropped      { border-color: #AD0003; }
+.gs-text-completed      { color: #7DD750; }
+.gs-text-playing        { color: #D64F82; }
+.gs-text-want_to_play   { color: #AC4FD6; }
+.gs-text-dropped        { color: #AD0003; }
+
+/* Glow por estado */
+.gs-glow-completed    { box-shadow: 0 0 1.5rem rgba(125,215,80,0.15); }
+.gs-glow-playing      { box-shadow: 0 0 1.5rem rgba(214,79,130,0.15); }
+.gs-glow-want_to_play { box-shadow: 0 0 1.5rem rgba(172,79,214,0.15); }
+.gs-glow-dropped      { box-shadow: 0 0 1.5rem rgba(173,0,3,0.15); }
+
+/* ─── FILTROS BIBLIOTECA ─────────────────────────────── */
+.gs-filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+
+.gs-filter-btn {
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 0.0625rem solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  min-width: 6rem;
+}
+.gs-filter-btn:hover { color: var(--text); border-color: #444; }
+.gs-filter-btn.active { color: var(--bg); background: #7DD750; border-color: #7DD750; }
+.gs-filter-btn.playing:hover      { color: #D64F82; border-color: #D64F82; }
+.gs-filter-btn.want_to_play:hover { color: #AC4FD6; border-color: #AC4FD6; }
+.gs-filter-btn.completed:hover    { color: #7DD750; border-color: #7DD750; }
+.gs-filter-btn.dropped:hover      { color: #AD0003; border-color: #AD0003; }
+.gs-filter-btn.active.playing      { background: #D64F82; border-color: #D64F82; color: #fff; }
+.gs-filter-btn.active.want_to_play { background: #AC4FD6; border-color: #AC4FD6; color: #fff; }
+.gs-filter-btn.active.completed    { background: #7DD750; border-color: #7DD750; color: var(--bg); }
+.gs-filter-btn.active.dropped      { background: #AD0003; border-color: #AD0003; color: #fff; }
+
+/* ─── UPLOADER ───────────────────────────────────────── */
 .gs-upload-area {
   border: 0.125rem dashed var(--green-border);
   border-radius: var(--radius-md);
@@ -619,10 +490,7 @@
   background: var(--bg-input);
 }
 .gs-upload-area:hover,
-.gs-upload-area.dragover {
-  border-color: var(--green);
-  background: var(--green-dim);
-}
+.gs-upload-area.dragover { border-color: var(--green); background: var(--green-dim); }
 .gs-upload-preview {
   width: 8rem;
   height: 8rem;
@@ -631,24 +499,43 @@
   border: 0.1875rem solid var(--green);
   box-shadow: var(--green-glow);
 }
-.gs-upload-filename {
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  margin-top: 0.5rem;
+.gs-upload-filename { color: var(--text-muted); font-size: 0.8125rem; margin-top: 0.5rem; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .gs-profile-inner { padding: 0 1rem; }
+  .gs-profile-card  { padding: 1.25rem; }
+
+  /* Header apilado en móvil */
+  .gs-profile-header      { flex-direction: column; gap: 1.25rem; }
+  .gs-profile-header-left { flex-wrap: wrap; }
+  .gs-profile-stats       { text-align: left !important; width: 100%; }
+  .gs-stats-row           { justify-content: flex-start !important; }
+  .gs-stats-label         { justify-content: flex-start !important; }
+  .gs-profile-btns        { justify-content: flex-start !important; }
+
+  /* Avatar más pequeño en móvil */
+  .gs-avatar-wrap { width: 6rem; height: 6rem; }
+  .gs-profile-username { font-size: clamp(1.5rem, 6vw, 2.5rem); }
+
+  /* Library grid — 1 columna en móvil */
+  .gs-library-grid { gap: 1rem; }
+  .gs-library-card { width: 100%; }
+
+  /* Fav cards más pequeñas */
+  .gs-fav-card { width: 12rem; }
+  .gs-fav-card__cover { height: 10rem; }
+
+  /* Títulos */
+  .gs-library-title { font-size: 1.75rem; }
+  .gs-section-title { font-size: 1.5rem; }
+
+  /* Filtros */
+  .gs-filter-btn { min-width: 5rem; font-size: 0.8125rem; padding: 0.375rem 0.75rem; }
 }
 
-/* ─── Spinner ───────────────────────────────────────────────── */
-.gs-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--border);
-  border-top: 4px solid var(--green);
-  border-radius: 50%;
-  animation: gs-spin 1s linear infinite;
-  margin: 2rem auto;
-}
-
-@keyframes gs-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@media (max-width: 480px) {
+  .gs-avatar-wrap { width: 5rem; height: 5rem; }
+  .gs-library-card { width: 100%; }
+  .gs-fav-card { width: 10rem; }
 }
