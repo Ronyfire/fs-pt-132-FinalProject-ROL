@@ -2,78 +2,93 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
-	<footer className="bg-dark text-light mt-auto py-4 border-top">
-	  <div className="container">
-		<div className="row gy-4">
+    <footer className="gs-footer">
+      <div className="container">
+        <div className="gs-footer-main">
+          <div className="gs-footer-brand">
+            <Link to="/" className="gs-footer-logo gs-spray-pink">
+              <svg
+                width="30"
+                height="30"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#7DD750"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="2" y="6" width="20" height="12" rx="5" />
+                <path d="M6 10v4M8 12H4" />
+                <circle cx="16" cy="10.5" r="0.8" fill="#7DD750" stroke="none" />
+                <circle cx="18.5" cy="12.5" r="0.8" fill="#7DD750" stroke="none" />
+                <circle cx="13.5" cy="12.5" r="0.8" fill="#7DD750" stroke="none" />
+                <circle cx="16" cy="14.5" r="0.8" fill="#7DD750" stroke="none" />
+              </svg>
 
-		  <div className="col-md-4">
-			<h3 className="h5">Game-Side</h3>
-			<p className="mb-0">
-			  Discover, organize, and share your favorite video games in a modern,
-			  personalized experience.
-			</p>
-		  </div>
+              <span>Game-Side</span>
+            </Link>
 
-		  <div className="col-md-4">
-			<h4 className="h6">Navigation</h4>
+            <p>
+              Discover, organize, rate, and share your favorite video games in a
+              modern, personalized experience built for players.
+            </p>
 
-			<ul className="list-unstyled mb-0">
-			  <li>
-				<Link to="/" className="text-light text-decoration-none">
-				  Home
-				</Link>
-			  </li>
+            <div className="gs-footer-tagline">
+              Track. Rate. Discover.
+            </div>
+          </div>
 
-			  <li>
-				<Link to="/games" className="text-light text-decoration-none">
-				  Games
-				</Link>
-			  </li>
+          <div className="gs-footer-column">
+            <h4 className="gs-graffiti-title">Explore</h4>
 
-			  <li>
-				<Link to="/survey" className="text-light text-decoration-none">
-				  Survey
-				</Link>
-			  </li>
+            <nav className="gs-footer-links">
+              <Link to="/">Home</Link>
+              <Link to="/games">Games</Link>
+              <Link to="/survey">Survey</Link>
+              <Link to="/profile">Profile</Link>
+            </nav>
+          </div>
 
-			  <li>
-				<Link to="/profile" className="text-light text-decoration-none">
-				  Profile
-				</Link>
-			  </li>
-			</ul>
-		  </div>
+          <div className="gs-footer-column">
+            <h4 className="gs-graffiti-title">Community</h4>
 
-		  <div className="col-md-4">
-			<h4 className="h6">Contact</h4>
+            <nav className="gs-footer-links">
+              <Link to="/tierlist">Tier List</Link>
+              <Link to="/games">Trending Games</Link>
+              <Link to="/survey">Recommendations</Link>
+              <Link to="/profile">My Library</Link>
+            </nav>
+          </div>
 
-			<p className="mb-1">
-			  contact@game-side.org
-			</p>
+          <div className="gs-footer-column">
+            <h4 className="gs-graffiti-title">Contact</h4>
 
-			<p className="mb-1">
-			  GitHub
-			</p>
+            <div className="gs-footer-contact">
+              <a href="mailto:contact@game-side.org">
+                contact@game-side.org
+              </a>
 
-			<p className="mb-0">
-			  Twitter
-			</p>
-		  </div>
+              <a href="https://github.com" target="_blank" rel="noreferrer">
+                GitHub
+              </a>
 
-		</div>
+              <a href="https://twitter.com" target="_blank" rel="noreferrer">
+                Twitter
+              </a>
+            </div>
+          </div>
+        </div>
 
-		<hr className="border-secondary my-4" />
+        <div className="gs-footer-bottom gs-spray-dots">
+          <small>
+            © {new Date().getFullYear()} Game-Side. All rights reserved.
+          </small>
 
-		<div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-		  <small>
-			© {new Date().getFullYear()} Game-Side. All rights reserved.
-		  </small>
-
-		  <small>
-			Game data powered by IGDB API.
-		  </small>
-		</div>
-	  </div>
-	</footer>
+          <small>
+            Game data powered by <span>IGDB API</span>.
+          </small>
+        </div>
+      </div>
+    </footer>
   );
 };

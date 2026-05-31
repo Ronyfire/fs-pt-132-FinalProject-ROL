@@ -1,9 +1,9 @@
 from api.routes import api
 from flask import request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from api.models import db, Game, GameTier, UserGameTier, UserGameList, User, UserGLG
+from api.models import db, Game, GameTier, UserGameTier, UserGameList, User, UserGLG, UserSurvey
 from sqlalchemy import select
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import re
 
 
@@ -26,14 +26,13 @@ def _calcular_tier(avg):
     return "F"
 
 def check_admin(user_id):
-    user = db.session.get(User,user_id)
+    user = db.session.get(User, int(user_id))
     
     if not user:
         return jsonify({"msg": "User not found"}), 404
     
-    is_admin = user.is_admin
-    if not is_admin:        
-        return jsonify({"msg": "Admin access required"}), 400
+    if not user.is_admin:
+        return jsonify({"msg": "Admin access required"}), 403
     return None
 def slugify(text):
     text = text.lower().strip()
@@ -429,29 +428,28 @@ def update_user_game_tier(vote_id):
 @jwt_required()
 def delete_user_game_tier(game_id):
     user_id = get_jwt_identity()
+
     game_tier = db.session.execute(
-        select(GameTier).where(
-            GameTier.game_id == game_id,
-        )
+        select(GameTier).where(GameTier.game_id == game_id)
     ).scalar_one_or_none()
-    vote_id = game_tier.id
+
+    if not game_tier:
+        return jsonify({"msg": "Game tier not found"}), 404
+
     vote = db.session.execute(
         select(UserGameTier).where(
-            UserGameTier.game_tier_id == vote_id,
-            UserGameTier.user_id == user_id
+            UserGameTier.game_tier_id == game_tier.id,
+            UserGameTier.user_id == int(user_id)
         )
     ).scalar_one_or_none()
 
     if not vote:
         return jsonify({"msg": "Vote not found"}), 404
 
-    game_tier_id = vote.game_tier_id
     db.session.delete(vote)
     db.session.commit()
 
-    game_tier = db.session.get(GameTier, game_tier_id)
-    if game_tier:
-        _recalcular_game_tier(game_tier)
+    _recalcular_game_tier(game_tier)
 
     return jsonify({"msg": "Vote deleted"}), 200
 
@@ -578,8 +576,162 @@ def update_user_game_entry(entry_id):
 def delete_user_game_entry(entry_id):
     user_id = get_jwt_identity()
     entry = db.session.get(UserGLG, entry_id)
-    if not entry or entry.ugl.user_id != user_id:
+    if not entry or entry.ugl.user_id != int(user_id):
         return jsonify({"msg": "Entry not found"}), 404
     db.session.delete(entry)
     db.session.commit()
     return jsonify({"msg": "Entry deleted"}), 200
+
+
+#GET for trending to work on Home
+@api.route('/games/trending', methods=['GET'])
+def get_trending_games():
+    seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
+
+    recent_votes = db.session.execute(
+        select(UserGameTier)
+        .where(UserGameTier.created_at >= seven_days_ago)
+    ).scalars().all()
+
+    game_data = {}
+
+    for vote in recent_votes:
+        game_tier = db.session.get(GameTier, vote.game_tier_id)
+
+        if not game_tier:
+            continue
+
+        game_id = game_tier.game_id
+
+        if game_id not in game_data:
+            game_data[game_id] = {"total_rating": 0, "vote_count": 0}
+
+        game_data[game_id]["total_rating"] += vote.rating
+        game_data[game_id]["vote_count"] += 1
+
+    trending = []
+
+    for game_id, data in game_data.items():
+        game = db.session.get(Game, game_id)
+
+        if not game:
+            continue
+
+        average_rating = data["total_rating"] / data["vote_count"]
+        score = average_rating * data["vote_count"]
+
+        serialized_game = game.serialize()
+        serialized_game["weekly_average_rating"] = round(average_rating, 2)
+        serialized_game["weekly_vote_count"] = data["vote_count"]
+        serialized_game["trending_score"] = round(score, 2)
+
+        trending.append(serialized_game)
+
+    trending.sort(
+        key=lambda game: (
+            game["trending_score"],
+            game["weekly_vote_count"],
+            game["weekly_average_rating"]
+        ),
+        reverse=True
+    )
+
+    return jsonify(trending[:10]), 200
+
+#GET for recommendations to work on Home
+@api.route('/games/recommendations', methods=['GET'])
+@jwt_required(optional=True)
+def get_game_recommendations():
+    current_user_id = get_jwt_identity()
+
+    games = db.session.execute(select(Game)).scalars().all()
+
+    if not current_user_id:
+        return jsonify([game.serialize() for game in games[:10]]), 200
+
+    surveys = db.session.execute(select(UserSurvey).where(UserSurvey.user_id == current_user_id)).scalars().all()
+
+    if not surveys:
+        return jsonify([game.serialize() for game in games[:10]]), 200
+
+    survey = surveys[-1]
+
+    user_game_list = db.session.execute(
+        select(UserGameList)
+        .where(UserGameList.user_id == current_user_id)
+    ).scalar_one_or_none()
+
+    owned_game_ids = set()
+
+    if user_game_list:
+        entries = db.session.execute(
+            select(UserGLG)
+            .where(UserGLG.ugl_id == user_game_list.id)
+        ).scalars().all()
+
+        owned_game_ids = {entry.game_id for entry in entries}
+
+    scored_games = []
+
+    for game in games:
+        if game.id in owned_game_ids:
+            continue
+
+        score = 0
+
+        game_genres = game.genres or []
+        game_platforms = game.platforms or []
+        game_description = (game.description or "").lower()
+
+        for genre in survey.genres or []:
+            if genre in game_genres:
+                score += 4
+
+        for platform in survey.platforms or []:
+            if platform in game_platforms:
+                score += 3
+
+        for theme in survey.favorite_themes or []:
+            theme_lower = theme.lower()
+
+            if theme_lower in game_description:
+                score += 2
+
+            if theme in game_genres:
+                score += 2
+
+        if survey.play_style == "story":
+            if "RPG" in game_genres or "Adventure" in game_genres:
+                score += 2
+
+        if survey.play_style == "competitive":
+            if "Shooter" in game_genres or "Fighting" in game_genres or "Sports" in game_genres:
+                score += 2
+
+        if survey.play_style == "casual":
+            if "Puzzle" in game_genres or "Simulation" in game_genres or "Platformer" in game_genres:
+                score += 2
+
+        if survey.play_style == "exploration":
+            if "Adventure" in game_genres or "Open World" in game_description:
+                score += 2
+
+        if survey.play_style == "completionist":
+            if "RPG" in game_genres or "Adventure" in game_genres:
+                score += 1
+
+        if survey.play_style == "social":
+            if "Multiplayer" in game_description or "Co-op" in game_description:
+                score += 2
+
+        serialized_game = game.serialize()
+        serialized_game["recommendation_score"] = score
+
+        scored_games.append(serialized_game)
+
+    scored_games.sort(
+        key=lambda game: game["recommendation_score"],
+        reverse=True
+    )
+
+    return jsonify(scored_games[:10]), 200

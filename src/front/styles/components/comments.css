@@ -1,0 +1,242 @@
+/* COMMENTS --------------------------------------------------- */
+
+.gs-comment-form {
+  position: relative;
+}
+
+.gs-comment-textarea {
+  width: 100%;
+  resize: vertical;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 95% 15%, rgba(214, 79, 130, 0.1), transparent 9rem),
+    rgba(10, 12, 26, 0.72);
+  border: 0.0625rem solid var(--green-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1rem 2rem;
+  box-shadow:
+    inset 0 0 0 0.0625rem rgba(255, 255, 255, 0.02),
+    0 0 1.2rem rgba(125, 215, 80, 0.08);
+}
+
+.gs-comment-textarea:focus {
+  color: var(--text);
+  background: rgba(10, 12, 26, 0.9);
+  border-color: var(--green);
+  box-shadow:
+    0 0 0 0.18rem rgba(125, 215, 80, 0.12),
+    var(--green-glow);
+}
+
+.gs-comment-textarea::placeholder {
+  color: rgba(216, 216, 232, 0.35);
+}
+
+.gs-comment-counter {
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.55rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.gs-comment-hint {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.gs-comment-alert {
+  color: #ffd6e5;
+  background: rgba(214, 79, 130, 0.14);
+  border: 0.0625rem solid rgba(214, 79, 130, 0.45);
+  border-radius: var(--radius-md);
+}
+
+.gs-comment-card {
+  position: relative;
+  overflow: hidden;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(214, 79, 130, 0.12), transparent 12rem),
+    linear-gradient(135deg, rgba(17, 19, 38, 0.96), rgba(10, 12, 26, 0.96));
+  border: 0.0625rem solid rgba(125, 215, 80, 0.16);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.22);
+}
+
+.gs-comment-card::before {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  top: 0.75rem;
+  width: 4rem;
+  height: 0.25rem;
+  background: linear-gradient(90deg, var(--pink), var(--green));
+  border-radius: 999rem;
+  box-shadow: 0 0 1rem rgba(214, 79, 130, 0.3);
+}
+
+.gs-comment-card:hover {
+  border-color: var(--green-border);
+  box-shadow:
+    0 1rem 2.4rem rgba(0, 0, 0, 0.28),
+    0 0 1.5rem rgba(125, 215, 80, 0.1);
+}
+
+.gs-comment-avatar {
+  width: 2.8rem;
+  height: 2.8rem;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--bg);
+  background:
+    radial-gradient(circle at 30% 25%, #ffffff55, transparent 35%),
+    linear-gradient(135deg, var(--green), var(--pink));
+  border: 0.125rem solid rgba(125, 215, 80, 0.45);
+  border-radius: 999rem;
+  font-weight: 900;
+  box-shadow:
+    0 0 0 0.18rem rgba(125, 215, 80, 0.12),
+    0 0 1rem rgba(214, 79, 130, 0.2);
+}
+
+.gs-comment-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gs-comment-author {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.gs-comment-role {
+  color: var(--purple);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.gs-comment-date {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.gs-comment-content {
+  color: #f1f1fb;
+  font-size: 1rem;
+  line-height: 1.65;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+}
+
+.gs-comment-message {
+  color: var(--green);
+  background: rgba(125, 215, 80, 0.1);
+  border: 0.0625rem solid var(--green-border);
+  border-radius: var(--radius-md);
+}
+
+.gs-comment-action {
+  color: var(--green);
+  background: rgba(125, 215, 80, 0.08);
+  border: 0.0625rem solid var(--green-border);
+  border-radius: 999rem;
+  font-weight: 800;
+  padding-inline: 0.8rem;
+}
+
+.gs-comment-action:hover {
+  color: var(--bg);
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.gs-comment-action.danger {
+  color: var(--pink);
+  background: rgba(214, 79, 130, 0.08);
+  border-color: rgba(214, 79, 130, 0.45);
+}
+
+.gs-comment-action.danger:hover {
+  color: var(--bg);
+  background: var(--pink);
+  border-color: var(--pink);
+}
+
+.gs-comment-action.warning {
+  color: var(--purple);
+  background: rgba(172, 79, 214, 0.1);
+  border-color: rgba(172, 79, 214, 0.45);
+}
+
+.gs-comment-action.warning:hover {
+  color: var(--text);
+  background: var(--purple);
+  border-color: var(--purple);
+}
+
+.gs-comment-nested-form {
+  padding: 1rem;
+  border: 0.0625rem dashed rgba(214, 79, 130, 0.35);
+  border-radius: var(--radius-lg);
+  background: rgba(10, 12, 26, 0.42);
+}
+
+.gs-comment-replies {
+  position: relative;
+  margin-left: 1.25rem;
+  padding-left: 1.25rem;
+  border-left: 0.125rem solid rgba(214, 79, 130, 0.35);
+}
+
+.gs-comment-replies .gs-comment-card {
+  margin-bottom: 1rem;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(125, 215, 80, 0.1), transparent 10rem),
+    rgba(10, 12, 26, 0.72);
+}
+
+.gs-report-form {
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(172, 79, 214, 0.08);
+  border: 0.0625rem solid rgba(172, 79, 214, 0.25);
+}
+
+@media (max-width: 576px) {
+  .gs-comment-date {
+    white-space: normal;
+    text-align: right;
+  }
+
+  .gs-comment-replies {
+    margin-left: 0.35rem;
+    padding-left: 0.8rem;
+  }
+}
+
+.gs-comment-role {
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.gs-comment-role.player {
+  color: var(--green);
+}
+
+.gs-comment-role.admin {
+  color: var(--pink);
+  text-shadow: 0 0 0.8rem rgba(214, 79, 130, 0.35);
+}

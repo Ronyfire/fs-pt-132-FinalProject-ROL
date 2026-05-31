@@ -20,6 +20,9 @@ class User(db.Model):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
     is_admin: Mapped[bool] = mapped_column(Boolean(), default=False, nullable=False)
+    #reset password
+    reset_code        = db.Column(db.String(5),  nullable=True)
+    reset_code_expiry = db.Column(db.DateTime,   nullable=True)
 
     # Relaciones
     profile: Mapped["Profile"] = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")
@@ -211,6 +214,8 @@ class Comment(db.Model):
             "id": self.id,
             "user_id": self.user_id,
             "username": self.user.username if self.user else None,
+            "avatar_url": self.user.profile.avatar_url if self.user and self.user.profile else None,
+            "is_admin": self.user.is_admin if self.user else False,
             "game_id": self.game_id,
             "content": self.content,
             "created_at": self.created_at.isoformat(),
@@ -247,6 +252,8 @@ class UserGameTier(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
     rating: Mapped[int] = mapped_column(Integer,nullable=False)
     __table_args__ = (db.UniqueConstraint('game_tier_id', 'user_id'),)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
     # Relaciones
     game_tier: Mapped["GameTier"] = relationship("GameTier", back_populates="user_game_tiers")
@@ -258,6 +265,9 @@ class UserGameTier(db.Model):
             "game_tier_id": self.game_tier_id,
             "user_id": self.user_id,
             "username": self.user.username if self.user else None,
+            "rating": self.rating,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
         }
 
 
@@ -269,9 +279,14 @@ class Ban(db.Model):
     reason: Mapped[str] = mapped_column(Text, nullable=False)
     ends: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
+    # Campo nuevo para registrar el unban
+    unbanned_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    unbanned_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey('user.id'), nullable=True)
+
     # Relaciones
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id], back_populates="bans_received")
     admin: Mapped["User"] = relationship("User", foreign_keys=[admin_id], back_populates="bans_given")
+    unbanned_by: Mapped[Optional["User"]] = relationship("User", foreign_keys=[unbanned_by_id])
 
     #Serialize
     def serialize(self):
@@ -284,6 +299,11 @@ class Ban(db.Model):
             "reason": self.reason,
             "created_at": self.created_at.isoformat(),
             "ends": self.ends.isoformat() if self.ends else "Permanent",
+            # Lo Nuevo 
+            "is_active_ban": self.unbanned_at is None,
+            "unbanned_at": self.unbanned_at.isoformat() if self.unbanned_at else None,
+            "unbanned_by_id": self.unbanned_by_id,
+            "unbanned_by_username": self.unbanned_by.username if self.unbanned_by else None,
         }
 
 class AddGame(db.Model):
@@ -344,6 +364,8 @@ class Report(db.Model):
             "reported_comment_id": self.reported_comment_id,
             "comment_content": self.comment.content if self.comment else None,
             "comment_game_id": self.comment.game_id if self.comment else None,
+            "comment_author_id": self.comment.user_id if self.comment else None,
+            "comment_author_username": self.comment.user.username if self.comment and self.comment.user else None,
             "reported_user_id": self.reported_user_id,
             "reported_username": self.reported_user.username if self.reported_user else None,
             "reason": self.reason,

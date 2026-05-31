@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ImageUploader } from "./ImageUploader";
 
 export const AddGameForm = ({ searchTerm = "" }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -179,15 +180,22 @@ export const AddGameForm = ({ searchTerm = "" }) => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Cover URL</label>
+          <ImageUploader
+            label="Cover Image"
+            currentUrl={formData.cover_img_url}
+            shape="square"
+            previewWidth={100}
+            previewHeight={140}
+            onUpload={(url) => setFormData((prev) => ({ ...prev, cover_img_url: url }))}
+          />
+          {/* Fallback manual */}
           <input
-            className="form-control"
+            className="form-control bg-dark border-secondary text-light mt-2"
             type="text"
             name="cover_img_url"
             value={formData.cover_img_url}
             onChange={handleChange}
-            placeholder="https://..."
-            required
+            placeholder="Or paste a URL manually..."
           />
         </div>
 

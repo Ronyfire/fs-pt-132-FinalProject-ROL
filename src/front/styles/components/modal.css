@@ -1,0 +1,65 @@
+.gs-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(0.25rem);
+}
+
+.gs-modal {
+  background: var(--bg-card);
+  border: 0.0625rem solid var(--green);
+  box-shadow: 0 0 2rem rgba(125, 215, 80, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.75rem;
+  width: min(21.25rem, 90vw);
+  position: relative;
+}
+
+.gs-modal-close {
+  position: absolute;
+  top: 0.875rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: color var(--transition);
+}
+
+.gs-modal-close:hover { color: var(--text); }
+
+.gs-modal-title {
+  color: var(--green);
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+}
+
+.gs-modal-footer {
+  border-top: 0.0625rem solid var(--border);
+  padding-top: 1rem;
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.gs-modal-link {
+  background: none;
+  border: none;
+  color: var(--pink);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  transition: color var(--transition);
+  padding: 0;
+}
+
+.gs-modal-link:hover { color: #ff6fa0; }

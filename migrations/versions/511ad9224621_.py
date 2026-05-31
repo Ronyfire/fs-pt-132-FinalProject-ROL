@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 0938a90317d1
+Revision ID: 511ad9224621
 Revises: 
-Create Date: 2026-05-22 18:18:04.979159
+Create Date: 2026-05-30 11:34:36.651053
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '0938a90317d1'
+revision = '511ad9224621'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -44,6 +44,8 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('is_admin', sa.Boolean(), nullable=False),
+    sa.Column('reset_code', sa.String(length=5), nullable=True),
+    sa.Column('reset_code_expiry', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
@@ -69,7 +71,10 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('reason', sa.Text(), nullable=False),
     sa.Column('ends', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('unbanned_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('unbanned_by_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['admin_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['unbanned_by_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -141,6 +146,8 @@ def upgrade():
     sa.Column('game_tier_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('rating', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['game_tier_id'], ['game_tier.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
