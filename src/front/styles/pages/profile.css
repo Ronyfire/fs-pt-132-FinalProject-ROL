@@ -862,3 +862,117 @@
 .gs-status-menu {
   z-index: 999;
 }
+
+/* Profile header fixed layout ------------------------------- */
+
+.gs-profile-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 2rem;
+}
+
+.gs-profile-main-info {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: nowrap;
+}
+
+.gs-profile-main-info > div:nth-child(2) {
+  min-width: 0;
+}
+
+.gs-profile-username {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: 1.05;
+}
+
+.gs-profile-side-panel {
+  min-width: 10rem;
+  justify-self: end;
+  text-align: right;
+}
+
+@media (max-width: 992px) {
+  .gs-profile-header {
+    grid-template-columns: 1fr;
+  }
+
+  .gs-profile-main-info {
+    flex-wrap: wrap;
+  }
+
+  .gs-profile-side-panel {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .gs-profile-side-panel .justify-content-end {
+    justify-content: flex-start !important;
+  }
+}
+
+/* Taste profile tags ---------------------------------------- */
+
+.gs-profile-taste {
+  max-width: 34rem;
+}
+
+.gs-profile-taste-label {
+  display: block;
+  color: var(--pink);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.5rem;
+}
+
+.gs-profile-taste-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.gs-profile-taste-tag {
+  color: var(--green);
+  background: rgba(125, 215, 80, 0.08);
+  border: 0.0625rem solid rgba(125, 215, 80, 0.35);
+  border-radius: 999rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+  box-shadow: 0 0 0.8rem rgba(125, 215, 80, 0.08);
+}
+
+.gs-profile-stats-box {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 1.4rem;
+}
+
+.gs-profile-stat-item {
+  min-width: 4.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.gs-profile-stat-item small {
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.gs-profile-stat {
+  display: block;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  line-height: 0.9;
+}
