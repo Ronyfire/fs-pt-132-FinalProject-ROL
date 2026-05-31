@@ -1,17 +1,43 @@
 import { Link } from "react-router-dom";
-import Rakki from "../components/Rakki";
+import RakkiConcerned from "../assets/img/Rakki_Concerned_Sticker.png";
+import "../styles/pages/not-found.css";
 
 const NotFound = () => {
   return (
-    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center text-center px-3">
-      <Rakki pose="scared" size="xl" text="404 — Page not found" />
-      <p className="text-muted mt-2" style={{ maxWidth: 360, fontSize: "0.95rem" }}>
-        Rakki looked everywhere but couldn't find this page. It might have been moved or doesn't exist.
-      </p>
-      <Link to="/" className="btn btn-primary mt-3">
-        Back to home
-      </Link>
-    </div>
+    <main className="gs-not-found-page">
+      <section className="container gs-not-found-content">
+        <div className="gs-not-found-card">
+          <span className="gs-not-found-kicker">
+            Error 404
+          </span>
+
+          <h1>
+            Rakki got lost.
+          </h1>
+
+          <p>
+            Rakki looked everywhere, but couldn&apos;t find this page.
+            It might have been moved, deleted, or hidden in another backlog.
+          </p>
+
+          <img
+            className="gs-not-found-rakki"
+            src={RakkiConcerned}
+            alt="Rakki looking concerned"
+          />
+
+          <div className="gs-not-found-actions">
+            <Link to="/" className="btn-gs btn-green">
+              Back to Home
+            </Link>
+
+            <Link to="/games" className="btn-gs btn-green-outline">
+              Explore Games
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 };
 

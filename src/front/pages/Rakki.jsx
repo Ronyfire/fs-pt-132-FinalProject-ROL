@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import RakkiTest from "../assets/img/RakkiTEST.png";
+import RakkiGraffiti from "../assets/img/RAkkiTi2.png";
+import RakkiWaving from "../assets/img/RakkiWaving.png";
 
 export const Rakki = () => {
     const profileFacts = [
@@ -67,13 +68,13 @@ export const Rakki = () => {
 
     return (
         <main className="gs-rakki-page gs-footer gs-page-bg">
-            <section className="container gs-rakki-hero">
+            <section className="container gs-rakki-hero gs-rakki-hero-remix">
                 <div className="gs-rakki-hero-content">
                     <span className="gs-rakki-kicker">Secret mascot file unlocked</span>
 
-                    <h1 className="gs-rakki-title">
-                        Meet <span>Rakki</span>
-                    </h1>
+                    <div className="gs-rakki-graffiti-logo">
+                        <img src={RakkiGraffiti} alt="Rakki graffiti signature" />
+                    </div>
 
                     <p className="gs-rakki-description">
                         You found Rakki&apos;s hideout. Don&apos;t tell the navbar.
@@ -95,15 +96,19 @@ export const Rakki = () => {
                     </div>
                 </div>
 
-                <aside className="gs-rakki-card">
-                    <div className="gs-rakki-image-box">
-                        <img src={RakkiTest} alt="Rakki, Game-Side mascot" />
-                    </div>
+                <aside className="gs-rakki-showcase">
+                    <div className="gs-rakki-showcase-glow"></div>
 
-                    <div className="gs-rakki-card-info">
+                    <div className="gs-rakki-profile-chip">
                         <h2>Rakki</h2>
                         <p>Punk raccoon · Game tracker · Backlog gremlin</p>
                     </div>
+
+                    <img
+                        src={RakkiWaving}
+                        alt="Rakki, Game-Side mascot"
+                        className="gs-rakki-showcase-img"
+                    />
                 </aside>
             </section>
 

@@ -15,7 +15,8 @@
 @import "./components/toast.css";
 @import "./components/scrollbar.css";
 @import "./components/graffiti.css";
-@import "./components/rakki.css";
+@import "./components/comments.css";
+
 
 @import "./pages/home.css";
 @import "./pages/survey.css";

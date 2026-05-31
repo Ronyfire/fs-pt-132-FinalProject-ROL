@@ -3,20 +3,20 @@ import { Link, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import html2canvas from "html2canvas";
 import { ImageUploader } from "../components/ImageUploader";
-import Rakki from "../components/Rakki";
+import { rakkiToast } from "../components/RakkiToast";
+import RakkiWaving from "../assets/img/Rakki_Waving_Sticker.png";
+
 const API = import.meta.env.VITE_BACKEND_URL || "";
-// Opciones de estado del juego
-// Los colores viven en CSS: gs-border-{key} / gs-text-{key}
+
 const STATUS = {
-  playing: { label: "Playing" },
+  playing:      { label: "Playing" },
   want_to_play: { label: "Pending" },
-  completed: { label: "Completed" },
-  dropped: { label: "Dropped" },
+  completed:    { label: "Completed" },
+  dropped:      { label: "Dropped" },
 };
-// Devuelve el sufijo CSS para una clave de estado
+
 const statusClass = (s) => s || "";
-// Redes sociales con iconos SVG
-// El input social solo acepta el nombre de usuario; baseUrl se agrega al guardar
+
 const SOCIAL = {
   instagram: {
     label: "Instagram",
@@ -41,7 +41,7 @@ const SOCIAL = {
   twitter: { icon: "𝕏", label: "Twitter / X", baseUrl: "https://twitter.com/" },
   website: {
     label: "Sitio Web",
-    baseUrl: "",  // URL libre, sin prefijo
+    baseUrl: "",
     icon: (
       <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
@@ -51,7 +51,7 @@ const SOCIAL = {
     ),
   },
 };
-// Componente de estrellas
+
 const Stars = ({ rating = 0, onRate }) => (
   <div className="gs-stars" onClick={onRate ? (e) => { e.preventDefault(); e.stopPropagation(); } : undefined}>
     {[0, 1, 2, 3, 4].map((i) => (
@@ -63,22 +63,25 @@ const Stars = ({ rating = 0, onRate }) => (
     ))}
   </div>
 );
-// Subcomponente para cada tarjeta de biblioteca
+
 const LibraryCard = ({ entry, openDropdown, setOpenDropdown, updateStatus, toggleFavorite, updateRating, navigate }) => {
-  const g = entry.game;
-  const btn = STATUS[entry.status] || { label: "—" };
-  const sc = statusClass(entry.status);
+  const g      = entry.game;
+  const btn    = STATUS[entry.status] || { label: "—" };
+  const sc     = statusClass(entry.status);
   const isDropped = entry.status === "dropped";
   const isOpen = openDropdown === entry.id;
+
   return (
-    <div onClick={() => navigate(`/games/${g.id}`)}
+    <div
+      onClick={() => navigate(`/games/${g.id}`)}
       className={`gs-library-card${sc ? ` gs-border-${sc} gs-glow-${sc}` : ""}${isDropped ? " dropped" : ""}`}
       style={{ cursor: "pointer" }}
     >
       <div className="gs-library-card__cover">
         {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
-        <button className="gs-library-card__heart"
-          onClick={(e) => toggleFavorite(g.id, e)}
+        <button
+          className="gs-library-card__heart"
+          onClick={(e) => toggleFavorite(g.id, entry.is_favorite, e)}
           title={entry.is_favorite ? "Remove from favorites" : "Add to favorites"}
         >
           {entry.is_favorite ? "❤️" : "🤍"}
@@ -117,36 +120,35 @@ const LibraryCard = ({ entry, openDropdown, setOpenDropdown, updateStatus, toggl
     </div>
   );
 };
+
 export const Profile = () => {
   const { store, dispatch } = useGlobalReducer();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [openDropdown, setOpenDropdown] = useState(null);
-  const [statusMsg, setStatusMsg] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ username: "", description: "", redes: {}, avatar_url: "" });
+
+  const [profile,       setProfile]       = useState(null);
+  const [loading,       setLoading]       = useState(true);
+  const [error,         setError]         = useState("");
+  const [openDropdown,  setOpenDropdown]  = useState(null);
+  const [isEditing,     setIsEditing]     = useState(false);
+  const [editForm,      setEditForm]      = useState({ username: "", description: "", redes: {}, avatar_url: "" });
   const [libraryFilter, setLibraryFilter] = useState("");
-  // Orden de prioridad para mostrar juegos en la biblioteca
-  const STATUS_ORDER = ["playing", "want_to_play", "completed", "dropped"];
-  const statusPriority = (s) => STATUS_ORDER.indexOf(s) >= 0 ? STATUS_ORDER.indexOf(s) : 99;
-  const setRedesField = (key, value) => {
-    setEditForm(prev => ({ ...prev, redes: { ...prev.redes, [key]: value } }));
-  };
-  const cardRef = useRef(null);
-  const playingGridRef = useRef(null);
-  const favGridRef = useRef(null);
-  // Estados para detectar si las grillas necesitan carrusel (overflow)
   const [playingOverflow, setPlayingOverflow] = useState(null);
-  const [favOverflow, setFavOverflow] = useState(null);
+  const [favOverflow,     setFavOverflow]     = useState(null);
+
+  const STATUS_ORDER   = ["playing", "want_to_play", "completed", "dropped"];
+  const statusPriority = (s) => STATUS_ORDER.indexOf(s) >= 0 ? STATUS_ORDER.indexOf(s) : 99;
+
+  const setRedesField = (key, value) =>
+    setEditForm(prev => ({ ...prev, redes: { ...prev.redes, [key]: value } }));
+
+  const cardRef        = useRef(null);
+  const playingGridRef = useRef(null);
+  const favGridRef     = useRef(null);
 
   const checkOverflow = (ref, setter) => {
-    if (ref.current) {
-      setter(ref.current.scrollWidth > ref.current.clientWidth);
-    }
+    if (ref.current) setter(ref.current.scrollWidth > ref.current.clientWidth);
   };
-  // Obtener datos del perfil desde el backend
+
   const fetchProfile = async () => {
     const resp = await fetch(`${API}/api/private`, {
       headers: { Authorization: `Bearer ${store.token}` },
@@ -154,7 +156,7 @@ export const Profile = () => {
     if (!resp.ok) throw new Error("Failed to load profile");
     setProfile(await resp.json());
   };
-  // Guardar cambios del perfil (descripción, redes sociales, etc.)
+
   const saveProfile = async (data) => {
     if (!profile?.id) throw new Error("Profile not loaded yet");
     const resp = await fetch(`${API}/api/users/${profile.id}/profile`, {
@@ -168,12 +170,12 @@ export const Profile = () => {
     }
     await fetchProfile();
   };
-  // Quitar el prefijo baseUrl para mostrar solo el nombre en modo edición
+
   const stripBaseUrl = (fullUrl, baseUrl) => {
     if (!fullUrl || !baseUrl) return fullUrl || "";
     return fullUrl.startsWith(baseUrl) ? fullUrl.slice(baseUrl.length) : fullUrl;
   };
-  // Iniciar modo edición con los valores actuales
+
   const handleStartEdit = () => {
     const currentRedes = profile?.profile?.redes || {};
     const redesForEdit = {};
@@ -181,22 +183,21 @@ export const Profile = () => {
       redesForEdit[key] = stripBaseUrl(currentRedes[key], s.baseUrl);
     });
     setEditForm({
-      username: profile?.username || "",
+      username:    profile?.username || "",
       description: profile?.profile?.description || "",
-      redes: redesForEdit,
-      avatar_url: profile?.profile?.avatar_url || "",
+      redes:       redesForEdit,
+      avatar_url:  profile?.profile?.avatar_url || "",
     });
     setIsEditing(true);
   };
-  // Cancelar edición sin guardar
+
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditForm({ username: "", description: "", redes: {}, avatar_url: "" });
   };
-  // Guardar cambios de username, descripción y redes
+
   const handleSaveEdit = async () => {
     if (!profile?.id) return;
-    setStatusMsg({ type: "ok", text: "Saving..." });
     try {
       if (editForm.username !== profile.username) {
         const userResp = await fetch(`${API}/api/users/${profile.id}`, {
@@ -209,14 +210,12 @@ export const Profile = () => {
           throw new Error(`Error updating username: ${userResp.status} ${errBody}`);
         }
       }
-      // Construir URLs completas: baseUrl + nombre de perfil
       const redesFull = {};
       Object.entries(editForm.redes).forEach(([key, val]) => {
         const base = SOCIAL[key]?.baseUrl || "";
         redesFull[key] = val ? base + val : "";
       });
       await saveProfile({ description: editForm.description, redes: redesFull, avatar_url: editForm.avatar_url });
-      // Sincronizar avatar en el store global
       if (editForm.avatar_url && editForm.avatar_url !== store.user?.profile?.avatar_url) {
         dispatch({
           type: "set_auth",
@@ -227,37 +226,36 @@ export const Profile = () => {
         });
       }
       setIsEditing(false);
-      setStatusMsg({ type: "ok", text: "Profile updated ✅" });
-      setTimeout(() => setStatusMsg(null), 2000);
+      rakkiToast.success("Profile updated!");
     } catch (err) {
-      setStatusMsg({ type: "error", text: err.message });
-      setTimeout(() => setStatusMsg(null), 4000);
+      rakkiToast.error(err.message);
     }
   };
-  // Cargar perfil al montar el componente
+
   useEffect(() => {
     (async () => {
       try { await fetchProfile(); } catch (err) { setError(err.message); }
       finally { setLoading(false); }
     })();
   }, []);
-  // Cerrar dropdown al hacer clic fuera
+
   useEffect(() => {
     if (!openDropdown) return;
-    const handler = () => { setOpenDropdown(null); };
+    const handler = () => setOpenDropdown(null);
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
   }, [openDropdown]);
-  // ─────────────── DATOS DERIVADOS ───────────────
+
   const avatarUrl = profile?.profile?.avatar_url ||
     `https://api.dicebear.com/7.x/bottts/svg?seed=${profile?.username || "Gamer"}`;
-  const games = profile?.game_lists?.[0]?.games || [];
-  const redes = profile?.profile?.redes || {};
-  const playing = games.filter((g) => g.status === "playing");
+
+  const games     = profile?.game_lists?.[0]?.games || [];
+  const redes     = profile?.profile?.redes || {};
+  const playing   = games.filter((g) => g.status === "playing");
   const favorites = games.filter((g) => g.is_favorite);
   const completed = games.filter((g) => g.status === "completed").length;
-  const pending = games.filter((g) => g.status === "want_to_play").length;
-  // ─────────────── DETECCIÓN DE OVERFLOW PARA CARRUSELES ───────────────
+  const pending   = games.filter((g) => g.status === "want_to_play").length;
+
   useEffect(() => { checkOverflow(playingGridRef, setPlayingOverflow); }, [playing]);
   useEffect(() => { checkOverflow(favGridRef, setFavOverflow); }, [favorites]);
   useEffect(() => {
@@ -268,26 +266,30 @@ export const Profile = () => {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
-  // ─────────────── ESTADOS DE CARGA Y ERROR ───────────────
+
   if (loading) return (
     <div className="min-vh-100 d-flex align-items-center justify-content-center">
-      <Rakki pose="searching" size="lg" text="Loading profile..." />
+      <div className="text-center">
+        <img src={RakkiWaving} alt="Rakki" width={200} style={{ objectFit: "contain" }} />
+        <p className="text-white-50 mt-3">Loading profile...</p>
+      </div>
     </div>
   );
+
   if (error) return (
     <div className="min-vh-100 py-5">
       <div className="container">
         <div className="d-flex flex-column align-items-center">
-          <Rakki pose="confused" size="lg" text="Something went wrong" />
+          <img src={RakkiWaving} alt="Rakki" width={200} style={{ objectFit: "contain" }} />
+          <p className="text-white-50 mt-2 mb-3">Something went wrong</p>
           <div className="alert alert-danger mt-3">{error}</div>
         </div>
       </div>
     </div>
   );
-  // ─────────────── FUNCIONES ───────────────
-  // Actualizar estado del juego en la biblioteca
+
+  // ── FUNCIONES ──────────────────────────────────────────────
   const updateStatus = async (entryId, newStatus) => {
-    setStatusMsg({ type: "ok", text: "Updating..." });
     try {
       const resp = await fetch(`${API}/api/user/games/${entryId}`, {
         method: "PUT",
@@ -300,18 +302,15 @@ export const Profile = () => {
       }
       setOpenDropdown(null);
       await fetchProfile();
-      setStatusMsg({ type: "ok", text: "Status updated ✅" });
-      setTimeout(() => setStatusMsg(null), 2000);
+      rakkiToast.success("Status updated!");
     } catch (err) {
-      setStatusMsg({ type: "error", text: err.message });
-      setTimeout(() => setStatusMsg(null), 4000);
+      rakkiToast.error(err.message);
     }
   };
-  // Alternar favorito para un juego de la biblioteca
-  const toggleFavorite = async (gameId, e) => {
+
+  const toggleFavorite = async (gameId, isFavorite, e) => {
     e.preventDefault();
     e.stopPropagation();
-    setStatusMsg({ type: "ok", text: "Updating..." });
     try {
       const resp = await fetch(`${API}/api/favorite/change`, {
         method: "PUT",
@@ -320,16 +319,17 @@ export const Profile = () => {
       });
       if (!resp.ok) throw new Error("Error updating favorite");
       await fetchProfile();
-      setStatusMsg({ type: "ok", text: "Favorite updated ✅" });
-      setTimeout(() => setStatusMsg(null), 2000);
+      if (isFavorite) {
+        rakkiToast.favoriteRemove("Removed from favorites");
+      } else {
+        rakkiToast.favoriteAdd("Added to favorites!");
+      }
     } catch (err) {
-      setStatusMsg({ type: "error", text: err.message });
-      setTimeout(() => setStatusMsg(null), 4000);
+      rakkiToast.error(err.message);
     }
   };
-  // Actualizar rating de un juego (favoritos y biblioteca)
+
   const updateRating = async (entryId, rating) => {
-    setStatusMsg({ type: "ok", text: "Saving rating..." });
     try {
       const resp = await fetch(`${API}/api/user/games/${entryId}`, {
         method: "PUT",
@@ -338,17 +338,14 @@ export const Profile = () => {
       });
       if (!resp.ok) throw new Error("Error updating rating");
       await fetchProfile();
-      setStatusMsg({ type: "ok", text: "Rating updated ✅" });
-      setTimeout(() => setStatusMsg(null), 2000);
+      rakkiToast.success("Rating saved!");
     } catch (err) {
-      setStatusMsg({ type: "error", text: err.message });
-      setTimeout(() => setStatusMsg(null), 4000);
+      rakkiToast.error(err.message);
     }
   };
-  // Capturar tarjeta de perfil con html2canvas y descargar
+
   const handleShare = async () => {
     if (!cardRef.current) return;
-    setStatusMsg({ type: "ok", text: "Generating screenshot..." });
     try {
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: "#0D0F1F",
@@ -360,27 +357,25 @@ export const Profile = () => {
       link.download = `profile-${profile?.username || "gamer"}.png`;
       link.href = canvas.toDataURL();
       link.click();
-      setStatusMsg({ type: "ok", text: "Screenshot downloaded ✅" });
-      setTimeout(() => setStatusMsg(null), 2000);
+      rakkiToast.success("Screenshot downloaded!");
     } catch (err) {
-      setStatusMsg({ type: "error", text: "Error generating screenshot" });
-      setTimeout(() => setStatusMsg(null), 4000);
+      rakkiToast.error("Error generating screenshot");
     }
   };
-  // ─────────────── RENDERIZADO ───────────────
+
+  // ── RENDER ─────────────────────────────────────────────────
   return (
     <div className="gs-profile-page gs-page-bg gs-footer">
       <div className="gs-profile-inner">
         <div ref={cardRef} className="gs-profile-card gs-rakki-mood-card mt-5 w-100">
-          {/* ── CABECERA: Avatar + Usuario/Desc + Redes + Stats ── */}
+
+          {/* CABECERA */}
           <div className="gs-profile-header gs-home-hero">
-            {/* Grupo izquierdo: Avatar + Usuario + Redes */}
             <div className="gs-profile-header-left">
-              {/* Avatar */}
               <div className="gs-avatar-wrap">
                 <img src={avatarUrl} alt="" className="gs-profile-avatar" />
               </div>
-              {/* Usuario + Descripción */}
+
               <div className="gs-profile-details">
                 {isEditing ? (
                   <>
@@ -396,7 +391,6 @@ export const Profile = () => {
                       className="gs-profile-textarea gs-profile-textarea--lg"
                       placeholder="Tell us about yourself..."
                     />
-                    {/* Subida de avatar con Cloudinary */}
                     <div className="gs-upload-wrap">
                       <ImageUploader
                         label="Avatar"
@@ -406,7 +400,6 @@ export const Profile = () => {
                         onUpload={(url) => setEditForm((prev) => ({ ...prev, avatar_url: url }))}
                       />
                     </div>
-                    {/* Inputs de redes sociales */}
                     <div className="gs-social-edit-group">
                       {Object.entries(SOCIAL).map(([key, s]) => (
                         <div key={key} className="gs-social-edit-row">
@@ -421,35 +414,27 @@ export const Profile = () => {
                       ))}
                     </div>
                     <div className="gs-edit-actions">
-                      <button onClick={handleSaveEdit} className="btn-gs btn-green">
-                        Save
-                      </button>
-                      <button onClick={handleCancelEdit} className="btn-gs btn-ghost">
-                        Cancel
-                      </button>
+                      <button onClick={handleSaveEdit} className="btn-gs btn-green">Save</button>
+                      <button onClick={handleCancelEdit} className="btn-gs btn-ghost">Cancel</button>
                     </div>
                   </>
                 ) : (
                   <>
                     <h1 className="gs-profile-username">{profile?.username}</h1>
                     {profile?.profile?.description && (
-                      <div className="font-varela gs-profile-desc">
-                        {profile.profile.description}
-                      </div>
+                      <div className="font-varela gs-profile-desc">{profile.profile.description}</div>
                     )}
                   </>
                 )}
               </div>
-              {/* Redes sociales — solo mostrar si existe URL */}
+
               {Object.entries(SOCIAL).some(([k]) => redes[k]) && (
                 <div className="gs-social-col">
                   {Object.entries(SOCIAL).map(([key, s]) => {
                     const url = redes[key];
                     if (!url) return null;
                     return (
-                      <a key={key} href={url} target="_blank" rel="noopener noreferrer" title={s.label}
-                        className="gs-social-icon"
-                      >
+                      <a key={key} href={url} target="_blank" rel="noopener noreferrer" title={s.label} className="gs-social-icon">
                         {s.icon}
                       </a>
                     );
@@ -457,7 +442,7 @@ export const Profile = () => {
                 </div>
               )}
             </div>
-            {/* Estadísticas */}
+
             <div className="gs-profile-stats">
               <div className="gs-stats-row">
                 <span className="gs-profile-stat text-green">{completed}</span>
@@ -467,7 +452,6 @@ export const Profile = () => {
                 <span>Completed</span>
                 <span>Pending</span>
               </div>
-              {/* Botones de acción */}
               <div className="gs-profile-btns">
                 <button onClick={handleStartEdit} className="gs-round-btn" title="Edit profile">
                   <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -486,15 +470,15 @@ export const Profile = () => {
               </div>
             </div>
           </div>
-          {/* ── Jugando ahora ── */}
+
+          {/* JUGANDO AHORA */}
           {playing.length > 0 && (
             <>
               <h2 className="gs-section-title purple gs-graffiti-title">Currently Playing</h2>
               <div className="gs-carousel-wrap gs-spray-dots">
                 {playingOverflow === true && (
                   <button className="gs-carousel-btn gs-carousel-btn--left"
-                    onClick={() => playingGridRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                  >‹</button>
+                    onClick={() => playingGridRef.current?.scrollBy({ left: -300, behavior: "smooth" })}>‹</button>
                 )}
                 <div className="gs-playing-grid gs-carousel-grid" ref={playingGridRef}>
                   {playing.slice(0, 5).map((entry) => {
@@ -506,9 +490,7 @@ export const Profile = () => {
                         </div>
                         <div className="gs-playing-card__body">
                           <div className="gs-playing-card__title">{g?.title}</div>
-                          <div className="gs-playing-card__rating">
-                            {g?.genres?.slice(0, 2).join(", ") || "—"}
-                          </div>
+                          <div className="gs-playing-card__rating">{g?.genres?.slice(0, 2).join(", ") || "—"}</div>
                           <div className="gs-playing-card__meta">
                             {g?.game_tier ? `★${g.game_tier.average_rating.toFixed(1)} | U: ${g.game_tier.vote_count}` : ""}
                           </div>
@@ -519,27 +501,26 @@ export const Profile = () => {
                 </div>
                 {playingOverflow === true && (
                   <button className="gs-carousel-btn gs-carousel-btn--right"
-                    onClick={() => playingGridRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                  >›</button>
+                    onClick={() => playingGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
                 )}
               </div>
             </>
           )}
-          {/* ── Juegos favoritos ── */}
+
+          {/* FAVORITOS */}
           {favorites.length > 0 && (
             <>
               <h2 className="gs-section-title pink gs-graffiti-title">Favorite Games</h2>
               <div className="gs-carousel-wrap gs-spray-pink">
                 {favOverflow === true && (
                   <button className="gs-carousel-btn gs-carousel-btn--left"
-                    onClick={() => favGridRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                  >‹</button>
+                    onClick={() => favGridRef.current?.scrollBy({ left: -300, behavior: "smooth" })}>‹</button>
                 )}
                 <div className="gs-fav-grid gs-carousel-grid" ref={favGridRef}>
                   {favorites.slice(0, 5).map((entry) => {
                     const g = entry.game;
                     return (
-                      <div onClick={() => navigate(`/games/${g.id}`)} className="gs-fav-card" style={{ cursor: "pointer" }}>
+                      <div key={entry.id} onClick={() => navigate(`/games/${g.id}`)} className="gs-fav-card" style={{ cursor: "pointer" }}>
                         <div className="gs-fav-card__cover">
                           {g?.cover_img_url && <img src={g.cover_img_url} alt="" />}
                         </div>
@@ -554,29 +535,31 @@ export const Profile = () => {
                 </div>
                 {favOverflow === true && (
                   <button className="gs-carousel-btn gs-carousel-btn--right"
-                    onClick={() => favGridRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                  >›</button>
+                    onClick={() => favGridRef.current?.scrollBy({ left: 300, behavior: "smooth" })}>›</button>
                 )}
               </div>
             </>
           )}
+
           {playing.length === 0 && favorites.length === 0 && (
             <div className="gs-empty">
-              <Rakki pose="confused" size="md" text="No games in your profile yet" />
+              <img src={RakkiWaving} alt="Rakki" width={120} style={{ objectFit: "contain" }} />
+              <p className="text-white-50 mt-2">No games in your profile yet</p>
               <span className="gs-rakki-tag">Rakki says: start playing!</span>
             </div>
           )}
         </div>
-        {/* ══ MI BIBLIOTECA ══ */}
+
+        {/* BIBLIOTECA */}
         <h2 className="gs-library-title gs-graffiti-title">My Library</h2>
         {games.length === 0 ? (
           <div className="gs-empty">
-            <Rakki pose="confused" size="md" text="You haven't added any games yet" />
+            <img src={RakkiWaving} alt="Rakki" width={120} style={{ objectFit: "contain" }} />
+            <p className="text-white-50 mt-2">You haven't added any games yet</p>
             <span className="gs-rakki-tag">Rakki picked this — explore games!</span>
           </div>
         ) : (
           <>
-            {/* Botones de filtro */}
             <div className="gs-filter-bar">
               {[{ key: "all", label: "All" }, ...Object.entries(STATUS).map(([k, v]) => ({ key: k, label: v.label }))].map((f) => (
                 <button key={f.key}
@@ -587,24 +570,24 @@ export const Profile = () => {
                 </button>
               ))}
             </div>
-            {/* Juegos ordenados por prioridad de estado */}
             <div className="gs-library-grid">
               {games
                 .filter((g) => !libraryFilter || libraryFilter === "all" || g.status === libraryFilter)
                 .sort((a, b) => statusPriority(a.status) - statusPriority(b.status))
                 .map((entry) => (
-                  <LibraryCard key={entry.id} entry={entry} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} updateStatus={updateStatus} toggleFavorite={toggleFavorite} updateRating={updateRating} navigate={navigate} />
+                  <LibraryCard
+                    key={entry.id}
+                    entry={entry}
+                    openDropdown={openDropdown}
+                    setOpenDropdown={setOpenDropdown}
+                    updateStatus={updateStatus}
+                    toggleFavorite={toggleFavorite}
+                    updateRating={updateRating}
+                    navigate={navigate}
+                  />
                 ))}
             </div>
           </>
-        )}
-        {statusMsg && (
-          <div className={`gs-toast ${statusMsg.type === "error" ? "error" : "ok"}`}>
-            {statusMsg.type !== "error" && (
-              <Rakki pose="celebrating" size="sm" />
-            )}
-            <span>{statusMsg.text}</span>
-          </div>
         )}
       </div>
     </div>

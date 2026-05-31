@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import GameCard from "../components/GameCard.jsx";
-import RakkiTest from "../assets/img/RakkiTEST.png";
+import RakkiPlaying from "../assets/img/RakkiPlaying.png";
+import TierListScreen from "../assets/img/TierListScreen.jpg";
 
 
 export const Home = () => {
@@ -178,7 +179,7 @@ export const Home = () => {
                   </div>
 
                   <div className="gs-rakki-image-box">
-                    <img src={RakkiTest} alt="Rakki, Game-Side mascot" />
+                    <img src={RakkiPlaying} alt="Rakki, Game-Side mascot" />
                   </div>
                 </div>
               </div>
@@ -238,8 +239,8 @@ export const Home = () => {
 
             <div className="col-md-4">
               <article className="gs-feature-card">
-                <div className="gs-feature-img gs-rakki-mood-card">
-                  <span>Tier List Preview</span>
+                <div className="gs-feature-img gs-feature-img-preview">
+                  <img src={TierListScreen} alt="Tier List preview" />
                 </div>
 
                 <div className="gs-feature-content">

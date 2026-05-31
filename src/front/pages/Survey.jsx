@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Rakki from "../components/Rakki";
+import RakkiSurvey from "../assets/img/RakkiSurvey.png";
 
 export const Survey = () => {
   const navigate = useNavigate();
@@ -179,9 +179,8 @@ export const Survey = () => {
       setMessageType("success");
       setMessage("Survey successfully saved. Your recommendations are getting smarter.");
 
-      // Redirige al perfil después de guardar
       setTimeout(() => {
-        navigate("/profile");
+        navigate("/");
       }, 900);
     } catch (error) {
       setMessageType("error");
@@ -238,7 +237,9 @@ export const Survey = () => {
           {message && (
             <div className={`gs-survey-message ${messageType}`}>
               {messageType === "success" && (
-                <Rakki pose="celebrating" size="sm" className="mb-2" />
+                <div className="gs-feature-img gs-rakki-mood-card">
+                  <span>Succes</span>
+                </div>
               )}
               {message}
             </div>
@@ -286,9 +287,8 @@ export const Survey = () => {
                   <button
                     type="button"
                     key={style.value}
-                    className={`gs-playstyle-card ${
-                      form.play_style === style.value ? "selected" : ""
-                    }`}
+                    className={`gs-playstyle-card ${form.play_style === style.value ? "selected" : ""
+                      }`}
                     onClick={() => handlePlayStyleChange(style.value)}
                   >
                     <strong>{style.title}</strong>
@@ -380,7 +380,15 @@ export const Survey = () => {
 
             {/* Mascota Rakki con tablet mientras se completa el perfil */}
             <div className="gs-survey-mascot-box">
-              <Rakki pose="tablet" size="lg" text="Building your taste profile..." />
+              <img
+                src={RakkiSurvey}
+                alt="Rakki building your taste profile"
+                className="gs-survey-rakki-img"
+              />
+
+              <span className="gs-survey-mascot-caption">
+                Building your taste profile...
+              </span>
             </div>
           </div>
         </aside>

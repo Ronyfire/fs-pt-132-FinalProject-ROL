@@ -215,6 +215,7 @@ class Comment(db.Model):
             "user_id": self.user_id,
             "username": self.user.username if self.user else None,
             "avatar_url": self.user.profile.avatar_url if self.user and self.user.profile else None,
+            "is_admin": self.user.is_admin if self.user else False,
             "game_id": self.game_id,
             "content": self.content,
             "created_at": self.created_at.isoformat(),

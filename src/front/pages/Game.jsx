@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import '../styles/pages/game-detail.css';
-
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import CommentCard from "../components/CommentCard";
+import CommentForm from "../components/CommentForm";
+import { rakkiToast } from "../components/RakkiToast";
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
-
 /* ─── Helper: label bonito para plataformas ─── */
 const PLATFORM_LABELS = {
   pc: 'PC',
@@ -22,7 +24,6 @@ const PLATFORM_LABELS = {
   ios: 'iOS',
   android: 'Android',
 };
-
 /* ─── Formatear fecha ─── */
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -32,29 +33,22 @@ const formatDate = (dateStr) => {
     day: 'numeric',
   });
 };
-
 export const Game = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
-
+  const { store } = useGlobalReducer();
   /* ── Estado del juego ── */
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   /* ── Comentarios ── */
   const [comments, setComments] = useState([]);
-  const [commentText, setCommentText] = useState('');
-  const [posting, setPosting] = useState(false);
-
   /* ── Voto del usuario ── */
   const [userRating, setUserRating] = useState(0);
   const [userVoteId, setUserVoteId] = useState(null);
   const [ratingLoading, setRatingLoading] = useState(false);
-
   const [libraryEntry, setLibraryEntry] = useState(null);
   const [libraryLoading, setLibraryLoading] = useState(false);
-
   /* ── Cargar comentarios desde el endpoint dedicado ── */
   const loadComments = () => {
     fetch(`${VITE_BACKEND_URL}/api/games/${gameId}/comments`)
@@ -67,16 +61,47 @@ export const Game = () => {
       .catch(() => { });
   };
 
+  const loadLibraryEntry = async () => {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      setLibraryEntry(null);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${VITE_BACKEND_URL}/api/private`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        setLibraryEntry(null);
+        return;
+      }
+
+      const userData = await res.json();
+
+      const games = userData?.game_lists?.[0]?.games || [];
+
+      const entry = games.find(
+        (item) => Number(item.game_id) === Number(gameId)
+      );
+
+      setLibraryEntry(entry || null);
+    } catch (err) {
+      console.error("Error loading library entry:", err);
+      setLibraryEntry(null);
+    }
+  };
   /* ── Cargar datos ── */
   useEffect(() => {
     if (!gameId) return;
-
     setLoading(true);
     setError(null);
-
     const token = sessionStorage.getItem('token');
     const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
-
     Promise.all([
       fetch(`${VITE_BACKEND_URL}/api/games/${gameId}`),
       fetch(`${VITE_BACKEND_URL}/api/user/game-tiers`, { headers: authHeaders }),
@@ -85,10 +110,10 @@ export const Game = () => {
         if (!gameRes.ok) throw new Error(`Error ${gameRes.status}`);
         const gameData = await gameRes.json();
         setGame(gameData);
-
         // Cargar comentarios del endpoint dedicado
         loadComments();
 
+        await loadLibraryEntry();
         // Buscar si el usuario ya votó este juego
         if (voteRes.ok) {
           const votes = await voteRes.json();
@@ -102,7 +127,6 @@ export const Game = () => {
             }
           }
         }
-
         setLoading(false);
       })
       .catch((err) => {
@@ -110,47 +134,14 @@ export const Game = () => {
         setLoading(false);
       });
   }, [gameId]);
-
-  /* ───── Publicar comentario ───── */
-  const handlePublish = async (e) => {
-    e.preventDefault();
-    if (!commentText.trim() || !gameId) return;
-
-    const token = sessionStorage.getItem('token');
-    setPosting(true);
-
-    try {
-      const res = await fetch(`${VITE_BACKEND_URL}/api/games/${gameId}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ content: commentText }),
-      });
-
-      if (!res.ok) throw new Error('Error al publicar');
-
-      // Recargar comentarios para tener la lista fresca con username y avatar
-      loadComments();
-      setCommentText('');
-    } catch (err) {
-      console.error('Error posting comment:', err);
-    } finally {
-      setPosting(false);
-    }
-  };
-
   /* ───── Votar (crear o actualizar) ───── */
   const handleRate = async (star) => {
     const token = sessionStorage.getItem('token');
     if (!token) return;
-
     setRatingLoading(true);
     try {
       const authHeaders = { Authorization: `Bearer ${token}` };
       const body = { game_id: parseInt(gameId), rating: star };
-
       if (userVoteId) {
         const res = await fetch(`${VITE_BACKEND_URL}/api/user/game-tiers/${userVoteId}`, {
           method: 'PUT',
@@ -166,11 +157,9 @@ export const Game = () => {
         });
         if (!res.ok) throw new Error('Error al crear voto');
       }
-
       // Refrescar datos del juego (actualiza promedio)
       const gameRes = await fetch(`${VITE_BACKEND_URL}/api/games/${gameId}`);
       if (gameRes.ok) setGame(await gameRes.json());
-
       setUserRating(star);
     } catch (err) {
       console.error('Error rating game:', err);
@@ -178,7 +167,6 @@ export const Game = () => {
       setRatingLoading(false);
     }
   };
-
   /* ═══════ LOADING ═══════ */
   const requireLogin = (message = "Log in to use this feature!") => {
     const token = sessionStorage.getItem("token");
@@ -191,9 +179,14 @@ export const Game = () => {
     return token;
   };
 
-  const addToLibrary = async () => {
+  const addToLibrary = async (status = "want_to_play") => {
     const token = requireLogin("Log in to add games to your library!");
     if (!token) return;
+
+    if (libraryEntry) {
+      rakkiToast.info("Already in your library!");
+      return;
+    }
 
     setLibraryLoading(true);
 
@@ -206,7 +199,7 @@ export const Game = () => {
         },
         body: JSON.stringify({
           game_id: parseInt(gameId),
-          status: "want_to_play",
+          status,
         }),
       });
 
@@ -215,13 +208,14 @@ export const Game = () => {
       if (!res.ok) {
         if (data.msg === "Game already in your list") {
           rakkiToast.info("Already in your library!");
+          await loadLibraryEntry();
           return;
         }
 
         throw new Error(data.msg || "Could not add game to library");
       }
 
-      setLibraryEntry(data.entry);
+      await loadLibraryEntry();
       rakkiToast.success(`${game.title} added to your library!`);
     } catch (err) {
       rakkiToast.error(err.message);
@@ -240,14 +234,14 @@ export const Game = () => {
     }
 
     try {
-      const res = await fetch(`${VITE_BACKEND_URL}/api/user/games/${libraryEntry.id}`, {
+      const res = await fetch(`${VITE_BACKEND_URL}/api/favorite/change`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          is_favorite: !libraryEntry.is_favorite,
+          game_id: parseInt(gameId),
         }),
       });
 
@@ -257,12 +251,13 @@ export const Game = () => {
         throw new Error(data.msg || "Could not update favorite");
       }
 
-      setLibraryEntry(data.entry);
-      rakkiToast.success(
-        data.entry.is_favorite
-          ? "Added to favorites!"
-          : "Removed from favorites!"
-      );
+      await loadLibraryEntry();
+
+      if (libraryEntry.is_favorite) {
+        rakkiToast.favoriteRemove("Removed from favorites");
+      } else {
+        rakkiToast.favoriteAdd("Added to favorites!");
+      }
     } catch (err) {
       rakkiToast.error(err.message);
     }
@@ -279,7 +274,6 @@ export const Game = () => {
       </div>
     );
   }
-
   /* ═══════ ERROR ═══════ */
   if (error || !game) {
     return (
@@ -296,14 +290,14 @@ export const Game = () => {
       </div>
     );
   }
-
   /* ═══════ DATOS ═══════ */
   const coverUrl = game.cover_img_url || game.background_image || '';
   const genres = game.genres || [];
   const platforms = game.platforms || [];
   const rating = game.game_tier?.average_rating ?? game.rating ?? 0;
   const voteCount = game.game_tier?.vote_count ?? game.ratings_count ?? 0;
-
+  const currentUser = store.user || null;
+  const isAdmin = store.user?.is_admin || false;
   const features = [
     'Online co-op for up to 4 players',
     'Wide variety of characters with unique abilities',
@@ -314,9 +308,8 @@ export const Game = () => {
     'PvE missions and endgame content',
     'Player trading',
   ];
-
+  // Comentarios principales (sin parent_id) y sus respuestas
   const parentComments = (comments || []).filter((c) => !c.parent_id);
-
   return (
     <div className="gs-page-bg">
       <div className="container-xxl gs-page-content py-4 py-lg-5">
@@ -376,19 +369,24 @@ export const Game = () => {
                 <div className="gd-action-panel">
                   <button
                     type="button"
-                    className="btn-gs btn-green w-100 mb-2"
-                    onClick={addToLibrary}
-                    disabled={libraryLoading}
+                    className={`btn-gs w-100 mb-2 ${libraryEntry ? "btn-green-outline" : "btn-green"}`}
+                    onClick={() => addToLibrary("want_to_play")}
+                    disabled={libraryLoading || Boolean(libraryEntry)}
                   >
-                    {libraryLoading ? "Adding..." : "+ Add to Library"}
+                    {libraryLoading
+                      ? "Updating..."
+                      : libraryEntry
+                        ? "✓ In your Library"
+                        : "+ Add to Library"}
                   </button>
 
                   <button
                     type="button"
                     className="btn-gs btn-pink-outline w-100 mb-3"
                     onClick={toggleFavorite}
+                    disabled={!libraryEntry}
                   >
-                    {libraryEntry?.is_favorite ? "♥ Favorite" : "♡ Add to Favorites"}
+                    {libraryEntry?.is_favorite ? "♥ Remove Favorite" : "♡ Add to Favorites"}
                   </button>
 
                   <div className="gd-user-rating">
@@ -458,7 +456,7 @@ export const Game = () => {
               </div>
             </div>
 
-            <div className="card gs-card gd-card">
+            <div className="card gs-card gd-card gd-comments-section">
               <div className="card-body p-4 p-lg-5">
                 <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
                   <div>
