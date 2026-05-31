@@ -1,0 +1,130 @@
+/* NOT FOUND PAGE -------------------------------------------- */
+
+.gs-not-found-page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(214, 79, 130, 0.16), transparent 20rem),
+    radial-gradient(circle at 80% 70%, rgba(125, 215, 80, 0.1), transparent 22rem),
+    linear-gradient(180deg, #0d0f1f 0%, #080a16 100%);
+}
+
+.gs-not-found-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(214, 79, 130, 0.18) 0 0.12rem, transparent 0.16rem),
+    radial-gradient(circle, rgba(125, 215, 80, 0.12) 0 0.1rem, transparent 0.14rem);
+  background-size: 8rem 8rem, 11rem 11rem;
+  opacity: 0.45;
+}
+
+.gs-not-found-content {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding-block: 5rem;
+}
+
+.gs-not-found-card {
+  width: min(100%, 42rem);
+  text-align: center;
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 15%, rgba(214, 79, 130, 0.18), transparent 18rem),
+    rgba(17, 19, 38, 0.86);
+  border: 0.0625rem solid var(--green-border);
+  border-radius: var(--radius-2xl);
+  padding: clamp(2rem, 5vw, 3.5rem);
+  box-shadow:
+    0 1.5rem 4rem rgba(0, 0, 0, 0.45),
+    0 0 2rem rgba(125, 215, 80, 0.12);
+  overflow: hidden;
+}
+
+.gs-not-found-card::before {
+  content: "";
+  position: absolute;
+  left: 2rem;
+  top: 1.5rem;
+  width: 5rem;
+  height: 0.35rem;
+  background: linear-gradient(90deg, var(--pink), var(--green));
+  border-radius: 999rem;
+  box-shadow: 0 0 1rem rgba(214, 79, 130, 0.35);
+}
+
+.gs-not-found-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--pink);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.8rem;
+}
+
+.gs-not-found-kicker::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: var(--green-glow);
+}
+
+.gs-not-found-card h1 {
+  color: var(--text);
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  line-height: 0.95;
+  font-weight: 900;
+  letter-spacing: -0.07em;
+  margin-bottom: 1rem;
+}
+
+.gs-not-found-card p {
+  max-width: 32rem;
+  margin: 0 auto 1.5rem;
+  color: #d8d8e8;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.gs-not-found-rakki {
+  width: min(100%, 18rem);
+  height: auto;
+  display: block;
+  margin: 1rem auto 1.75rem;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 1rem rgba(214, 79, 130, 0.28))
+    drop-shadow(0 0 1.2rem rgba(125, 215, 80, 0.15));
+}
+
+.gs-not-found-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 576px) {
+  .gs-not-found-card {
+    border-radius: var(--radius-xl);
+  }
+
+  .gs-not-found-actions .btn-gs {
+    width: 100%;
+  }
+
+  .gs-not-found-rakki {
+    width: min(100%, 14rem);
+  }
+}

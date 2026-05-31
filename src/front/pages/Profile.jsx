@@ -541,8 +541,7 @@ export const Profile = () => {
         {games.length === 0 ? (
           <div className="text-center py-4">
             <img src={RakkiWaving} alt="Rakki" width={120} className="d-block mx-auto" />
-            <p className="text-white-50 mt-2">You haven't added any games yet</p>
-            <span className="gs-rakki-tag">Rakki picked this — explore games!</span>
+            <span className="gs-rakki-tag">You haven't added any games yet</span>
           </div>
         ) : (
           <>
