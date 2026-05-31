@@ -26,11 +26,15 @@ app.url_map.redirect_defaults = False
 
 CORS(app, supports_credentials=True, resources={r"/api/*": {
     "origins": [
-        "https://shiny-carnival-q7jp7q7rqqp4h97qp-3000.app.github.dev",
-        "https://cautious-fortnight-xvpv9pj66qv39vgj-3000.app.github.dev",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-    ]
+        "https://silver-enigma-q7j7xqg9vvqpc4jwj-3000.app.github.dev",
+        "https://silver-enigma-q7jxqg9vvqpc4jwj-3000.app.github.dev",
+        "https://shiny-carnival-q7jp7q7rqqp4h97qp-3000.app.github.dev",
+        "https://cautious-fortnight-xvpv9pj66qv39vgj-3000.app.github.dev",
+    ],
+    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization"],
 }})
 
 # ── Database ──────────────────────────────────────────────────
