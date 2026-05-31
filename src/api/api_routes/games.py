@@ -700,28 +700,30 @@ def get_game_recommendations():
             if theme in game_genres:
                 score += 2
 
-        if survey.play_style == "story":
+        play_styles = survey.play_styles or []
+
+        if "story" in play_styles:
             if "RPG" in game_genres or "Adventure" in game_genres:
                 score += 2
 
-        if survey.play_style == "competitive":
+        if "competitive" in play_styles:
             if "Shooter" in game_genres or "Fighting" in game_genres or "Sports" in game_genres:
                 score += 2
 
-        if survey.play_style == "casual":
+        if "casual" in play_styles:
             if "Puzzle" in game_genres or "Simulation" in game_genres or "Platformer" in game_genres:
                 score += 2
 
-        if survey.play_style == "exploration":
-            if "Adventure" in game_genres or "Open World" in game_description:
+        if "exploration" in play_styles:
+            if "Adventure" in game_genres or "open world" in game_description:
                 score += 2
 
-        if survey.play_style == "completionist":
+        if "completionist" in play_styles:
             if "RPG" in game_genres or "Adventure" in game_genres:
                 score += 1
 
-        if survey.play_style == "social":
-            if "Multiplayer" in game_description or "Co-op" in game_description:
+        if "social" in play_styles:
+            if "multiplayer" in game_description or "co-op" in game_description:
                 score += 2
 
         serialized_game = game.serialize()
