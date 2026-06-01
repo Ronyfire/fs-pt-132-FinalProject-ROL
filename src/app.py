@@ -45,7 +45,11 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-MIGRATE = Migrate(app, db, compare_type=True)
+MIGRATIONS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+    "migrations"
+)
+MIGRATE = Migrate(app, db, compare_type=True, directory=MIGRATIONS_DIR)
 db.init_app(app)
 bcrypt.init_app(app)
 
