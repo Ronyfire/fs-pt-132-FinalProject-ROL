@@ -1,0 +1,56 @@
+/* ── RAKKI TOAST (react-hot-toast) ─────────────────────────── */
+.gs-rakki-toast {
+  position: relative;
+  overflow: hidden;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  background: #0D0F1F !important;
+  color: var(--text) !important;
+  border-radius: 999rem !important;      /* pill shape */
+  font-size: 0.8125rem !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 700 !important;
+  padding: 0.4rem 1rem 0.4rem 0.4rem !important;
+  box-shadow: 0 0.25rem 1.5rem rgba(0,0,0,0.5) !important;
+  max-width: 18rem !important;
+  width: auto !important;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  font-size: 0.75rem !important;
+}
+
+/* Borde por variante */
+.gs-rakki-toast--success        { border: 0.125rem solid var(--green) !important; }
+.gs-rakki-toast--error          { border: 0.125rem solid var(--red)   !important; }
+.gs-rakki-toast--info           { border: 0.125rem solid var(--purple) !important; }
+.gs-rakki-toast--favorite_add   { border: 0.125rem solid var(--pink)  !important; }
+.gs-rakki-toast--favorite_remove { border: 0.125rem solid var(--text-dim) !important; }
+
+/* Punto de color antes del texto (el ✦ de la imagen) */
+.gs-rakki-toast::before {
+  content: "✦";
+  font-size: 0.625rem;
+  flex-shrink: 0;
+}
+
+.gs-rakki-toast--success::before        { color: var(--green); }
+.gs-rakki-toast--error::before          { color: var(--red); }
+.gs-rakki-toast--info::before           { color: var(--purple); }
+.gs-rakki-toast--favorite_add::before   { color: var(--pink); }
+.gs-rakki-toast--favorite_remove::before { color: var(--text-dim); }
+
+/* Icono Rakki */
+.gs-rakki-toast__icon {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  flex-shrink: 0;
+  order: 10;    /* siempre al final a la derecha */
+}
+
+/* Texto */
+.gs-rakki-toast__msg {
+  flex: 1;
+  line-height: 1.2;
+}

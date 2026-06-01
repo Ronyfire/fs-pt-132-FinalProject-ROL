@@ -1,0 +1,27 @@
+/* GAME-SIDE — styles entrypoint
+   Import only this file from main.jsx / main.css.
+*/
+
+@import "./settings.css";
+@import "./base.css";
+@import "./utilities.css";
+
+@import "./components/buttons.css";
+@import "./components/forms.css";
+@import "./components/cards.css";
+@import "./components/modal.css";
+@import "./components/navbar.css";
+@import "./components/footer.css";
+@import "./components/toast.css";
+@import "./components/scrollbar.css";
+@import "./components/graffiti.css";
+@import "./components/comments.css";
+
+
+@import "./pages/home.css";
+@import "./pages/survey.css";
+@import "./pages/profile.css";
+@import "./pages/tier-list.css";
+@import "./pages/game-detail.css";
+@import "./pages/rakki.css";
+@import "./pages/admin.css";

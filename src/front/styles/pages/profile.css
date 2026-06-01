@@ -1,0 +1,978 @@
+/* ─── PERFIL ──────────────────────────────────────────── */
+
+/* Tarjeta de perfil (sección superior) */
+.gs-profile-card {
+  border: 0.0625rem solid var(--green);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 0.25rem 1rem rgba(125, 215, 80, 0.2);
+  background: var(--bg);
+  padding: 2.5rem;
+  overflow: visible;
+}
+
+/* Avatar */
+.gs-avatar-wrap {
+  width: 14.25rem;
+  height: 14.25rem;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 0 1.5rem rgba(125, 215, 80, 0.5);
+  border: 0.15rem solid rgba(125, 215, 80, 0.6);
+}
+
+.gs-profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Textos de perfil */
+.gs-profile-username {
+  font-size: clamp(1.75rem, 4vw, 3.5rem);
+  font-weight: 700;
+  color: var(--green);
+  margin: 0;
+}
+
+.gs-profile-stat {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.gs-profile-desc {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #ffedf4;
+  max-width: 29.9375rem;
+  margin-top: 0.5rem;
+}
+
+/* Inputs modo edición */
+.gs-profile-input {
+  background: transparent;
+  border: none;
+  border-bottom: 0.125rem solid var(--green);
+  outline: none;
+  color: var(--green);
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  width: 100%;
+  padding: 0;
+}
+
+.gs-profile-input--xl {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.gs-profile-textarea {
+  background: transparent;
+  border: none;
+  border-bottom: 0.125rem solid var(--border);
+  outline: none;
+  color: #ffedf4;
+  font-family: "Varela Round", sans-serif;
+  resize: vertical;
+  width: 100%;
+  padding: 0;
+}
+
+.gs-profile-textarea--lg {
+  font-size: 1rem;
+  max-width: 29.9375rem;
+  margin-top: 0.5rem;
+}
+
+.gs-upload-wrap {
+  margin-bottom: 0.5rem;
+  max-width: 29.9375rem;
+}
+
+/* Redes sociales — vista */
+.gs-social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.5rem;
+  color: #fff;
+  text-decoration: none;
+  transition: transform var(--transition);
+}
+.gs-social-icon:hover {
+  transform: scale(1.15);
+}
+
+/* Redes sociales — edición */
+.gs-social-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.gs-social-edit-icon {
+  font-size: 1.25rem;
+  width: 1.5rem;
+  display: inline-flex;
+  justify-content: center;
+}
+.gs-social-edit-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 0.0625rem solid #555;
+  color: #ffedf4;
+  font-size: 0.875rem;
+  outline: none;
+  padding: 0.25rem 0;
+  font-family: "Varela Round", sans-serif;
+}
+
+/* Botón redondo (editar / compartir) */
+.gs-round-btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--green);
+  border: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: transform var(--transition);
+}
+.gs-round-btn:hover {
+  transform: scale(1.1);
+}
+.gs-round-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke: #000;
+}
+
+/* PROFILE LAYOUT -------------------------------------------- */
+
+.gs-profile-page {
+  min-height: 100vh;
+  padding-bottom: 9rem;
+}
+
+.gs-profile-inner {
+  width: min(100%, 82rem);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.gs-profile-card {
+  width: 100%;
+  border: 0.0625rem solid var(--green);
+  border-radius: var(--radius-2xl);
+  box-shadow:
+    0 0.25rem 1rem rgba(125, 215, 80, 0.2),
+    0 0 2rem rgba(125, 215, 80, 0.08);
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(172, 79, 214, 0.08),
+      transparent 18rem
+    ),
+    var(--bg);
+  padding: 2.5rem;
+  overflow: visible;
+}
+
+/* ─── CARRUSELES ────────────────────────────────────────── */
+.gs-carousel-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+.gs-carousel-grid {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0.25rem 0;
+}
+.gs-carousel-grid::-webkit-scrollbar {
+  display: none;
+}
+.gs-carousel-grid > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+.gs-carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 0.125rem solid #555;
+  background: var(--bg);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: all var(--transition);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.gs-carousel-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+.gs-carousel-btn--left {
+  left: -1.125rem;
+}
+.gs-carousel-btn--right {
+  right: -1.125rem;
+}
+
+/* ─── TARJETA "JUGANDO AHORA" ────────────────────────── */
+.gs-playing-card {
+  width: 16rem;
+  height: 8rem;
+  background: rgba(49, 38, 42, 0.39);
+  border-radius: 0.5rem;
+  display: flex;
+  padding: 0.875rem;
+  text-decoration: none;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: border-color var(--transition);
+  border: 0.0625rem solid transparent;
+}
+.gs-playing-card:hover {
+  border-color: var(--green);
+}
+
+.gs-playing-card__cover {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 0.3125rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-hover);
+}
+.gs-playing-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gs-playing-card__body {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.gs-playing-card__title {
+  color: var(--green);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gs-playing-card__rating {
+  color: var(--pink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gs-playing-card__meta {
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+/* ─── ESTRELLAS ──────────────────────────────────────── */
+.gs-stars {
+  display: inline-flex;
+  gap: 2px;
+}
+.gs-star {
+  color: #555;
+  font-size: 1.125rem;
+  transition: color var(--transition);
+  cursor: pointer;
+}
+.gs-star.on {
+  color: #d4b609;
+}
+
+/* ─── TARJETA FAVORITOS ──────────────────────────────── */
+.gs-fav-card {
+  width: 15rem;
+  background: var(--bg);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 0.0625rem solid var(--border);
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+.gs-fav-card:hover {
+  border-color: var(--green-border);
+  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.3);
+}
+.gs-fav-card__cover {
+  width: 100%;
+  height: 13rem;
+  overflow: hidden;
+  background: var(--bg-hover);
+}
+.gs-fav-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gs-fav-card__body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  overflow: hidden;
+  min-width: 0;
+}
+.gs-fav-card__title {
+  color: var(--green);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.gs-fav-card__score {
+  color: var(--pink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* Status dropdown */
+.gs-status-wrap {
+  position: relative;
+  align-self: flex-start;
+}
+.gs-status-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.75rem;
+  background: var(--bg);
+  cursor: pointer;
+  border-style: solid;
+  border-width: 0.1875rem;
+  min-width: 11rem;
+  height: 2.25rem;
+}
+.gs-status-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  background: var(--bg);
+  border: 0.0625rem solid #444;
+  border-radius: 0.5rem;
+  z-index: 10;
+  min-width: 11rem;
+  overflow: hidden;
+}
+.gs-status-option {
+  padding: 0.625rem 1.25rem;
+  cursor: pointer;
+  border-bottom: 0.0625rem solid #222;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background var(--transition);
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  width: 100%;
+  text-align: left;
+  font-family: "Inter", sans-serif;
+}
+.gs-status-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.gs-status-option.active {
+  background: rgba(255, 255, 255, 0.05);
+}
+.gs-status-label {
+  font-size: 1rem;
+  font-weight: 500;
+}
+.gs-status-arrow {
+  font-size: 1rem;
+}
+.gs-check {
+  font-size: 0.875rem;
+}
+.gs-spacer {
+  width: 0.875rem;
+  display: inline-block;
+}
+
+/* Color por estado */
+.gs-border-completed {
+  border-color: #7dd750;
+}
+.gs-border-playing {
+  border-color: #d64f82;
+}
+.gs-border-want_to_play {
+  border-color: #ac4fd6;
+}
+.gs-border-dropped {
+  border-color: #ad0003;
+}
+.gs-text-completed {
+  color: #7dd750;
+}
+.gs-text-playing {
+  color: #d64f82;
+}
+.gs-text-want_to_play {
+  color: #ac4fd6;
+}
+.gs-text-dropped {
+  color: #ad0003;
+}
+
+/* Glow por estado */
+.gs-glow-completed {
+  box-shadow: 0 0 1.5rem rgba(125, 215, 80, 0.15);
+}
+.gs-glow-playing {
+  box-shadow: 0 0 1.5rem rgba(214, 79, 130, 0.15);
+}
+.gs-glow-want_to_play {
+  box-shadow: 0 0 1.5rem rgba(172, 79, 214, 0.15);
+}
+.gs-glow-dropped {
+  box-shadow: 0 0 1.5rem rgba(173, 0, 3, 0.15);
+}
+
+/* ─── BIBLIOTECA / MY LIBRARY ─────────────────────────────── */
+
+.gs-library-title {
+  width: min(100%, 82rem);
+  margin: 2.5rem auto 1.5rem;
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.gs-filter-bar {
+  width: min(100%, 82rem);
+  margin: 0 auto 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.gs-library-grid {
+  width: min(100%, 82rem);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.gs-library-card {
+  width: 100%;
+  min-width: 0;
+  background: var(--bg);
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #333;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: visible;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
+}
+
+.gs-library-card:hover {
+  transform: translateY(-0.12rem);
+}
+
+.gs-library-card.gs-border-playing:hover {
+  border-color: #d64f82;
+  box-shadow: 0 0 1.6rem rgba(214, 79, 130, 0.28);
+}
+
+.gs-library-card.gs-border-want_to_play:hover {
+  border-color: #ac4fd6;
+  box-shadow: 0 0 1.6rem rgba(172, 79, 214, 0.28);
+}
+
+.gs-library-card.gs-border-completed:hover {
+  border-color: #7dd750;
+  box-shadow: 0 0 1.6rem rgba(125, 215, 80, 0.28);
+}
+
+.gs-library-card.gs-border-dropped:hover,
+.gs-library-card.dropped:hover {
+  border-color: #ad0003;
+  box-shadow: 0 0 1.6rem rgba(173, 0, 3, 0.3);
+}
+
+.gs-library-card.dropped {
+  border-color: #ad0003;
+  box-shadow: 0 0.25rem 0.35rem rgba(173, 0, 3, 0.4);
+}
+
+.gs-library-card__cover {
+  width: 100%;
+  height: 14rem;
+  overflow: hidden;
+  background: var(--bg-hover);
+  position: relative;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.gs-library-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gs-library-card__body {
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.gs-library-card__title {
+  color: var(--green);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  display: block;
+}
+
+.gs-library-card__score {
+  color: var(--pink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: block;
+}
+
+.gs-library-card__heart {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.375rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 5;
+  transition: transform var(--transition);
+}
+
+.gs-library-card__heart:hover {
+  transform: scale(1.2);
+}
+
+/* Filtros de biblioteca */
+
+.gs-filter-btn {
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 0.0625rem solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: "Inter", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  min-width: 6rem;
+}
+
+.gs-filter-btn:hover {
+  color: var(--text);
+  border-color: #444;
+}
+
+.gs-filter-btn.active {
+  color: var(--bg);
+  background: #7dd750;
+  border-color: #7dd750;
+}
+
+.gs-filter-btn.playing:hover {
+  color: #d64f82;
+  border-color: #d64f82;
+}
+
+.gs-filter-btn.want_to_play:hover {
+  color: #ac4fd6;
+  border-color: #ac4fd6;
+}
+
+.gs-filter-btn.completed:hover {
+  color: #7dd750;
+  border-color: #7dd750;
+}
+
+.gs-filter-btn.dropped:hover {
+  color: #ad0003;
+  border-color: #ad0003;
+}
+
+.gs-filter-btn.active.playing {
+  background: #d64f82;
+  border-color: #d64f82;
+  color: #fff;
+}
+
+.gs-filter-btn.active.want_to_play {
+  background: #ac4fd6;
+  border-color: #ac4fd6;
+  color: #fff;
+}
+
+.gs-filter-btn.active.completed {
+  background: #7dd750;
+  border-color: #7dd750;
+  color: var(--bg);
+}
+
+.gs-filter-btn.active.dropped {
+  background: #ad0003;
+  border-color: #ad0003;
+  color: #fff;
+}
+
+/* Responsive biblioteca */
+
+@media (max-width: 1200px) {
+  .gs-library-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .gs-library-title,
+  .gs-filter-bar,
+  .gs-library-grid {
+    width: 100%;
+  }
+
+  .gs-library-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .gs-library-card__cover {
+    height: 12rem;
+  }
+
+  .gs-filter-btn {
+    min-width: 5rem;
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+/* ─── UPLOADER ───────────────────────────────────────── */
+.gs-upload-area {
+  border: 0.125rem dashed var(--green-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  background: var(--bg-input);
+}
+.gs-upload-area:hover,
+.gs-upload-area.dragover {
+  border-color: var(--green);
+  background: var(--green-dim);
+}
+.gs-upload-preview {
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 0.1875rem solid var(--green);
+  box-shadow: var(--green-glow);
+}
+.gs-upload-filename {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  margin-top: 0.5rem;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .gs-profile-inner {
+    padding: 0 1rem;
+  }
+  .gs-profile-card {
+    padding: 1.25rem;
+  }
+
+  /* Header apilado en móvil */
+  .gs-profile-header {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .gs-profile-header-left {
+    flex-wrap: wrap;
+  }
+  .gs-profile-stats {
+    text-align: left !important;
+    width: 100%;
+  }
+  .gs-stats-row {
+    justify-content: flex-start !important;
+  }
+  .gs-stats-label {
+    justify-content: flex-start !important;
+  }
+  .gs-profile-btns {
+    justify-content: flex-start !important;
+  }
+
+  /* Avatar más pequeño en móvil */
+  .gs-avatar-wrap {
+    width: 6rem;
+    height: 6rem;
+  }
+  .gs-profile-username {
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
+  }
+
+  .gs-library-card:hover {
+    transform: translateY(-0.12rem);
+  }
+
+  /* Fav cards más pequeñas */
+  .gs-fav-card {
+    width: 12rem;
+  }
+  .gs-fav-card__cover {
+    height: 10rem;
+  }
+
+  /* SECTION TITLES -------------------------------------------- */
+
+  .gs-library-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 2.5rem 0 1.5rem;
+  }
+
+  /* Filtros */
+  .gs-filter-btn {
+    min-width: 5rem;
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gs-avatar-wrap {
+    width: 5rem;
+    height: 5rem;
+  }
+  .gs-library-card {
+    width: 100%;
+  }
+  .gs-fav-card {
+    width: 10rem;
+  }
+}
+
+/* Library card status borders -------------------------------- */
+
+.gs-library-card.gs-border-playing {
+  border-color: #d64f82;
+  box-shadow: 0 0 1.25rem rgba(214, 79, 130, 0.18);
+}
+
+.gs-library-card.gs-border-want_to_play {
+  border-color: #ac4fd6;
+  box-shadow: 0 0 1.25rem rgba(172, 79, 214, 0.18);
+}
+
+.gs-library-card.gs-border-completed {
+  border-color: #7dd750;
+  box-shadow: 0 0 1.25rem rgba(125, 215, 80, 0.18);
+}
+
+.gs-library-card.gs-border-dropped,
+.gs-library-card.dropped {
+  border-color: #ad0003;
+  box-shadow: 0 0 1.25rem rgba(173, 0, 3, 0.2);
+}
+
+/* Status dropdown layering ----------------------------------- */
+
+.gs-library-card {
+  z-index: 1;
+}
+
+.gs-library-card.is-open {
+  z-index: 50;
+}
+
+.gs-status-wrap {
+  position: relative;
+  z-index: 60;
+}
+
+.gs-status-menu {
+  z-index: 999;
+}
+
+/* Profile header fixed layout ------------------------------- */
+
+.gs-profile-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 2rem;
+}
+
+.gs-profile-main-info {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: nowrap;
+}
+
+.gs-profile-main-info > div:nth-child(2) {
+  min-width: 0;
+}
+
+.gs-profile-username {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: 1.05;
+}
+
+.gs-profile-side-panel {
+  min-width: 10rem;
+  justify-self: end;
+  text-align: right;
+}
+
+@media (max-width: 992px) {
+  .gs-profile-header {
+    grid-template-columns: 1fr;
+  }
+
+  .gs-profile-main-info {
+    flex-wrap: wrap;
+  }
+
+  .gs-profile-side-panel {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .gs-profile-side-panel .justify-content-end {
+    justify-content: flex-start !important;
+  }
+}
+
+/* Taste profile tags ---------------------------------------- */
+
+.gs-profile-taste {
+  max-width: 34rem;
+}
+
+.gs-profile-taste-label {
+  display: block;
+  color: var(--pink);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.5rem;
+}
+
+.gs-profile-taste-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.gs-profile-taste-tag {
+  color: var(--green);
+  background: rgba(125, 215, 80, 0.08);
+  border: 0.0625rem solid rgba(125, 215, 80, 0.35);
+  border-radius: 999rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+  box-shadow: 0 0 0.8rem rgba(125, 215, 80, 0.08);
+}
+
+.gs-profile-stats-box {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 1.4rem;
+}
+
+.gs-profile-stat-item {
+  min-width: 4.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.gs-profile-stat-item small {
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.gs-profile-stat {
+  display: block;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  line-height: 0.9;
+}

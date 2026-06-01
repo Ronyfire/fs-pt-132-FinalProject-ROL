@@ -1,0 +1,248 @@
+/* FOOTER — GAME-SIDE STYLE ---------------------------------- */
+
+.gs-footer {
+  position: relative;
+  overflow: hidden;
+  margin-top: auto;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(125, 215, 80, 0.12), transparent 18rem),
+    radial-gradient(circle at 85% 20%, rgba(172, 79, 214, 0.12), transparent 20rem),
+    linear-gradient(180deg, rgba(17, 19, 38, 0.98), #080a16);
+  border-top: 0.0625rem solid var(--green-border);
+  color: var(--text);
+  padding: 3.5rem 0 1.5rem;
+}
+
+.gs-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(125, 215, 80, 0.035) 0.0625rem, transparent 0.0625rem),
+    linear-gradient(90deg, rgba(125, 215, 80, 0.035) 0.0625rem, transparent 0.0625rem);
+  background-size: 3rem 3rem;
+  pointer-events: none;
+  mask-image: linear-gradient(to top, black, transparent 90%);
+}
+
+.gs-footer .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* MAIN LAYOUT ----------------------------------------------- */
+
+.gs-footer-main {
+  display: grid;
+  grid-template-columns: 1.4fr 0.65fr 0.85fr 0.65fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.gs-footer-brand {
+  max-width: 30rem;
+}
+
+.gs-footer-column {
+  min-width: 0;
+  justify-self: start;
+  padding-top: 0.45rem;
+}
+
+/* LOGO ------------------------------------------------------- */
+
+.gs-footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  text-decoration: none;
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease;
+}
+
+.gs-footer-logo:hover {
+  transform: translateY(-1px);
+}
+
+.gs-footer-logo:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.gs-footer-logo-icon-wrap {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gs-footer-logo-icon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition:
+    opacity 0.18s ease,
+    filter 0.18s ease;
+}
+
+.gs-footer-logo-icon-base {
+  opacity: 1;
+}
+
+.gs-footer-logo-icon-hover,
+.gs-footer-logo-icon-click {
+  opacity: 0;
+}
+
+.gs-footer-logo:hover .gs-footer-logo-icon-base {
+  opacity: 0;
+}
+
+.gs-footer-logo:hover .gs-footer-logo-icon-hover {
+  opacity: 1;
+  filter: drop-shadow(0 0 0.45rem rgba(214, 79, 130, 0.45));
+}
+
+.gs-footer-logo:active .gs-footer-logo-icon-base,
+.gs-footer-logo:active .gs-footer-logo-icon-hover {
+  opacity: 0;
+}
+
+.gs-footer-logo:active .gs-footer-logo-icon-click {
+  opacity: 1;
+  filter: drop-shadow(0 0 0.45rem rgba(172, 79, 214, 0.55));
+}
+
+.gs-footer-logo span:last-child {
+  color: var(--green);
+  font-size: 1.45rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  transition:
+    color var(--transition),
+    text-shadow var(--transition);
+}
+
+.gs-footer-logo:hover span:last-child {
+  color: var(--pink);
+  text-shadow: 0 0 0.6rem rgba(214, 79, 130, 0.35);
+}
+
+.gs-footer-logo:active span:last-child {
+  color: var(--purple, #ac4fd6);
+  text-shadow: 0 0 0.6rem rgba(172, 79, 214, 0.45);
+}
+
+/* BRAND TEXT ------------------------------------------------- */
+
+.gs-footer-brand-content {
+  padding-left: 0;
+}
+
+.gs-footer-brand p,
+.gs-footer-brand-content p {
+  max-width: 25rem;
+  color: #d8d8e8;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.gs-footer-tagline {
+  display: inline-flex;
+  color: var(--pink);
+  background: var(--pink-dim);
+  border: 0.0625rem solid rgba(214, 79, 130, 0.35);
+  border-radius: 999rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* COLUMNS ---------------------------------------------------- */
+
+.gs-footer-column h4 {
+  display: inline-block;
+  color: var(--green);
+  font-size: 0.95rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.1rem;
+}
+
+.gs-footer-links,
+.gs-footer-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.gs-footer-links a,
+.gs-footer-contact a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition:
+    color var(--transition),
+    transform var(--transition);
+}
+
+.gs-footer-links a:hover,
+.gs-footer-contact a:hover {
+  color: var(--green);
+  transform: translateX(0.2rem);
+}
+
+/* BOTTOM ----------------------------------------------------- */
+
+.gs-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.75rem;
+  padding-top: 1.25rem;
+  border-top: 0.0625rem solid rgba(125, 215, 80, 0.16);
+  color: var(--text-muted);
+}
+
+.gs-footer-bottom span {
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* RESPONSIVE ------------------------------------------------- */
+
+@media (max-width: 991px) {
+  .gs-footer-main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem;
+  }
+
+  .gs-footer-brand {
+    max-width: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .gs-footer {
+    padding-top: 2.5rem;
+  }
+
+  .gs-footer-main {
+    grid-template-columns: 1fr;
+  }
+
+  .gs-footer-bottom {
+    flex-direction: column;
+  }
+}
